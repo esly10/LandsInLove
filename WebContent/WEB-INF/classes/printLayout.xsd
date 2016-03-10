@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:simpleType name="column-type">
+		<xs:restriction base="xs:string" />
+	</xs:simpleType>
+
+	<xs:simpleType name="spacer-type">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0" />
+			<xs:maxLength value="0" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="line-type" mixed="true">
+		<xs:sequence>
+			<xs:element name="column" type="column-type" minOccurs="0"
+				maxOccurs="2" />
+		</xs:sequence>
+		<xs:attribute name="align" type="xs:string" default="left" />
+		<xs:attribute name="font" type="xs:string" />
+		<xs:attribute name="bold" type="xs:boolean" default="false" />
+	</xs:complexType>
+
+	<xs:complexType name="barcode-type" mixed="true">
+		<xs:attribute name="font" type="xs:string" default="BC39W" />
+		<xs:attribute name="align" type="xs:string" default="left" />
+		<xs:attribute name="margin-left" type="xs:int" default="0" />
+	</xs:complexType>
+	<xs:complexType name="violation-type">
+		<xs:choice maxOccurs="unbounded" minOccurs="0">
+			<xs:element name="spacer" type="spacer-type" minOccurs="0"
+				maxOccurs="unbounded" />
+
+			<xs:element name="line" type="line-type" minOccurs="0"
+				maxOccurs="unbounded" />
+
+			<xs:element name="violation" type="violation-type"
+				minOccurs="0" maxOccurs="unbounded" />
+
+			<xs:element name="if" type="if-type" minOccurs="0"
+				maxOccurs="unbounded" />
+
+			<xs:element name="barcode" type="barcode-type" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xs:choice>
+		<xs:attribute name="code_id" type="xs:string" />
+		<xs:attribute name="overtime" type="xs:boolean" />
+	</xs:complexType>
+
+	<xs:complexType name="if-type">
+		<xs:choice maxOccurs="unbounded" minOccurs="0">
+			<xs:element name="spacer" type="spacer-type" minOccurs="0"
+				maxOccurs="unbounded" />
+
+			<xs:element name="line" type="line-type" minOccurs="0"
+				maxOccurs="unbounded" />
+
+			<xs:element name="violation" type="violation-type"
+				minOccurs="0" maxOccurs="unbounded" />
+
+			<xs:element name="if" type="if-type" minOccurs="0"
+				maxOccurs="unbounded" />
+
+			<xs:element name="barcode" type="barcode-type" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xs:choice>
+		<xs:attribute name="test" type="xs:string" use="required" />
+	</xs:complexType>
+
+
+	<xs:complexType name="citation-format-type">
+		<xs:choice maxOccurs="unbounded" minOccurs="0">
+			<xs:element name="line" type="line-type" minOccurs="0"
+				maxOccurs="unbounded" />
+
+			<xs:element name="spacer" type="spacer-type" minOccurs="0"
+				maxOccurs="unbounded" />
+
+			<xs:element name="violation" type="violation-type"
+				minOccurs="0" maxOccurs="unbounded" />
+
+			<xs:element name="barcode" type="barcode-type" minOccurs="0"
+				maxOccurs="unbounded" />
+
+			<xs:element name="if" type="if-type" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xs:choice>
+		<xs:attribute name="type" type="xs:string" default="ez" />
+		<xs:attribute name="width" type="xs:int" default="4" />
+		<xs:attribute name="line-spacing" type="xs:int" default="30" />
+		<xs:attribute name="margin-left" type="xs:int" default="0" />
+		<xs:attribute name="font" type="xs:string" default="MF107" />
+	</xs:complexType>
+
+	<xs:element name="citation-format" type="citation-format-type" />
+</xs:schema>
