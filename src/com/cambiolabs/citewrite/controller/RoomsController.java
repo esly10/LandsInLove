@@ -35,7 +35,7 @@ public class RoomsController extends MultiActionController
 			orderBy = sort;
 		}
 		else
-		{
+		{ 
 			orderBy = "ROOM_NO";
 		}
 		

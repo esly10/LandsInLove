@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.w3c.dom.Element;
 
-public class CiteField extends Field
+public class CiteField extends Field 
 {
 	//codes
 	public static final String FN_VIOLATION    = "violation";
