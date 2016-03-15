@@ -30,7 +30,7 @@ ChargeGeneralPanel = Ext.extend(Ext.Panel, {
 			var config = 
 			{
 				xtype: 'panel',
-			    title: 'Charges',
+			    //title: 'Charges',
 			    id: 'chargetab-general-' + panel.charge.ROOM_ID,
 			    padding: 5,
 			    bodyCssClass: 'x-citewrite-panel-body',

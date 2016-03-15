@@ -23,7 +23,7 @@ ReportViewerPanel = Ext.extend(Ext.Panel, {
 			    				scripts : true, 
 			    				//params: {report_id: panel.report_id, date: panel.date.value }, 
 			    				params: {report_id: panel.report_id, start: panel.start, end: panel.end, year: panel.year, type: panel.type } },
-			    				buttons:  buttons
+			    buttons:  buttons
 			};
 			Ext.apply(this, Ext.apply(this.initialConfig, config));
 	        

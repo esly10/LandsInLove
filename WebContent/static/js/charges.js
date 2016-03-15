@@ -374,7 +374,6 @@ Ext.onReady(function(){
 			                	 id: 'chargetabs',
 			                	 frame: false,
 			                	 closable: true
-			                	 
 			                 },filterForm]	
 			            }]
 			        });

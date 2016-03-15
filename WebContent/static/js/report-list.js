@@ -56,7 +56,7 @@ Ext.onReady(function(){
 			            	    }else if(dataStore.data.id == 4) {
 			            	    	meta.style = "background-color:#4d7aec; background-image: url(/cws/static/images/payment-report.png); height:70px;";
 			            	    }else if(dataStore.data.id == 5) {
-			            	    	meta.style = "background-color:#ffc000; background-image: url(/cws/static/images/meal-report.png);  height:70px;";
+			            	    	meta.style = "background-color:#ff7f00; background-image: url(/cws/static/images/meal-report.png);  height:70px;";
 			            	    }else if(dataStore.data.id == 6) {
 			            	    	meta.style = "background-color:#ca18ab; background-image: url(/cws/static/images/security-report.png); height:70px;";
 			            	    }else if(dataStore.data.id == 7) {
@@ -79,8 +79,8 @@ Ext.onReady(function(){
 			    ReportList.superclass.constructor.call(this, 
 			    {
 			        region: 'center',
-			        id: 'charge-list-grid',
-			        loadMask: {msg:'Loading Charge...'},
+			        id: 'report-list-grid',
+			        loadMask: {msg:'Loading Report...'},
 			
 			        sm: new Ext.grid.RowSelectionModel
 			        ({
@@ -181,9 +181,10 @@ Ext.onReady(function(){
 								anchor: "90%",
 								id: 'filter_start',
 								name: 'filter_start',
+								renderer: Ext.util.Format.dateRenderer('Y-m-d'),
 								listeners : {
 								    render : function(datefield) {
-								        datefield.setValue(new Date());
+								        datefield.setValue(new Date().format('m/d/Y'));
 								    }
 								}
 							   
@@ -196,7 +197,8 @@ Ext.onReady(function(){
 					            hidden: true,
 					            enableKeyEvents: true,
 					            format: 'Y-m-d',
-								submitFormat: 'Y-m-d',
+					            dateFormat: 'Y-m-d',
+					            submitFormat: 'Y-m-d H:i:s',
 								submitValue : true,
 								altFormats: 'Y-m-d',
 								width: 150,
@@ -256,30 +258,13 @@ Ext.onReady(function(){
                             		width: 100,
                             		anchor:'99%',
             			            handler: function(){
-            			              /* //var params = filterForm.getForm().getFieldValues();
-            			               Ext.getCmp("filter_pdf").show();
-            			              
-            			               var report_id = Ext.getCmp('report_id').getValue();
-            			               var report_name = Ext.getCmp('report_name').getValue();
-            			               var tabs = Ext.getCmp('reporttabs');
-
-            			               var reportPanel = tabs.find('id', 'Report-' + record);
-            			               if(reportPanel.length > 0)
-            			               {
-            			            	   tabs.setActiveTab(reportPanel[0]);
-            			               }
-            			               else
-            			               {
-            			            	   reportPanel = new ReportTabPanel({report_id: report_id, report_name:report_name, start: Ext.getCmp('filter_start').getValue(), 
-            			            		   			end: Ext.getCmp('filter_end').getValue(), year: Ext.getCmp('filter_year').getValue(), 
-            			            		   			type: Ext.getCmp('filter_pay').getValue() });
-            			            	   tabs.add(reportPanel);
-            			            	   tabs.setActiveTab(reportPanel.id);
-            				    		}
-            			           */
+            			        
+            			            	 	Ext.getCmp("filter_pdf").show();
 	            			            	var id = Ext.getCmp('report_id').getValue();
 	            			            	var report_name = Ext.getCmp('report_name').getValue();
 	            			            	var start = Ext.getCmp('filter_start').getValue();
+	            			            	//var dt = new Date(strstart);
+	            			            	//var start = Ext.Date.parse(strstart,'d-m-Y');
 	            			            	var end = Ext.getCmp('filter_end').getValue();
 	            			            	var year = Ext.getCmp('filter_year').getValue();
 	            			            	var type = Ext.getCmp('filter_pay').getValue();
@@ -288,13 +273,13 @@ Ext.onReady(function(){
 	            				    		var reportPanel = tabs.find('id', 'Report-' + report_name);
 	            				    		if(reportPanel.length > 0)
 	            				    		{
-	            				    			tabs.setActiveTab(chargePanel[0]);
+	            				    			tabs.setActiveTab(reportPanel[0]);
 	            				    		}
 	            				    		else
 	            				    		{
-	            				    			reportPanel = new ReportViewerPanel({
+	            				    			reportPanel = new ReportTabPanel({
 	            				    											report_id: id, 
-	            				    											name: report_name,
+	            				    											report_name: report_name,
 	            				    											start: start, 
 	            				    											end: end, 
 	            				    											year: year, 
@@ -303,7 +288,6 @@ Ext.onReady(function(){
 	            								tabs.add(reportPanel);
 	            								tabs.setActiveTab(reportPanel.id);
 	            				    		}
-	            				    		
             			            }
 								},{
 									xtype: 'button',
@@ -314,9 +298,34 @@ Ext.onReady(function(){
                             		width: 100,
                             		anchor:'99%',
             			            handler: function(){
-            			               var params = filterForm.getForm().getFieldValues();
-            			               store.baseParams = params;
-            			              store.load({params: {start: 0, limit: pageLimit}});
+            			            
+            			            	var id = Ext.getCmp('report_id').getValue();
+            			            	var report_name = Ext.getCmp('report_name').getValue();
+            			            	var start = Ext.getCmp('filter_start').getValue();
+            			            	//var dt = new Date(strstart);
+            			            	//var start = Ext.util.Format.dateRenderer('Y-m-d');
+            			            	//var start = Ext.Date.parse(strstart,'d-m-Y');
+            			            	var end = Ext.getCmp('filter_end').getValue();
+            			            	var year = Ext.getCmp('filter_year').getValue();
+            			            	var type = Ext.getCmp('filter_pay').getValue();
+            				    		            			    			
+            			    			var body = Ext.getBody();
+            			    			var frame = Ext.get('hiddenform-iframe');
+            			    			if(frame != undefined)
+            			    			{
+            			    				frame.remove();
+            			    			}
+            			    			
+            			    			
+            			    			frame = body.createChild({
+            			    		        tag: 'iframe',
+            			    		        cls: 'x-hidden',
+            			    		        id: 'hiddenform-iframe',
+            			    		        name: 'hidden-iframe',
+            			    		        src: _contextPath + "/report/exportPDF?report_id="+ id + "&report_name=" + report_name
+            			    		        + "&start=" + start + "&end=" + end + "&year=" + year  + "&type=" + type
+            			    		      });    		
+            			    		
             			            }
 								},
 							       {
@@ -331,7 +340,7 @@ Ext.onReady(function(){
 					       ],
 			});
 			 
-			 
+			
 			 ReportTabPanel = Ext.extend(Ext.TabPanel, {
 				report : null,
 				date: null,
@@ -354,7 +363,7 @@ Ext.onReady(function(){
 					
 			        Ext.apply(this, Ext.apply(this.initialConfig, config));
 			        
-			        ReportPanel.superclass.initComponent.apply(this, arguments);
+			        ReportTabPanel.superclass.initComponent.apply(this, arguments);
 			    }				
 			});
 			
@@ -427,6 +436,7 @@ Ext.onReady(function(){
 			content.removeAll(true);
 			content.add(new ReportManager({bodyCssClass: 'x-citewrite-border-ct'}));
 			content.doLayout();
+			Ext.getCmp("filterRegion").collapse(); 
 		}); //end managers on click
 	}//end if	
 	

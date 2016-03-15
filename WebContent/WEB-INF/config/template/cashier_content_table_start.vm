@@ -1,0 +1,62 @@
+	
+
+	<fo:table font-family="sans-serif" table-layout="fixed" space-before="10pt" space-after="10pt" border-color="white" border-width="0mm">
+		<fo:table-column column-number="1" column-width="12mm"/>
+		<fo:table-column column-number="2" column-width="22mm"/>
+		<fo:table-column column-number="3" column-width="65mm"/>
+		<fo:table-column column-number="4" column-width="22mm"/>
+
+		<fo:table-column column-number="5" column-width="28mm"/>
+
+		<fo:table-column column-number="6" column-width="33mm"/>
+		<fo:table-column column-number="7" column-width="18mm"/>
+
+		<fo:table-body>
+			<fo:table-row border-width="0mm">
+				<fo:table-cell border-style="none" padding-top="20px">					
+					<fo:block text-align="left" font-size="7pt" padding-top="10px">Payment</fo:block>
+				</fo:table-cell>
+				<fo:table-cell border-style="none" padding-top="20px">
+					<fo:block text-align="left" font-size="7pt" padding-top="10px">Citation #</fo:block>
+				</fo:table-cell>
+				<fo:table-cell border-style="none" padding-top="20px">
+					<fo:block text-align="left" font-size="8pt" padding-top="10px">Violation</fo:block>
+				</fo:table-cell>
+				<fo:table-cell border-style="none"  padding-top="20px">
+					<fo:block text-align="left" font-size="8pt" >Payment Type</fo:block>
+					<fo:block text-align="left" font-size="8pt" >Payment Mode</fo:block>
+				</fo:table-cell>
+
+				<fo:table-cell border-style="none"  padding-top="20px">
+					<fo:block text-align="left" font-size="8pt" >Payment Num</fo:block>
+					<fo:block text-align="left" font-size="8pt" >Trans ID</fo:block>
+				</fo:table-cell>
+
+				<fo:table-cell border-style="none" padding-top="20px">
+					<fo:block text-align="left" font-size="8pt">Payment Day</fo:block>
+					<fo:block text-align="left" font-size="8pt" >Received By</fo:block>
+				</fo:table-cell>
+				<fo:table-cell border-style="none" padding-top="20px">
+					<fo:block text-align="left" font-size="8pt" padding-top="10px" >Amount</fo:block>
+				</fo:table-cell>
+			</fo:table-row>
+		</fo:table-body>
+	</fo:table>			
+	
+	<fo:table font-family="sans-serif" table-layout="fixed" space-before="10pt" space-after="10pt" border-color="black" border-width="0.35mm" border-style="solid">
+		<fo:table-column column-number="1" column-width="12mm"/>
+		<fo:table-column column-number="2" column-width="22mm"/>
+		<fo:table-column column-number="3" column-width="65mm"/>
+		<fo:table-column column-number="4" column-width="22mm"/>
+
+		<fo:table-column column-number="5" column-width="28mm"/>
+
+		<fo:table-column column-number="6" column-width="33mm"/>
+		<fo:table-column column-number="7" column-width="18mm"/>
+		<fo:table-body>
+			<fo:table-row line-height="6mm">
+				<fo:table-cell padding-start="0.3em" padding-end="0.2em" padding-before="2pt" padding-after="2pt" number-columns-spanned="7" border-color="black" border-width="0.35mm" border-style="solid">
+					<fo:block text-align="left" font-weight="bold">Payment Type: ${payment_type}</fo:block>
+				</fo:table-cell>
+			</fo:table-row>
+			

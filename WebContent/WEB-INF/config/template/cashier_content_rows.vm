@@ -1,0 +1,34 @@
+
+			<fo:table-row line-height="3.5mm" border-color="black" border-width="0.35mm" border-style="solid">
+				<fo:table-cell border-style="none" border-width="0.1pt" padding-start="0.3em" padding-end="0.2em" padding-before="2pt" padding-after="2pt">
+					<fo:block text-align="left" font-size="7pt">${data.invoice_item_id}</fo:block>
+				</fo:table-cell>
+				<fo:table-cell border-style="none" border-width="0.1pt" padding-start="0.3em" padding-end="0.2em" padding-before="2pt" padding-after="2pt">
+					<fo:block text-align="left" font-size="7pt">${citation_number}</fo:block>
+				</fo:table-cell>
+				<fo:table-cell border-style="none" border-width="0.1pt" padding-start="0.3em" padding-end="0.2em" padding-before="2pt" padding-after="2pt">
+					<fo:block text-align="left" font-size="8pt">${violation_id}</fo:block>
+					<fo:block text-align="left" font-size="8pt">${violation_description}</fo:block>
+				</fo:table-cell>
+				<fo:table-cell border-style="none" border-width="0.1pt" padding-start="0.3em" padding-end="0.2em" padding-before="2pt" padding-after="2pt">
+					<fo:block text-align="left" font-size="8pt">#if($data.type == 5)Refund#else${data.payment_method}#end</fo:block>
+					<fo:block text-align="left" font-size="8pt">${data.trans_type}</fo:block>
+				</fo:table-cell>
+
+
+				<fo:table-cell border-style="none" border-width="0.1pt" padding-start="0.3em" padding-end="0.2em" padding-before="2pt" padding-after="2pt">
+					<fo:block text-align="left" font-size="8pt">${data.cc_number}</fo:block>
+					<fo:block text-align="left" font-size="8pt">${data.trans_id}</fo:block>
+				</fo:table-cell>
+
+
+				<fo:table-cell border-style="none" border-width="0.1pt" padding-start="0.3em" padding-end="0.2em" padding-before="2pt" padding-after="2pt">
+					<fo:block text-align="left" font-size="8pt">${data.createDateFormat}</fo:block>
+					<fo:block text-align="left" font-size="8pt">${data.issuedByID}</fo:block>
+				</fo:table-cell>
+				<fo:table-cell border-style="none" border-width="0.1pt" padding-start="0.3em" padding-end="0.2em" padding-before="2pt" padding-after="2pt">
+					<fo:block text-align="left" font-size="8pt">#if($data.type == 5)-#end${data.formatAmount}</fo:block>
+				</fo:table-cell>
+			</fo:table-row>
+			
+	

@@ -7,18 +7,20 @@
 	<div style="width: 100%; float: left;">
 		<div style="width: 100%; float: left;">
 			<dl class="list" style="font-size:14px;">
-				<dt style="background:#00BBFF; color:#FFFFFF; text-align:center; padding:5px; font-size:14px;">Meal Plan:</dt>	
-				<dd style="background:#00BBFF; color:#FFFFFF; text-align:center; padding:5px; font-size:14px;"></dd> 	
-				<dt></dt><dd></dd>	 
+				<dt style="background:#FFFFFF; color:#ff7f00; text-align:center; padding:5px; font-size:24px;">Meal Plan</dt>	
+				<dd style="background:#FFFFFF; color:#ff7f00; text-align:center; padding:5px; font-size:24px;"></dd> 	
+				<dt style="background:#FFFFFF; color:#A65B1A; text-align:left; padding:5px; font-size:14px;"><c:out value="${date.formatdate}" /></dt>	
+				<dd style="background:#FFFFFF; color:#A65B1A; text-align:center; padding:5px; font-size:14px;"></dd> 	
 			</dl>
 		</div>	
 	</div>	
-		<div style="width: 100%; float: left;">
-		<table  class="tableCharge"  style="width:100%; float: right;">
-			 <tr><td colspan=7>Date Meal List: </td></tr>
-			  <tr>
-			    <td>Room No</td><td>Guest Name</td><td>Qty</td><td>Plan</td><td>Breakfast</td> <td>Launch</td><td>Dinner</td>
-			  </tr>
+		<div class="mealplan" style="width: 100%; float: left;">
+		<table>
+			  <thead>
+				  <tr>
+				    <th>Room No</th><th>Guest Name</th><th>Qty</th><th>Plan</th><th>Breakfast</th> <th>Launch</th><th>Dinner</th>
+				  </tr>
+			  </thead>
 			<c:forEach items="${reservations}" var="item">	
 			 <tr>
 			 		<td><c:out value="${item.rooms}" /></td>
@@ -36,6 +38,21 @@
 					<td><input type="checkbox"></td>								
 			 </tr>		
 			</c:forEach>
+			<tfoot>
+				<tr>
+					<td colspan="7"><div id="paging">
+							<ul>
+								<li><a href="#"><span>Previous</span></a></li>
+								<li><a href="#" class="active"><span>1</span></a></li>
+								<li><a href="#"><span>2</span></a></li>
+								<li><a href="#"><span>3</span></a></li>
+								<li><a href="#"><span>4</span></a></li>
+								<li><a href="#"><span>5</span></a></li>
+								<li><a href="#"><span>Next</span></a></li>
+							</ul>
+						</div>
+				</tr>
+			</tfoot>
+			<tbody></tbody>
 		</table>
-		
-	</div>			
+	</div>		

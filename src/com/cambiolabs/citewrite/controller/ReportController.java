@@ -9,35 +9,46 @@ import java.sql.ResultSetMetaData;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.TransformerException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+//import org.apache.fop.apps.FOPException;
 import org.jsoup.select.Evaluator.IsEmpty;
+import org.springframework.ui.velocity.VelocityEngineUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.apache.velocity.app.VelocityEngine;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
 import com.cambiolabs.citewrite.data.Agencies;
 import com.cambiolabs.citewrite.data.Charges;
+import com.cambiolabs.citewrite.data.Citation;
 import com.cambiolabs.citewrite.data.CiteField;
 import com.cambiolabs.citewrite.data.CiteFields;
 import com.cambiolabs.citewrite.data.Code;
 import com.cambiolabs.citewrite.data.Codes;
+import com.cambiolabs.citewrite.data.DateFormater;
 import com.cambiolabs.citewrite.data.Field;
 import com.cambiolabs.citewrite.data.Guests;
+import com.cambiolabs.citewrite.data.LateFee;
 import com.cambiolabs.citewrite.data.ManagedPermitField;
 import com.cambiolabs.citewrite.data.ManagedPermitFields;
 import com.cambiolabs.citewrite.data.ManagedPermitTypeField;
 import com.cambiolabs.citewrite.data.ManagedPermitTypeFields;
+import com.cambiolabs.citewrite.data.Owner;
 import com.cambiolabs.citewrite.data.Report;
 import com.cambiolabs.citewrite.data.ReportCriteria;
 import com.cambiolabs.citewrite.data.ReportField;
@@ -50,6 +61,8 @@ import com.cambiolabs.citewrite.db.DBFilter;
 import com.cambiolabs.citewrite.db.DBFilterList;
 import com.cambiolabs.citewrite.db.QueryBuilder;
 import com.cambiolabs.citewrite.db.UnknownObjectException;
+import com.cambiolabs.citewrite.ecommerce.Invoice;
+import com.cambiolabs.citewrite.ecommerce.InvoiceItem;
 //import com.cambiolabs.citewrite.ecommerce.InvoiceItem;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -59,7 +72,13 @@ import com.google.gson.JsonObject;
 
 public class ReportController extends MultiActionController
 {
-	
+	private static VelocityEngine velocityEngine;
+	private String template_path = "config/template/mealplan.vm";
+	//private String template_path_footer = "config/template/fo_footer.vm";
+
+	public void setVelocityEngine(VelocityEngine vEngine) {
+		velocityEngine = vEngine;
+	}
 	protected final Log logger = LogFactory.getLog(getClass());
 	public static Properties properties;
 	
@@ -1128,6 +1147,7 @@ public class ReportController extends MultiActionController
 						
 						long now = System.currentTimeMillis();
 						Timestamp dateStart = new Timestamp(now);
+						
 						String date = request.getParameter("start");
 						date = date.replace("T", " ");
 						try
@@ -1139,12 +1159,10 @@ public class ReportController extends MultiActionController
 								response.getOutputStream().print(gson.toJson(json));
 								return null;
 							}
+						DateFormater mydate = new DateFormater(dateStart);
 						ArrayList<Reservations> reservations = null;
 						reservations = Reservations.MealPlan(dateStart);
-						String test = null;
-						for (int i=0; i<reservations.size(); i++){
-							test = reservations.get(i).getRooms();
-						}
+						String test = mydate.getFormatdate();
 						
 						if (reservations.size()==0){
 								ModelAndView msg =  new ModelAndView("no_result_report","message",
@@ -1154,6 +1172,8 @@ public class ReportController extends MultiActionController
 								mv =  new ModelAndView("meal_plan");
 								if (reservations != null){
 									mv.addObject("reservations", reservations);
+									mv.addObject("date", mydate);
+								
 								}
 								mv.addObject("user", user);
 								
@@ -1185,7 +1205,102 @@ public class ReportController extends MultiActionController
 			
 	}
 	
-	
+	public void exportPDF(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, TransformerException, UnknownObjectException, ParseException {
+		//response.setContentType("text/json");
+						
+		try
+		{
+			int type = Integer.parseInt(request.getParameter("report_id"));
+			switch (type){
+				case 1:{
+					
+				}		
+				break;
+				case 2:{
+									
+				}		
+				break;
+				case 3:{
+					
+				}		
+				break;
+				case 4:{
+					
+				}		
+				break;
+				case 5:{
+					
+					String htmlFile = "";
+					HashMap<String, Object> model = new HashMap<String, Object>();
+					long now = System.currentTimeMillis();
+					Timestamp dateStart = new Timestamp(now);
+					
+					String date = request.getParameter("start");
+					date ="2016-01-21 00:00:00";
+					DateFormat formatter = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss z");
+					
+					//Date formatdate = (Date)formatter.parse(dateStart);
+					//Date formatdate2 = (Date)formatter.parse(date);
+					 //YYYY-MM-DDThh:mm:ss TZD
+					//date = date.replace("T", " ");
+					
+					try
+					{
+						dateStart = Timestamp.valueOf(date);
+					}
+					catch(NumberFormatException nfe){
+						
+					}
+					DateFormater mydate = new DateFormater(dateStart);
+					ArrayList<Reservations> reservations = null;
+					reservations = Reservations.MealPlan(dateStart);
+					String test = mydate.getFormatdate();
+					model.put("reservations", reservations);
+					model.put("date", mydate);
+													
+					try 
+					{
+						htmlFile =  VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "config/template/mealplan.vm", model);
+					} 
+					catch (Exception e) 
+					{
+						
+					}
+								
+					Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+					JsonObject json = new JsonObject();
+					json.addProperty("success", true);
+					json.addProperty("html", htmlFile);
+					
+					//response.setContentType("text/json");	
+					
+					//response.getWriter().print(gson.toJson(json));	
+					response.setContentType("text/html");			
+					response.getOutputStream().print(htmlFile);		
+					
+				}		
+				break;
+				case 6:{
+					
+				}		
+				break;
+				case 7:{
+					
+				}		
+				break;
+				case 8:{
+					
+				}		
+				break;
+			}
+			
+		}
+		catch(Exception e)
+		{
+			
+		}
+		
+}
 	
 	
 	
