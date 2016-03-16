@@ -75,7 +75,7 @@ ul.navigation li {
 }
 ul.navigation li#nav-reservation { background: transparent url(../js/library/ext/images/landsinlove/icons/new-ico.png) no-repeat left center; }
 ul.navigation li#nav-list { background: transparent url(../js/library/ext/images/landsinlove/icons/list-ico.png) no-repeat left center; }
-ul.navigation li#nav-ocupancy { background: transparent url(../js/library/ext/images/landsinlove/icons/ocupancy-ico.png) no-repeat left center; }
+ul.navigation li#nav-calendar { background: transparent url(../js/library/ext/images/landsinlove/icons/ocupancy-ico.png) no-repeat left center; }
 ul.navigation li#nav-payment { background: transparent url(../js/library/ext/images/landsinlove/icons/charge-ico.png) no-repeat left center; }
 ul.navigation li#nav-contacts { background: transparent url(../js/library/ext/images/landsinlove/icons/guest-ico.png) no-repeat left center; }
 ul.navigation li#nav-services { background: transparent url(../js/library/ext/images/landsinlove/icons/service-ico.png) no-repeat left center; }
@@ -364,8 +364,7 @@ div.citation-notes .citation-note .note { margin-bottom: 5px; }
 }
 .tableCharge tr:first-child td:last-child{
 	border-width:0px 0px 1px 1px;
-}
-.mealplan table {
+}.mealplan table {
 	border-collapse: collapse;
 	text-align: left;
 	width: 100%;

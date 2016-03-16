@@ -237,6 +237,10 @@ public class DBConnection
 					{
 						field.set(object, this.rs.getInt(columnName));
 					}
+					else if(type.equals(long.class))
+					{
+						field.set(object, this.rs.getLong(columnName));
+					}
 					else if(type.equals(float.class))
 					{
 						field.set(object, this.rs.getFloat(columnName));
@@ -244,6 +248,12 @@ public class DBConnection
 					else if(type.equals(Timestamp.class))
 					{
 						field.set(object, this.rs.getTimestamp(columnName));
+					}
+					else if(type.equals(double.class)){
+						field.setDouble(object, this.rs.getDouble(columnName));
+					}
+					else if(type.equals(Blob.class)){
+						field.set(object, this.rs.getBlob(columnName));
 					}
 				}
 				catch(SQLException e)
@@ -319,6 +329,17 @@ public class DBConnection
 							parameters.add(value);
 						}
 					}
+					else if(type.equals(double.class))
+					{
+						double value = field.getDouble(object);
+						if(value > 0)
+						{
+							if(where.length() > 0){ where += " AND "; }
+							where += columnName+"=?";
+							
+							parameters.add(new Double(value));
+						}
+					}
 				}
 			} //sql for loop
 			
@@ -343,6 +364,10 @@ public class DBConnection
 					else if(type.equals(Timestamp.class))
 					{
 						pst.setTimestamp(i+1, (Timestamp)field);
+					}
+					else if(type.equals(Double.class))
+					{
+						pst.setDouble(i+1, ((Double)field).doubleValue());
 					}
 				}
 				

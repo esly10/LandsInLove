@@ -19,6 +19,14 @@
 	<meta http-equiv="Content-Style-Type" content="text/css" />
 	<title>Lands in Love</title>
 	<script type="text/javascript" src="<c:url value="/static/js/library/prototype.js" />" ></script>
+	
+	<!-- helper libraries -->
+	<script type="text/javascript" src="<c:url value="/static/js/calendar/js/jquery-1.9.1.min.js" />"></script>
+ 		    		  
+	<script type="text/javascript">
+        var $jQuery = jQuery.noConflict();
+    </script>
+    
 	<script type="text/javascript" src="<c:url value="/static/js/library/scriptaculous/scriptaculous.js?load=effects" /> " ></script>
 	
 	<link href="<c:url value="/static/js/library/ext/css/ext-all.css" />" rel="stylesheet" type="text/css" />
@@ -43,6 +51,11 @@
 	
     <link rel="stylesheet" type="text/css" href="<c:url value="/static/js/library/ext/ux/css/Ext.ux.GridTotals.css" />"/>
 	<script type="text/javascript" src="<c:url value="/static/js/library/ext/ux/Ext.ux.GridTotals.js" />"></script>
+	
+	<script type="text/javascript" src="<c:url value="/static/js/library/ext/ux/CheckColumn.js" />"></script>
+	<script type="text/javascript" src="<c:url value="/static/js/library/ext/ux/Ext.ux.form.MultiCombo.js" />"></script>
+	<link href="<c:url value="/static/js/library/ext/css/Ext.ux.form.MultiCombo.css" />" rel="stylesheet" type="text/css" />
+	
 	
 	<script type="text/javascript" src="<c:url value="/static/js/portal.js" />"></script>
 	<script type="text/javascript" src="<c:url value="/static/js/utils.js" />"></script>
@@ -70,9 +83,9 @@
         <ul class="navigation" id="tool-options">
         	<% if(cwUser.hasPermission(User.PL_RESERVATION_MANAGE)){ %>
         		<li id="nav-reservation">New Reservation
-		    		<script type="text/javascript" src="<c:url value="/static/js/search.js" />"></script>
-		    		<script type="text/javascript" src="<c:url value="/static/js/search-panel.js" />"></script>
-		    		<script type="text/javascript" src="<c:url value="/static/js/search-panel-result.js" />"></script>
+        			<script type="text/javascript" src="<c:url value="/static/js/reservationStores.js" />"></script>
+		    		<script type="text/javascript" src="<c:url value="/static/js/reservation.js" />"></script>
+		 			<script type="text/javascript" src="<c:url value="/static/js/reservation-grid.js" />"></script>
 		    	</li>
 		    <% } if(cwUser.hasPermission(User.PL_RESERVATION_VIEW)){ %>
 		    	<li id="nav-list">Reservation List</li>
@@ -82,8 +95,18 @@
 		    	</li>
 		    	
 		    <% } if(cwUser.hasPermission(User.PL_OCUPANCY_LIST)){ %>
-		    	<li id="nav-ocupancy">Ocupancy</li>
+		    	<li id="nav-calendar">Calendar		    	  
+		    	  	<meta charset="utf-8">
 		   
+		    	  	<script type="text/javascript" src="<c:url value="/static/js/calendar/js/moment.min.js" />"></script>
+		    	  	<script type="text/javascript" src="<c:url value="/static/js/calendar/js/jquery-ui-1.10.2.min.js" />"></script>
+		    	  	 					    
+ 					<script type="text/javascript" src="<c:url value="/static/js/calendar/js/timelineScheduler.js" />"></script>        		
+        			<script type="text/javascript" src="<c:url value="/static/js/calendar-code.js" />"></script>		    	
+        	
+		    		<script type="text/javascript" src="<c:url value="/static/js/calendar.js" />"></script>
+		    		<script type="text/javascript" src="<c:url value="/static/js/calendar-general.js" />"></script>		    		
+		    	</li>		   		
 	    	
 		    <% } if(cwUser.hasPermission(User.PL_CHARGES_VIEW)){ %>
 		    	<li id="nav-payment">Charges

@@ -1,5 +1,5 @@
 var _ownerMutex = false;
-ReservationPanel = Ext.extend(Ext.Panel, {
+ReservationListPanel = Ext.extend(Ext.Panel, {
 	grid: null,
 	store: null,
 	filter: null,
@@ -18,22 +18,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 			this.owner = {owner_id: 0};
 		}
 		
-		this.statusStore = new Ext.data.JsonStore({
-			url: _contextPath + '/reservation/List',
-			baseParams: {},
-			root: 'status',
-	        totalProperty: 'count',
-	        remoteSort: true,
-	        fields: [
-	            'status_id',
-	            'status_name', 
-	            'fee_check',		            	          
-	        ],
-			sortInfo: {
-				field: 'status_name'
-			},
-			autoLoad: {params:{start:0, limit: 100}}
-	    });
+	
 		// create the Data Store
 	    this.store = new Ext.data.JsonStore({
 			url: _contextPath + '/reservation/reservationList',
@@ -51,6 +36,9 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	            'reservation_user_id', 
 	            'reservation_check_in',
 	            'reservation_check_out',
+	        	'reservation_rooms_qty',
+	        	'reservation_nights',
+				'reservation_rooms_occupancy',
 	            'reservation_rooms',
 	            'reservation_adults',
 	            'reservation_children', 
@@ -109,65 +97,29 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 			   params: { owner_id: citation.owner_id, xaction: 'get' }
 			});*/
 		
-	    this.stateStore = new Ext.data.JsonStore({
-			url: _contextPath + '/codes/list',
-			root: 'codes',
-			id: 'states-store',
-	        totalProperty: 'count',
-	        remoteSort: true,
-	        fields: [
-	            'codeid',
-	            'description'
-	        ],
-			sortInfo: {
-				field: 'description',
-				direction: 'ASC'
-			},
-			baseParams: {start: 0, limit: 0, type: 'state'},
-			autoLoad: true
-	    });
-	    
-	    this.violationStore = new Ext.data.JsonStore({
-			url: _contextPath + '/codes/list',
-			id: 'violations-store',
-			root: 'codes',
-	        totalProperty: 'count',
-	        remoteSort: true,
-	        fields: [
-	            'codeid',
-	            'description',
-	            'is_overtime'
-	        ],
-			sortInfo: {
-				field: 'description',
-				direction: 'ASC'
-			},
-			baseParams: {start: 0, limit: 0, type: 'violation'},
-			autoLoad: true
-	    });
 	    
 	    var toolbar = {
 	            pageSize: panel.pageLimit,
 	            store: this.store,
 	            displayInfo: true,
-	            displayMsg: 'Displaying citations {0} - {1} of {2}',
-	            emptyMsg: "No citations to display"
+	            displayMsg: 'Displaying Reservations {0} - {1} of {2}',
+	            emptyMsg: "No reservations to display"
 	        };
 	    
 	    if( (hasPermission(PL_ADMIN) && this.owner.owner_id == 0) || hasPermission(PL_CITATION_MANAGE))
 	    {
-		    toolbar.items = ['-', {
-	                text: 'Clear Citations',
-	                cls: 'x-btn-text details',
-	                handler: function(btn, event){ panel.clearCitations(); }
-	                },
+		    toolbar.items = [
 	                '-',	                
 	                {
-		                text: 'Add Citation',
+		                text: 'Add Reservation',
 		                cls: 'x-btn-text details',
 		                handler: function(btn, event){ 
-		                	// 0 to new
-		                	panel.editCitation(0);
+		                	var content = Ext.getCmp('content-panel');
+		                	content.update('');
+		                	content.removeAll();		        			
+		        			content.add(new ReservationPanel());
+		        			content.doLayout();
+		        			return;
 		                }
 		             }];
 	    }
@@ -345,7 +297,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 		    
 		var config = 
 		{
-			title: 'Citations',
+			title: 'Reservation List',
 			layout:'border',
 			border: false,
 			bodyCssClass: 'x-citewrite-panel-body',
@@ -375,7 +327,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 		
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
         
-		ReservationPanel.superclass.initComponent.apply(this, arguments);
+		ReservationListPanel.superclass.initComponent.apply(this, arguments);
 
     },
     showContextMenu: function(grid, index, event)
@@ -388,11 +340,16 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 					text: 'Details',
 					handler: function() 
 					{
-						panel.details(record.data);
+						//panel.details(record.data);
+						var content = Ext.getCmp('content-panel');
+	        			content.removeAll(true);			
+	        			content.add(new ReservationPanel({'reservationInfo' : record.data}));
+	        			content.doLayout();
+	        			return;
 					}
 				});
 		
-		if(hasPermission(PL_CITATION_MANAGE) || (hasPermission(PL_OWNER_MANAGE) && panel.owner.owner_id > 0))
+		/*if(hasPermission(PL_CITATION_MANAGE) || (hasPermission(PL_OWNER_MANAGE) && panel.owner.owner_id > 0))
 		{
 			items.push({
 					text: 'Edit',
@@ -402,8 +359,8 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 					}
 				});
 			
-		}	
-		
+		}*/	
+		/*
 		if(hasPermission(PL_ADMIN))
 		{
 			items.push({
@@ -414,17 +371,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 				}
 			});
 			
-			if(record.data.exported == 1)
-			{
-				items.push({ 
-					text: 'Mark for Export', 
-					handler: function()
-					{
-						panel.markForExport(record.data);
-					}});
-			}
-			
-		}		
+		}		*/
 
 		new Ext.menu.Menu(
 		{
@@ -432,41 +379,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 			autoDestroy: true
 		}).showAt(event.xy);
 	},
-	markForExport: function(citation)
-	{
-		panel = this;
-		Ext.Ajax.request({
-			   url: _contextPath + '/citation/exported',
-			   params: { citation_id: citation.citation_id, owner_id: panel.owner.owner_id },
-			   success: function(p1, p2)
-			   {
-				   var response = Ext.decode(p1.responseText);
-				   if(response.success)
-				   {
-					   panel.store.reload();
-					   Ext.growl.message('Success', 'Citation has been marked to be exported.');
 					   
-				   }
-				   else
-				   {
-					   Ext.Msg.show({
-						   title:'Failure',
-						   msg:  response.msg,
-						   buttons: Ext.Msg.OK,
-						   icon: Ext.MessageBox.ERROR
-						});
-				   }
-			   },
-			   failure: function(){ 
-				   Ext.Msg.show({
-					   title:'Failure',
-					   msg:  'Error updating citation.',
-					   buttons: Ext.Msg.OK,
-					   icon: Ext.MessageBox.ERROR
-					});
-			   }
-			}); 
-	},
 	details: function(cite)
 	{
 		var panel = this;		
@@ -1538,967 +1451,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
     	});
     	
     },
-	getPaymentPanel: function(citation)
-	{
-		var bPanel = null;
-		var panel = this;
-		
-		
-		paymentPlanStore = new Ext.data.JsonStore({
-			url: _contextPath + '/citation/listPaymentPlan',
-			baseParams: {citation_id: citation.citation_id, status: "No Paid" },
-			root: 'payment_plan',
-	        totalProperty: 'count',
-	        remoteSort: true,
-	        fields: [
-	            'payment_plan_id',
-	            'citation_id', 
-	            'amount',
-	            'frequency'   	          
-	        ],
-			sortInfo: {
-				field: 'date',
-				direction: 'DESC'
-			}
-	    });
-		
-		paymentPlanStore.load();
-		
-		/*if(citation.status != 'Paid') //if(citation.status != 'dPaid') //
-		{*/
-			var years = [];
 			
-			var year = new Date().getFullYear();
-			for(var i = year; i <= year+10; i++)
-			{
-				years[years.length] = [i, i];
-			}
-			
-			var paymentPanel = {
-					xtype: 'panel',
-					layout: 'form',
-					defaultType:'textfield',
-					defaults: { width: '200px' },
-					bodyBorder: false,
-					border: false,
-					bodyCssClass: 'x-citewrite-panel-body',
-					items:[				       
-					{
-						xtype: 'panel',
-						layout:'table',
-						bodyBorder: false,
-						bodyCssClass: 'x-citewrite-panel-body',
-						layoutConfig: {
-							// The total column count must be specified here
-							columns: 3,
-							tableAttrs: {
-								style: {
-									width: '300px'
-								}
-							}
-						},
-						items: [
-							{
-								xtype: 'label',
-								text: 'Amount:',
-								style: 'font-size:12px;'
-							},
-							{
-								xtype: 'numberfield',
-								id: 'citation-billing-amount',
-								name: 'citation_amount',
-								fieldLabel: 'Amount',
-								readOnly:true,
-								value: citation.hasOverride ? Ext.util.Format.number(citation.override_fine_amount, '0.00') : Ext.util.Format.number(citation.violation_amount, '0.00'),
-								width: 75,
-								allowBlank: false,
-								enableKeyEvents: true,
-								style: 'margin:0px 0px 5px 53px',
-								listeners:{keyup: function(field, e)
-												{
-													var val = field.getValue();
-													var fee = Ext.getCmp('citation-billing-late-fee').getValue();
-													
-													
-													var total = parseFloat(fee) + parseFloat(val);
-													Ext.getCmp('citation-billing-total').setValue('<b>$'+ Ext.util.Format.number(total, '0.00')+'</b>');
-													
-													return true;
-												}
-											}
-							},
-							{
-								xtype: 'label',	
-								id:'override_fine_amount_lb',
-								text: (citation.hasOverride ? String('\u00a0$'+citation.violation_amount) : ''),
-							},
-							{
-								xtype: 'label',
-								text: 'Late\u00a0Fee:',
-								
-								id:'citation-billing-late-feeLb',
-								style: 'font-size:12px;',
-								hidden: citation.late_fee == undefined
-							},
-							{
-								xtype: 'numberfield',
-								id: 'citation-billing-late-fee',
-								name: 'late_fee_amount',
-								value: (citation.hasOverride && citation.late_fee != undefined) ? Ext.util.Format.number(citation.override_late_fee, '0.00') : (citation.late_fee != undefined)?Ext.util.Format.number(citation.late_fee.fee_amount, '0.00'):'0.00',
-								hidden: citation.late_fee == undefined,
-								width: 75,
-								allowBlank: false,
-								readOnly:true,
-								enableKeyEvents: true,
-								style: 'margin:0px 0px 5px 53px',
-								listeners:{keyup: function(field, e)
-									{
-										var val = field.getValue();
-										var amount = Ext.getCmp('citation-billing-amount').getValue();
-										
-										var total = parseFloat(amount) + parseFloat(val);
-										Ext.getCmp('citation-billing-total').setValue('<b>$'+ Ext.util.Format.number(total, '0.00')+'</b>');
-										
-										return true;
-									}
-								}
-							},
-							{
-								xtype: 'label',	
-								id:'override_late_fee_lb',
-								text: (citation.hasOverride ? '\u00a0$'+String((citation.late_fee != undefined)?'\u00a0'+ Ext.util.Format.number(citation.late_fee.fee_amount, '0.00'):'0.00') : ''),
-								hidden: citation.late_fee == undefined
-							},
-							{
-								xtype: 'label',
-								text: 'Total:',
-								style: 'font-weight:bold;font-size:12px;'
-							},
-							{
-								xtype: 'displayfield',
-								id: 'citation-billing-total',
-								value: '<b>$'+ ((citation.hasOverride) ? ((citation.override_late_fee != undefined) ? Ext.util.Format.number((citation.override_fine_amount + citation.override_late_fee), '0.00') : Ext.util.Format.number(citation.override_fine_amount, '0.00')) : ((citation.late_fee != undefined) ? Ext.util.Format.number((citation.late_fee.fee_amount+citation.violation_amount), '0.00') : Ext.util.Format.number(citation.violation_amount, '0.00'))) +'</b>',
-								style: 'margin:0px 0px 5px 53px'
-							},
-							
-							{
-								xtype: 'label',	
-								html:'<table><tr><td><img src="'+_rootContextPath+'/static/js/library/ext/images/citewrite/icons/ico-expiration-add.png" onclick="javascript: overrideAction =\'create\';"/></td><td><img id="deleteOverride" src="'+_rootContextPath+'/static/js/library/ext/images/citewrite/icons/ico-expiration-remove.png" onclick="javascript: overrideAction =\'delete\';"/></td><td  style="width:80px"><div id="expiration" style="float:left; display: none;"></div></td></tr></table>',
-								listeners: {
-									render: function(c){
-									  c.getEl().on('click', function(){
-										  
-										  if (overrideAction == "create"){
-											  
-											  var expirationWindow = new Ext.Window({
-													title: 'Override',
-									                renderTo: document.body,
-									                layout:'fit',
-									                width:250,
-									                height:200,
-									                closeAction:'close',
-									                plain: true,
-									                resizable: true,
-									                modal: true, 
-									                items:[
-									                	{
-								                			xtype: 'panel',
-								                			layout:'table',
-								    						bodyBorder: false,
-								    						bodyCssClass: 'x-citewrite-panel-body',
-								    						layoutConfig: {
-								    							// The total column count must be specified here
-								    							columns: 2,
-								    							tableAttrs: {
-								    								style: {
-								    									width: '270px',
-								    									margin:'10px'
-								    								}
-								    							}
-								    						},
-								                			items:[
-																    {
-																		xtype: 'box',
-																		height: 5
-																	},
-																	{
-																		xtype: 'box',
-																		height: 5
-																	},
-																	{
-																		xtype: 'label',
-																		text:  'Amount:',
-																		style: 'font-size:12px;'
-																	},
-																	{
-																		xtype: 'label',
-																		id: 'override-amount',
-																		style: 'font-size:12px;'
-																	},
-																	{
-																		xtype: 'box',
-																		height: 5
-																	},
-																	{
-																		xtype: 'box',
-																		height: 5
-																	},
-																	{
-																		xtype: 'label',
-																		text: 'Late fee:',
-																		style: 'font-size:12px;',
-																		hidden: (citation.late_fee == undefined) ||	(citation.late_fee <= 0),
-																	},
-																	{
-																		xtype: 'label',
-																		id: 'override-late-fee',
-																		style: 'font-size:12px;',
-																		hidden:	(citation.late_fee == undefined) || (citation.late_fee <= 0),
-																	},
-																	{
-																		xtype: 'box',
-																		height: 5
-																	},
-																	{
-																		xtype: 'box',
-																		height: 5
-																	},
-								                			        {
-																		xtype: 'label',
-																		text: 'Expiration',
-																		style: 'font-size:12px;'
-																	},
-																	{
-																		xtype: 'datefield',
-																		id: 'expiration_date',
-																		width: 100
-																	}]    
-								                		}],
-									                buttons: [
-													   {
-													    text: 'Save',
-														handler: function(){
-															
-															params = {
-																	citationNumber:citation.citation_number,
-																	expiration: Ext.getCmp('expiration_date').value,
-																	overrideFineAmount: Ext.getCmp('citation-billing-amount').value,
-																	overrideLateFee: Ext.getCmp('citation-billing-late-fee').value,
-																	owner_id: panel.owner.owner_id 
-															};
-															
-															if((Ext.getCmp('expiration_date').value ==  undefined)||(Ext.getCmp('expiration_date').value ==  "")){
-																Ext.Msg.show({
-																   title:'Error',
-																   msg: 'The expiration is required.',
-																   buttons: Ext.Msg.OK,
-																   icon: Ext.MessageBox.ERROR
-																});
-															}else{
-																Ext.Ajax.request({
-																	url:_contextPath + '/citation/expiration',
-																	success:function(p1, p2)
-																	{ 
-																		var response = Ext.util.JSON.decode(p1.responseText);
-																		if(response.success)
-																		{
-																			if(response.hasOverride){
-																				Ext.getCmp('override_fine_amount_lb').setText(String('\u00a0$' + response.fineAmount));
-																				Ext.getCmp('override_late_fee_lb').setText(String('\u00a0$' + response.lateFee)); 
-																				Ext.get("expiration").update(String("&nbsp;("+ response.overrideExpiration + ")"));
-																				Ext.get("expiration").setStyle('display', 'block');
-																				Ext.get("deleteOverride").setStyle('display', 'block');
-																			}else{
-																				Ext.getCmp('override_fine_amount_lb').setText("");
-																				Ext.getCmp('override_late_fee_lb').setText(""); 
-																				Ext.get("expiration").update("");
-																				Ext.get("expiration").setStyle('display', 'none');
-																				Ext.getCmp("citation-billing-amount").setValue(response.fineAmount);
-																				Ext.getCmp("citation-billing-late-fee").setValue(response.lateFee);
-																				Ext.getCmp("citation-billing-total").setValue(Ext.util.Format.number((response.fineAmount + response.lateFee), '0.00'));
-																				Ext.get("deleteOverride").setStyle('display', 'none');
-																			}
-																		}
-																		else
-																		{
-																			Ext.Msg.show({
-																			   title:'Error',
-																			   msg: response.msg,
-																			   buttons: Ext.Msg.OK,
-																			   icon: Ext.MessageBox.ERROR
-																			});
-																		}
-																	},
-																	failure:function(){},
-																	params: params
-																});
-																expirationWindow.close();	
-															}
-														}
-													    },
-														{
-									                    text: 'Close',
-									                    handler: function(){
-									                    	this.findParentByType('window').close();
-									                    }
-									                }]
-									            });
-
-												Ext.getCmp('override-amount').setText(Ext.getCmp('citation-billing-amount').value);
-												Ext.getCmp('override-late-fee').setText(Ext.getCmp('citation-billing-late-fee').value);
-												
-												expirationWindow.show();
-											  
-										  }else if(overrideAction == "delete"){
-
-											  params = {
-														citationNumber:citation.citation_number,
-														owner_id: panel.owner.owner_id 
-												};
-											 
-											  Ext.Ajax.request({
-													url:_contextPath + '/citation/cleanOverride',
-													success:function(p1, p2)
-													{ 
-														var response = Ext.util.JSON.decode(p1.responseText);
-														if(response.success)
-														{
-															Ext.getCmp('override_fine_amount_lb').setText("");
-															Ext.getCmp('override_late_fee_lb').setText(""); 
-															Ext.get("expiration").update("");
-															Ext.get("expiration").setStyle('display', 'none');
-															Ext.get("deleteOverride").setStyle('display', 'none');				
-															Ext.getCmp("citation-billing-amount").setValue(response.fineAmount);
-															Ext.getCmp("citation-billing-late-fee").setValue(response.lateFee);
-															Ext.getCmp("citation-billing-total").setValue(Ext.util.Format.number((response.fineAmount + response.lateFee), '0.00'));
-														}
-														else
-														{
-															Ext.Msg.show({
-															   title:'Failure',
-															   msg:  response.msg,
-															   buttons: Ext.Msg.OK,
-															   icon: Ext.MessageBox.ERROR
-															});
-														}
-													},
-													failure: function(){
-														Ext.Msg.show({
-														   title:'Failure',
-														   msg:  'Error deleting the override citation.',
-														   buttons: Ext.Msg.OK,
-														   icon: Ext.MessageBox.ERROR
-														});
-												},
-													params: params
-												});
-											  
-										  }
-										  overrideAction = null;
-										  
-									  }, c);
-									},
-									afterrender: function(){
-										
-										var dateText = "";
-										
-										try{
-						                    var overrideExpirationDate = new Date(citation.override_expiration);
-						                    
-						                    if((citation.override_expiration != undefined) && (citation.override_expiration != "") && (overrideExpirationDate.getDate)){
-						                    	dateText = Ext.util.Format.date(overrideExpirationDate,'Y-m-d');
-						                    	dateText = "("+dateText+")";
-						                    }else{
-						                        dateText = "";
-						                    }
-
-						                }catch(ex){
-						                	dateText = "";
-						                }
-										
-										Ext.get("expiration").update(String("&nbsp;"+ dateText));
-										Ext.get("expiration").setStyle('display', 'block');
-										
-										
-										if(citation.hasOverride != undefined){
-											Ext.get("deleteOverride").setStyle('display', 'block');
-											
-										}else{
-											Ext.get("deleteOverride").setStyle('display', 'none');
-											
-										}
-										
-							        }
-								}
-							},
-							{
-								xtype: 'label',
-								text: 'Paid:',
-								style: 'font-weight:bold;font-size:12px; float:left;'
-							},
-							{
-								xtype: 'displayfield',
-								id: 'citation-billing-total-paid',
-								style: 'margin:0px 0px 5px 53px',
-								listeners: {
-									'render': {
-									scope: this,
-									fn: function (field) {
-										var pay = 0;
-										//balance
-										if(typeof citation.invoice != "undefined")
-										{
-											Ext.each(citation.invoice.items, function(value) {
-												pay = pay + value.amount;
-											});
-										}										
-										
-										field.setValue('$'+parseFloat(pay).toFixed(2));
-									}
-								    }
-								}
-							},
-							{
-								xtype: 'label',
-								text: '',
-								style: ''
-							},
-							{
-								xtype: 'label',
-								text: 'Balance:',
-								style: 'font-weight:bold;font-size:12px; float:left;'
-							},
-							{
-								xtype: 'displayfield',
-								id: 'citation-billing-total-balance',
-								style: 'margin:0px 0px 5px 53px',
-								listeners: {
-									'render': {
-									scope: this,
-									fn: function (field) {
-										var pay = 0;
-										
-										if(typeof citation.invoice != "undefined")
-										{
-											Ext.each(citation.invoice.items, function(value) {
-												pay = pay + value.amount;
-											});
-										}
-										
-										var total = ((citation.hasOverride) ? ((citation.override_late_fee != undefined) ? Ext.util.Format.number((citation.override_fine_amount + citation.override_late_fee), '0.00') : Ext.util.Format.number(citation.override_fine_amount, '0.00')) : ((citation.late_fee != undefined) ? Ext.util.Format.number((citation.late_fee.fee_amount+citation.violation_amount), '0.00') : Ext.util.Format.number(citation.violation_amount, '0.00'))); 
-										
-										field.setValue('$'+parseFloat(total-pay).toFixed(2));
-									}
-								    }
-								}
-							}
-						]
-					},
-					{
-						   xtype: 'combo',
-						   id: 'citation-billing-payment_plan',
-						   hiddenName: 'payment_plan_id',
-						   name:"payment_plan_id",
-						   fieldLabel: 'Payment Plan',
-						   submitValue: true,
-						   margins: {top:15, bottom: 10},
-					       width: 150,
-						 	lazyRender: false,
-						 	store: paymentPlanStore,
-						    displayField: 'amount',
-						    valueField: 'payment_plan_id',
-							triggerAction: 'all',
-							forceSelection: true,
-							mode: 'local',
-							queryMode: 'local',							
-							listeners: {
-								select: function( combo, record, index )
-								{
-									Ext.getCmp("citation-billing-pay-amount").setValue(Ext.util.Format.number(record.data.amount, '0.00'));
-									if(record.data.payment_plan_id == 0){
-										Ext.getCmp("citation-billing-pay-amount").el.dom.readOnly = false;
-									}else {
-										Ext.getCmp("citation-billing-pay-amount").el.dom.readOnly = true;
-									}
-								},
-								'render': {
-									scope: this,
-									fn: function (field) {
-										// load first opotion to combo
-										var payPlan = Ext.data.Record.create([
-											                                   {name: 'payment_plan_id', mapping : "payment_plan_id", type: 'int'},
-											                                   {name: 'citation_id',  mapping : "citation_id",  type: 'string'},
-											                                   {name: 'amount',  mapping : "amount",  type: 'string'},
-											                                   {name: 'frequency',  mapping : "frequency",  type: 'string'}
-											                                 ]);
-										var newData = new payPlan({payment_plan_id: 0, citation_id: 0, amount: "No use Payment Plan", frequency: ""});
-										paymentPlanStore.insert(0, newData);
-										paymentPlanStore.commitChanges();
-										
-										Ext.getCmp("citation-billing-payment_plan").setValue(0);
-									}
-								}
-							}
-					},
-					{
-						xtype: 'numberfield',
-						id: 'citation-billing-pay-amount',
-						name: 'pay_amount',
-						fieldLabel: 'Payment Amount',
-						value: 0,
-						width: 150,
-						allowBlank: false,
-						enableKeyEvents: true,
-						listeners: {
-							'render': {
-							scope: this,
-							fn: function (field) {
-								var pay = 0;
-								if(typeof citation.invoice != "undefined")
-								{
-									Ext.each(citation.invoice.items, function(value) {
-										pay = pay + value.amount;
-									});
-								}
-								
-								var total = ((citation.hasOverride) ? ((citation.override_late_fee != undefined) ? Ext.util.Format.number((citation.override_fine_amount + citation.override_late_fee), '0.00') : Ext.util.Format.number(citation.override_fine_amount, '0.00')) : ((citation.late_fee != undefined) ? Ext.util.Format.number((citation.late_fee.fee_amount+citation.violation_amount), '0.00') : Ext.util.Format.number(citation.violation_amount, '0.00'))); 
-								field.setValue(parseFloat(total-pay).toFixed(2));
-							}
-						    }
-						}
-					},
-					{
-					   xtype: 'combo',
-					   id: 'citation-billing-payment-method',
-					   hiddenName: 'payment_method',
-					   fieldLabel: 'Payment Method',
-					   submitValue: true,
-					   margins: {top:15, bottom: 10},
-				       width: 150,
-					 	lazyRender: false,
-					 	store: new Ext.data.ArrayStore({
-					        autoDestroy: true,
-					        fields: ['id', 'description'],
-					        data : [
-					            ['Credit Card', 'Credit Card'],
-					            ['Check', 'Check'],
-					            ['Cash', 'Cash'],
-					            ['None', 'None']
-					        ]
-					    }),
-					    displayField: 'description',
-					    valueField: 'id',
-						triggerAction: 'all',
-						forceSelection: true,
-						mode: 'local',
-						value: 'Credit Card',
-						listeners: {
-							select: function( combo, record, index )
-							{
-								var ccBillingPanel = Ext.getCmp('cc-billing-panel');
-								ccBillingPanel.hide();
-								var checkBillingPanel = Ext.getCmp('check-billing-panel');
-								checkBillingPanel.hide();
-								var cashBillingPanel = Ext.getCmp('cash-billing-panel');
-								cashBillingPanel.hide();
-								
-								if(record.data.id == 'Credit Card')
-								{
-									ccBillingPanel.show();
-								}
-								else if(record.data.id == 'Check')
-								{
-									checkBillingPanel.show();
-								}
-								else if(record.data.id == 'Cash')
-								{
-									cashBillingPanel.show();
-								}
-							}
-						}
-					   }
-					]
-			};
-			
-			var ccPanel = {
-					xtype: 'panel',
-					layout: 'form',
-					id: 'cc-billing-panel',
-					defaultType:'textfield',
-					defaults: { width: '200px' },
-					bodyCssClass: 'x-citewrite-panel-body',
-					bodyBorder: false,
-					border: false,					
-					items:[{
-								id: 'citation-billing-first-name',
-								name: 'billing_first_name',
-								fieldLabel: 'First Name'
-							},{
-								id: 'citation-billing-last-name',
-								name: 'billing_last_name',
-								fieldLabel: 'Last Name'
-							},{
-								id: 'citation-billing-email',
-								name: 'billing_email',
-							    fieldLabel: 'Email'
-							},{
-								id: 'citation-billing-cc',
-								name: 'cc_number',
-								fieldLabel: 'CC Number',
-								maskRe: /^[0-9]*$/
-							},{
-								id: 'citation-billing-cvv',
-								name: 'cc_cvv',
-								fieldLabel: 'CCV',
-								maxLength: 4,
-								width: 75
-							},{
-								   xtype: 'combo',
-								   id: 'citation-billing-exp-month',
-								   hiddenName: 'cc_exp_month',
-								   fieldLabel: 'Expiration Month',
-								   submitValue: true,
-							       width: 165,
-								 	lazyRender: false,
-								 	store: new Ext.data.ArrayStore({
-								        autoDestroy: true,
-								        fields: ['id', 'month'],
-								        data : [
-								            ['1', '1 - January'],
-								            ['2', '2 - February'],
-								            ['3', '3 - March'],
-								            ['4', '4 - April'],
-								            ['5', '5 - May'],
-								            ['6', '6 - June'],
-								            ['7', '7 - July'],
-								            ['8', '8 - August'],
-								            ['9', '9 - September'],
-								            ['10', '10 - October'],
-								            ['11', '11 - November'],
-								            ['12', '12 - December']
-								        ]
-								    }),
-								    displayField: 'month',
-								    valueField: 'id',
-									triggerAction: 'all',
-									forceSelection: true,
-									mode: 'local',
-									width: 75
-							   },{
-								   xtype: 'combo',
-								   id: 'citation-billing-exp-year',
-								   hiddenName: 'cc_exp_year',
-								   fieldLabel: 'Expiration Year',
-								   submitValue: true,
-							       width: 165,
-								 	lazyRender: false,
-								 	store: new Ext.data.ArrayStore({
-								        autoDestroy: true,
-								        fields: ['id', 'year'],
-								        data : years
-								    }),
-								    displayField: 'year',
-								    valueField: 'id',
-									triggerAction: 'all',
-									forceSelection: true,
-									mode: 'local',
-									width: 75
-							   },				
-							{
-								xtype: 'box',
-								height: '15px;'
-							},
-							{
-								id: 'citation-billing-address',
-								name: 'billing_address',
-								fieldLabel: 'Address'
-							},{
-								id: 'citation-billing-city',
-								name: 'billing_city',
-								fieldLabel: 'City'
-							},{
-								   xtype: 'combo',
-								   id: 'citation-billing-state',
-								   hiddenName: 'billing_state_id',
-								   fieldLabel: 'State',
-								   submitValue: true,
-							       width: 165,
-								 	lazyRender: false,
-								 	store: this.stateStore,
-								    displayField: 'description',
-								    valueField: 'codeid',
-									triggerAction: 'all',
-									forceSelection: true,
-									mode: 'local'
-							   },{
-								id: 'citation-billing-zip',
-								name: 'billing_zip',
-								fieldLabel: 'Zip',
-								width: 75
-							}
-					     ]
-			};
-			
-			var checkPanel = {
-				xtype: 'panel',
-				layout: 'form',
-				id: 'check-billing-panel',
-				hidden: true,
-				bodyBorder: false,
-				border: false,				
-				defaultType: 'textfield',
-				defaults: { width: '200px' },
-				bodyCssClass: 'x-citewrite-panel-body',
-				items:[{
-					id: 'citation-billing-check-number',
-					name: 'check_number',
-					fieldLabel: 'Check Number',
-					maskRe: /^[0-9]*$/,
-					width: 150
-				},{
-					id: 'citation-check-billing-email',
-					name: 'check_billing_email',
-				    fieldLabel: 'Receipt Email',
-				    allowBlank: true,
-					width: 150
-				}]
-			};
-			
-			var cashPanel = {
-					xtype: 'panel',
-					layout: 'form',
-					id: 'cash-billing-panel',
-					hidden: true,
-					bodyBorder: false,
-					border: false,				
-					defaultType: 'textfield',
-					defaults: { width: '200px' },
-					bodyCssClass: 'x-citewrite-panel-body',
-					items:[{
-						id: 'citation-cash-billing-email',
-						name: 'cash_billing_email',
-					    fieldLabel: 'Receipt Email',
-						width: 150
-					}]
-				};
-			
-			 
-			
-			bPanel= {
-					xtype: 'form',
-					title: 'Payment',
-					bodyBorder: false,
-					border: false,
-					frame: false,
-					autoScroll: true,
-					bodyStyle: 'padding: 10px; ',
-					bodyCssClass: 'x-citewrite-panel-body',
-					buttonAlign: 'left',
-					items: [
-							{
-								xtype: 'hidden',
-								name: 'citation_id',
-								value: citation.citation_id
-							},
-							paymentPanel,
-							ccPanel,
-							checkPanel,
-							cashPanel
-							],
-							 buttons: [{
-						            text:'Pay',
-						            handler: function()
-						            {
-						            	var formPanel = this.findParentByType('form'); 
-						            	 
-						            	var pay = 0;										
-										if(typeof citation.invoice != "undefined")
-										{
-											Ext.each(citation.invoice.items, function(value) {
-												pay = pay + value.amount;
-											});
-										}										
-										var total = ((citation.hasOverride) ? ((citation.override_late_fee != undefined) ? Ext.util.Format.number((citation.override_fine_amount + citation.override_late_fee), '0.00') : Ext.util.Format.number(citation.override_fine_amount, '0.00')) : ((citation.late_fee != undefined) ? Ext.util.Format.number((citation.late_fee.fee_amount+citation.violation_amount), '0.00') : Ext.util.Format.number(citation.violation_amount, '0.00'))); 
-									
-										if(pay == 0){
-											if(parseFloat(Ext.getCmp('citation-billing-pay-amount').getValue()) > parseFloat(total)){
-												 Ext.Msg.show({
-					            	    			   title:'Error',
-					            	    			   msg: 'the maximum payable should be: $'+parseFloat(total-pay).toFixed(2),
-					            	    			   buttons: Ext.Msg.OK,
-					            	    			   icon: Ext.MessageBox.ERROR
-					            	    			});
-												 return false;
-											}
-										}else {
-											if(parseFloat(Ext.getCmp('citation-billing-pay-amount').getValue()) > parseFloat(total-pay)){
-												 Ext.Msg.show({
-					            	    			   title:'Error',
-					            	    			   msg: 'the maximum payable should be: $'+parseFloat(total-pay).toFixed(2),
-					            	    			   buttons: Ext.Msg.OK,
-					            	    			   icon: Ext.MessageBox.ERROR
-					            	    			});
-												 return false;
-											}
-										}
-										
-						            	//validate form
-						            	formPanel.getForm().submit({
-						            	    url: _contextPath + '/citation/payment',
-						            	    scope: this,
-						            	    params: {citation_id: citation.citation_id, owner_id: panel.owner.owner_id },
-						            	    success: function(form, action) {
-						            	    	panel.store.reload();
-						            	    	
-						            	    	var response = Ext.decode(action.response.responseText);
-						            	    	if(response.success)
-						            	    	{
-							            	    	var status = Ext.get('citation-status-field');
-							            	    	if(status != null)
-							            	    	{
-							            	    		status.update(response.citation.status);
-							            	    	}
-							            	    
-							            	    	var tabPanel = formPanel.ownerCt;
-							            	    	tabPanel.remove(formPanel, true);
-							            	    	var tab = tabPanel.add(panel.getPaymentPanel(response.citation));
-							            	    	tabPanel.doLayout();
-							            	    	tabPanel.setActiveTab(tab);
-							            	    	
-							            	    	Ext.growl.message('Success', 'Payment has been applied to the citation.');
-						            	    	}
-						            	    	else
-						            	    	{
-						            	    		Ext.Msg.show({
-					            	    			   title:'Error',
-					            	    			   msg: response.msg,
-					            	    			   buttons: Ext.Msg.OK,
-					            	    			   icon: Ext.MessageBox.ERROR
-					            	    			});
-						            	    	}
-						            	    },
-						            	    failure: function(form, action) {
-						            	        switch (action.failureType) {
-						            	            case Ext.form.Action.CLIENT_INVALID:
-						            	                Ext.Msg.show({
-						            	    			   title:'Error',
-						            	    			   msg: 'The fields outlined in red are required.',
-						            	    			   buttons: Ext.Msg.OK,
-						            	    			   icon: Ext.MessageBox.ERROR
-						            	    			});
-						            	                break;
-						            	            case Ext.form.Action.CONNECT_FAILURE:
-						            	            	Ext.Msg.show({
-						            	    			   title:'Failure',
-						            	    			   msg: 'Ajax communication failed.',
-						            	    			   buttons: Ext.Msg.OK,
-						            	    			   icon: Ext.MessageBox.ERROR
-						            	    			});
-						            	                break;
-						            	            case Ext.form.Action.SERVER_INVALID:
-						            	            	Ext.Msg.show({
-						            	    			   title:'Failure',
-						            	    			   msg: action.result.msg,
-						            	    			   buttons: Ext.Msg.OK,
-						            	    			   icon: Ext.MessageBox.ERROR
-						            	    			});
-						            	       }
-						            	    }
-						            	});
-						            }
-						        }]
-				};
-		/*}
-		else
-		{
-			var invoice = citation.invoice;
-			var html = new Array();
-			if(invoice != undefined && invoice != null)
-			{
-				html.push('<dl class="list">',
-							'<dt>Paid:</dt>',
-							'<dd>',Ext.util.Format.date(invoice.create_date, 'F j, Y g:i A'),'</dd>',
-							'<dt>Status:</dt>',
-							'<dd>',invoice.status,'</dd>',
-							'<dt>Payment Method:</dt>',
-							'<dd>',invoice.payment_method,'</dd>',
-							'<dt class="spacer"></dt>',
-							'<dt style="font-weight: normal;">Amount:</dt>',
-							'<dd>$',panel.getItemAmount(citation.invoice.items, 1),'</dd>');
-				
-				var lf = panel.getItemAmount(citation.invoice.items, 2);
-				if(lf != '0.00')
-				{
-				html.push(	'<dt style="font-weight: normal;">Late Fee:</dt>',
-							'<dd>$',lf,'</dd>');
-				}
-				
-				html.push(	'<dt>Total:</dt>',
-							'<dd style="font-weight: bold;">$',Ext.util.Format.number(invoice.amount, '0.00'),'</dd>',
-							'<dt class="spacer"></dt>');
-				
-				if(invoice.user_id > 0)
-				{
-					html.push(	'<dt>Clerk Name:</dt>',
-								'<dd>',invoice.user_full_name,'</dd>',
-								'<dt class="spacer"></dt>');
-				}
-				
-				if(invoice.payment_method == 'Credit Card')
-				{
-					html.push(	'<dt>Name:</dt>',
-								'<dd>',invoice.billing_first_name,' ',invoice.billing_last_name,'</dd>',
-								'<dt>Email:</dt>',
-								'<dd>',invoice.billing_email,'</dd>',
-								'<dt>Address:</dt>',
-								'<dd>',invoice.billing_address,'</dd>',
-								'<dt>City:</dt>',
-								'<dd>',invoice.billing_city,'</dd>',
-								'<dt>State:</dt>',
-								'<dd>',invoice.billing_state_id,'</dd>',
-								'<dt>Zip:</dt>',
-								'<dd>',invoice.billing_zip,'</dd>',
-								'<dt class="spacer"></dt>',
-								
-								'<dt>Credit Card:</dt>',
-								'<dd>',invoice.cc_number,'</dd>',
-								'<dt>Expiration:</dt>',
-								'<dd>',invoice.cc_exp_month,'/',invoice.cc_exp_year,'</dd>');
-				}
-				else if(invoice.payment_method == 'Check')
-				{
-					html.push(	'<dt>Check Number:</dt>',
-								'<dd>',invoice.check_number,'</dd>',
-								'<dt>Email:</dt>',
-								'<dd>',invoice.billing_email,'</dd>');
-				}
-				else if(invoice.payment_method == 'Cash')
-				{
-					html.push(	'<dt>Email:</dt>',
-								'<dd>',invoice.billing_email,'</dd>');
-				}
-				
-				html.push('</dl>');
-			}
-			
-			
-			bPanel = {
-    			xtype: 'panel',
-    			title: 'First Payment',
-    			bodyCssClass: 'x-citewrite-panel-body',
-		        padding: 10,
-		        autoHeight: true,
-		        autoScroll: true,
-		        border: false,
-		        bodyBorder: false,
-		        frame: false,
-    			html: html.join('')
-    		};
-		}*/
-		
-		
-		return bPanel;
-	},
 	getItemAmount: function(items, type)
 	{
 		//var payments = 0.00;

@@ -128,4 +128,53 @@ public class ReservationRoom  extends DBObject
 		return reservations;
 	} 		
 		
+	public ArrayList<Rooms> noReceivedRooms(int reservation_id, Timestamp checkIn, Timestamp checkOut) {
+		
+		ArrayList<Rooms> noReceivedRooms = new ArrayList<Rooms>();
+		DBConnection conn = null;
+		try 
+		{
+			conn = new DBConnection();
+			
+			String sql = "SELECT "+ 
+							    "rooms.* "+
+							"FROM "+
+							    "landsinlove_server.rooms "+
+							"WHERE "+
+							    "room_id NOT IN "+ 
+							    "( "+
+									"SELECT "+ 
+										"rr_room_id "+
+									"FROM "+
+										"reservations_rooms AS rr "+
+									"WHERE "+
+										"rr_reservation_id != "+ reservation_id +
+											" AND "+
+										"(rr_reservation_in BETWEEN '"+ checkIn +"' AND '"+ checkOut +"') "+
+											"OR "+
+										"(rr_reservation_out BETWEEN '"+ checkIn +"' AND '"+ checkOut +"') "+
+								") order by room_no";
+			if(conn.query(sql))
+			{
+				Rooms rooms = new Rooms();
+				while(conn.fetch(rooms))
+				{
+					noReceivedRooms.add(rooms);
+					rooms = new Rooms();
+				}
+			}
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			if(conn != null)
+			{
+				conn.close();
+			}
+		}
+		return noReceivedRooms;
+	} 	
 }

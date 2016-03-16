@@ -21,9 +21,10 @@ public class Reservations extends DBObject
 	@Expose public int reservation_user_id = 0;
 	@Expose public Timestamp reservation_check_in = null;
 	@Expose public Timestamp reservation_check_out = null;
-	@Expose public int reservation_rooms = 0;
+	@Expose public int reservation_rooms_qty = 0;
+	@Expose public int reservation_rooms_occupancy = 0;
+	@Expose public String reservation_rooms = null;
 	@Expose public int reservation_nights = 0;
-	@Expose public int reservation_occupancy = 0;
 	@Expose public int reservation_adults = 0;
 	@Expose public int reservation_children = 0;
 	@Expose public int reservation_guides = 0;
@@ -38,8 +39,8 @@ public class Reservations extends DBObject
 	@Expose public String reservation_service_notes = null;
 	@Expose public String reservation_transport_notes = null;
 	@Expose public String reservation_internal_notes = null;
-	@Expose public Timestamp reservation_update_data = null;
-	@Expose public Timestamp reservation_creation_date = null;
+	@Expose public String reservation_update_date = null;
+	@Expose public String reservation_creation_date = null;
 	
 	//private static final String UTF_8 = "UTF-8";
 	
@@ -58,6 +59,27 @@ public class Reservations extends DBObject
 		}
 	}
 	
+	
+	public int getReservation_id() {
+		return reservation_id;
+	}
+
+	public void setReservation_id(int reservation_id) {
+		this.reservation_id = reservation_id;
+	}
+
+	public int getReservation_rooms_occupancy() {
+		return reservation_rooms_occupancy;
+	}
+
+	public void setReservation_rooms_occupancy(int reservation_rooms_occupancy) {
+		this.reservation_rooms_occupancy = reservation_rooms_occupancy;
+	}
+
+	public void setReservation_update_date(String reservation_update_date) {
+		this.reservation_update_date = reservation_update_date;
+	}
+
 	public int getAgencyID() {
 		return reservation_id;
 	}
@@ -112,10 +134,10 @@ public class Reservations extends DBObject
 	public void setReservation_check_out(Timestamp reservation_check_out) {
 		this.reservation_check_out = reservation_check_out;
 	}
-	public int getReservation_rooms() {
+	public String getReservation_rooms() {
 		return reservation_rooms;
 	}
-	public void setReservation_rooms(int reservation_rooms) {
+	public void setReservation_rooms(String reservation_rooms) {
 		this.reservation_rooms = reservation_rooms;
 	}
 	public int getReservation_nights() {
@@ -123,12 +145,6 @@ public class Reservations extends DBObject
 	}
 	public void setReservation_nights(int reservation_nights) {
 		this.reservation_nights = reservation_nights;
-	}
-	public void setReservation_occupancy(int reservation_occupancy) {
-		this.reservation_occupancy = reservation_occupancy;
-	}
-	public int getReservation_occupancy() {
-		return reservation_occupancy;
 	}
 	public int getReservation_adults() {
 		return reservation_adults;
@@ -215,23 +231,29 @@ public class Reservations extends DBObject
 	public void setReservation_internal_notes(String reservation_internal_notes) {
 		this.reservation_internal_notes = reservation_internal_notes;
 	}
-	public Timestamp getReservation_update_date() {
-		return reservation_update_data;
+	public String getReservation_update_date() {
+		return reservation_update_date;
 	}
-	public void setReservation_update_date(Timestamp reservation_update_data) {
-		this.reservation_update_data = reservation_update_data;
-	}
-	public Timestamp getReservation_creation_date() {
+	
+	public String getReservation_creation_date() {
 		return reservation_creation_date;
 	}
-	public void setReservation_creation_date(Timestamp reservation_creation_date) {
+	public void setReservation_creation_date(String reservation_creation_date) {
 		this.reservation_creation_date = reservation_creation_date;
 	}
 	
-	public static ArrayList<Reservations> MealPlan(Timestamp date) {
+
+	public void setReservation_rooms_qty(int reservation_rooms_qty) {
+		this.reservation_rooms_qty = reservation_rooms_qty;
+	}
+	
+	public int getReservation_rooms_qty() {
+		return reservation_rooms_qty;
+	}
 		
-		ArrayList<Reservations> reservations = new ArrayList<Reservations>();
-		DBConnection conn = null;
+	public static ArrayList<Reservations> MealPlan(Timestamp date){
+	ArrayList<Reservations> reservations = new ArrayList<Reservations>();
+	DBConnection conn = null;
 		try 
 		{
 			conn = new DBConnection();
@@ -259,8 +281,8 @@ public class Reservations extends DBObject
 		}
 		return reservations;
 	}
+
 	public String getRooms() {
-		
 		String roomsResult = "";
 		DBConnection conn = null;
 		try 

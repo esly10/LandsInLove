@@ -282,7 +282,7 @@ ul.x-tab-strip-bottom{
 }
 
 .x-form-item {
-   font: normal 16px verdana, arial, helvetica, sans-serif;
+   font: normal 12px verdana, arial, helvetica, sans-serif;
    color: #635F5F;
 }
 
@@ -320,7 +320,7 @@ ul.x-tab-strip-bottom{
 }
 
 .x-btn button{
-   font: normal 14px verdana,tahoma,verdana,helvetica;
+   font: normal 12x verdana,tahoma,verdana,helvetica;
    color: #226071;
 }
 
@@ -1333,7 +1333,7 @@ div#ext-gen18 {
 .x-panel-header {
     color:#FFF;
 	 /*font-weight:bold; */
-    font-size: 16px;
+    font-size: 12px;
     font-family: verdana, helvetica, arial,sans-serif;
     /*background-image: url(../images/landsinlove/panel/white-top-bottom.png);*/
     border-color: #037dcf;

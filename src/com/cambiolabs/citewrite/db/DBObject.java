@@ -2,6 +2,7 @@ package com.cambiolabs.citewrite.db;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.sql.Blob;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.PreparedStatement;
@@ -216,13 +217,24 @@ public abstract class DBObject implements Cloneable {
 							{
 								pst.setInt(count, field.getInt(this));
 							}
+							else if(type.equals(long.class))
+							{
+								pst.setLong(count, field.getLong(this));
+							}
 							else if(type.equals(float.class))
 							{
 								pst.setFloat(count, field.getFloat(this));
 							}
+							else if(type.equals(double.class))
+							{
+								pst.setDouble(count, field.getDouble(this));
+							}
 							else if(type.equals(Timestamp.class))
 							{
 								pst.setTimestamp(count, (Timestamp)field.get(this));
+							}
+							else if(type.equals(Blob.class)){
+								pst.setBinaryStream(count,  ((Blob)field.get(this)).getBinaryStream(), (int)((Blob)field.get(this)).length());
 							}
 							
 							count++;
@@ -284,6 +296,11 @@ public abstract class DBObject implements Cloneable {
 			else if(type.equals(int.class))
 			{
 				if(field.getInt(this) > 0)
+				{
+					return false;
+				}
+			} else if(type.equals(double.class)){
+				if(field.getDouble(this) > 0)
 				{
 					return false;
 				}

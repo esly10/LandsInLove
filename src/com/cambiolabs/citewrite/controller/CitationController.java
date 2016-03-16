@@ -1867,7 +1867,9 @@ public class CitationController extends MultiActionController {
 								String time = request
 										.getParameter("citation-violation-start-time");
 								if (date != null && date.length() > 0) {
-									citation.violation_start = DateParser.toTimestamp(date + " " + time,"MM/dd/yyyy h:mm a");
+									citation.violation_start = DateParser
+											.toTimestamp(date + " " + time,
+													"MM/dd/yyyy h:mm a");
 								}
 
 								date = request

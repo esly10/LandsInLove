@@ -7,7 +7,7 @@ Ext.onReady(function(){
 				var content = Ext.getCmp('content-panel');
 				content.removeAll(true);
 				
-				content.add(new ReservationPanel());
+				content.add(new ReservationListPanel());
 				content.doLayout();
 				return;
 			});//end onclick 

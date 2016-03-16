@@ -1,4 +1,4 @@
- InvoicePanel = Ext.extend(Ext.grid.GridPanel, {
+ RoomsPanel = Ext.extend(Ext.grid.GridPanel, {
 		rooms: null,
 		pageLimit: 50,
 		initComponent: function()
@@ -117,7 +117,7 @@
 		   
 			Ext.apply(this, Ext.apply(this.initialConfig, config));
 	        
-			InvoicePanel.superclass.initComponent.apply(this, arguments);
+			RoomsPanel.superclass.initComponent.apply(this, arguments);
 			
 			this.on('rowcontextmenu', this.showContextMenu);
 			this.on('rowdblclick', function(grid, index, event)
@@ -313,7 +313,7 @@
 	    		]
 	    	});
 			
-			var vehicleWindow = new Ext.Window({
+			var roomsWindow = new Ext.Window({
 		        renderTo: document.body,
 		        title:title,
 		        width:350,
@@ -385,8 +385,8 @@
 	            }]
 		    });
 			
-			vehicleWindow.show();
-			vehicleWindow.center();
+			roomsWindow.show();
+			roomsWindow.center();
 			
 			if(data != null){
 				 Ext.getCmp("room_id").setValue(data.ROOM_ID);

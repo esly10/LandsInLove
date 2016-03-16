@@ -50,10 +50,23 @@ public class AgencyController extends MultiActionController
 			
 			DBFilterList filter = new DBFilterList();
 			
+			
 			String value = request.getParameter("filter_name");
 			if(value != null && value.length() > 0)
 			{
 				filter.add(new DBFilter("agency_name", "LIKE", value));
+			}
+			
+			value = request.getParameter("reservation_agency_id");
+			if(value != null && value.length() > 0)
+			{
+				filter.add(new DBFilter("agency_id", "=", value));
+			}
+			
+			value = request.getParameter("query");
+			if(value != null && value.length() > 0)
+			{
+				filter.add(new DBFilter("agency_name", "LIKE", "%"+value+"%"));
 			}
 			
 			value = request.getParameter("filter_dni");

@@ -18,6 +18,7 @@ import com.cambiolabs.citewrite.db.DBFilter;
 import com.cambiolabs.citewrite.db.DBFilterList;
 import com.cambiolabs.citewrite.db.UnknownObjectException;
 import com.cambiolabs.citewrite.util.CodesWatcher;
+import com.cambiolabs.citewrite.util.DateParser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -128,6 +129,32 @@ public class RoomsController extends MultiActionController
 		response.getOutputStream().print("{count: "+count+", rooms: " + json + "}");	
 	}
 	
+	public void availableList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, UnknownObjectException 
+	{
+				
+		//Code query = new Code();
+		ReservationRoom rooms = new ReservationRoom();
+		
+		String checkin = request.getParameter("reservation_check_in");//
+		checkin = checkin.replace("T", " ");
+		String checkout = request.getParameter("reservation_check_out");//
+		checkout = checkout.replace("T", " ");
+		int reservation_id = 0;
+		
+		String id = request.getParameter("reservation_id");//
+		if(id != null){
+			reservation_id = Integer.parseInt(id);
+		}
+		@SuppressWarnings("unchecked")
+		ArrayList<Rooms> roomsList = rooms.noReceivedRooms(reservation_id, DateParser.toTimestamp(checkin,"yyyy-M-dd HH:mm:ss"), DateParser.toTimestamp(checkout,"yyyy-M-dd HH:mm:ss"));
+		
+		
+		response.setContentType("text/json");
+		Gson gson = new Gson();
+		String json = gson.toJson(roomsList);
+		
+		response.getOutputStream().print("{rooms: " + json + "}");	
+	}
 	public ModelAndView details(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");

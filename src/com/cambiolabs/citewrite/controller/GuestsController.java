@@ -53,6 +53,18 @@ public class GuestsController extends MultiActionController
 				filter.add(new DBFilter("name", "LIKE", value));
 			}
 			
+			value = request.getParameter("reservation_guest_id");
+			if(value != null && value.length() > 0)
+			{
+				filter.add(new DBFilter("guest_id", "=", value));
+			}
+			
+			value = request.getParameter("query");
+			if(value != null && value.length() > 0)
+			{
+				filter.add(new DBFilter("name", "LIKE", "%"+value+"%"));
+			}
+			
 			value = request.getParameter("filter_dni");
 			if(value != null && value.length() > 0)
 			{
@@ -192,6 +204,7 @@ public class GuestsController extends MultiActionController
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
 		
+		Guests guest = null;
 		int guestID = 0;
 		try
 		{
@@ -203,9 +216,12 @@ public class GuestsController extends MultiActionController
 				response.getOutputStream().print(gson.toJson(json));
 				return;
 			}
+				String id = request.getParameter("guest_id");
+				if(id != null && id.length() > 0){
+					guestID = Integer.parseInt(id);
+				}
 			
-				guestID = Integer.parseInt(request.getParameter("guest_id"));
-				Guests guest = new Guests(guestID);
+				guest = new Guests(guestID);
 				guest.setName(request.getParameter("guest_name"));		
 				guest.setDni(request.getParameter("guest_dni"));
 				String Tittle = request.getParameter("guest_title");		
@@ -224,25 +240,25 @@ public class GuestsController extends MultiActionController
 				guest.setCreationDate(nowtime);
 
 				try{
-					if(Tittle!= "" && Country.length()>0){
+					if(Tittle != null && Tittle!= "" && Tittle.length()>0){
 						guest.setTitle(Integer.parseInt(Tittle));
 					}
 				}catch(NumberFormatException nfe){}	
 				
 				try{
-					if(Country!= "" && Country.length()>0){
+					if(Country != null && Country!= "" && Country.length()>0){
 						guest.setCountry(Integer.parseInt(Country));
 					}
 				}catch(NumberFormatException nfe){}	
 				
 				try{
-					if(Market!= "" && Market.length()>0){
+					if(Market != null && Market!= "" && Market.length()>0){
 						guest.setMarket(Integer.parseInt(Market));
 					}
 				}catch(NumberFormatException nfe){}	
 				
 				try{
-					if(Type!= "" && Type.length()>0){
+					if(Type != null && Type!= "" && Type.length()>0){
 						guest.setType(Integer.parseInt(Type));
 					}
 				}catch(NumberFormatException nfe){}	
@@ -261,7 +277,7 @@ public class GuestsController extends MultiActionController
 			return;
 		}
 		
-		response.getOutputStream().print("{success: true}");
+		response.getOutputStream().print("{success: true, guest_id : "+guest.guest_id+"}");
 	}
 	
 	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
