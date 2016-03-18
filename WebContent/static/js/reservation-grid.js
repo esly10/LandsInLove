@@ -1,13 +1,15 @@
 ReservationPanel = Ext.extend(Ext.Panel, {
 		reservation: null,
 		reservation_id:0,
+		total_paid: 0,
+		total_charges:0,
 		load_combo_rooms : null,
 		initComponent: function()
 	    {
 			var panel = this;
 			
 			if(panel.reservationInfo !== undefined){
-				this.reservation_id = panel.reservationInfo.reservation_id;
+				panel.reservation_id = panel.reservationInfo.reservation_id;
 			}
 			
 			/*
@@ -39,17 +41,34 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 			   
 			    htmlContent = htmlInfo.join('');
 			
-			    chargesStore.baseParams = {'reservation_id': this.reservation_id};
-			    chargesStore.load();
-			    
-			    paymentStore.baseParams = {'reservation_id': this.reservation_id};
-			    paymentStore.load();
-			    /*chargesStore.load({
-            		params:{'reservation_id':reservation_id },
+			    chargesStore.baseParams = {'reservation_id': panel.reservation_id};
+			    chargesStore.load({
+            		params:{'reservation_id': panel.reservation_id},
 	    			callback: function () {
-		        		//Ext.getCmp('patient_id').setValue(data_id);   	
+	    				chargesStore.each(function(record,id){
+	    					panel.total_charges += parseFloat(record.data.charge_total);
+	    				});
+	    				
+	    				 Ext.getCmp("sub_total").setValue(panel.total_charges.toFixed(2));	    		 
+	    	    		 Ext.getCmp("total_changes").setValue(panel.total_charges.toFixed(2));
+			    
+	    	    		 paymentStore.baseParams = {'reservation_id': panel.reservation_id};
+	    	    		 paymentStore.load({
+	    	            		params:{'reservation_id': panel.reservation_id},
+	    			callback: function () {
+	    		    				paymentStore.each(function(record2,id2){
+	    		    					panel.total_paid += parseFloat(record2.data.amount);
+	    		    				});   	
+	    		    				 Ext.getCmp("total_paid").setValue(panel.total_paid.toFixed(2));
+	    		    				 var bal = parseFloat(panel.total_charges-panel.total_paid);
+	    		    				 Ext.getCmp("balance").setValue(bal.toFixed(2));
 		            }
-		         });*/
+	    			    });
+		            }
+		        });
+		
+			    //paymentStore.baseParams = {'reservation_id': this.reservation_id};
+			    
 			
 			var config = 
 			{
@@ -997,7 +1016,6 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 											    title: '',
 											    id: 'event-info',
 											    padding: 5,
-											    hidden:true,
 											    border:false,
 											    bodyCssClass: 'x-citewrite-panel-body',
 											    bodyStyle: 'padding-bottom: 0px; background-color: #fff;',
@@ -1029,16 +1047,31 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																		submitFormat: 'Y-m-dTH:i:s',
 																		submitValue : true,
 																		altFormats: 'Y-m-d',
-																		anchor: "90%",
+																		width: 180,
+																		//anchor: "90%",
 																		allowBlank: false,
 																		//value: Ext.util.Format.date(data.date, 'Y-m-d')
 																	},
 																	{
+																    	   xtype: 'numberfield',
+																    	   id: 'reservation_event_participants',
+																    	   name: 'reservation_event_participants',
+																    	   width: 60,																	    
+																    	   fieldLabel: 'Participants'													    
+																    },
+																    {
+																    	   xtype: 'numberfield',
+																    	   id: 'reservation_event_adult',
+																    	   name: 'reservation_event_adult',
+																    	   width: 60,
+																    	   labelStyle: 'width:70px !important;',
+																    	   style: 'padding:0px;',
+																    	   fieldLabel: 'Adult *'													    
+																    },
+																	/*{
 																		layout: 'column',
 																    	itemCls: 'items-event',
-																    	style:{
-																	    	border:'0px'
-																	    },
+																    	id:"column_event",
 																	    bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #fff;',
 																	    border: false,
 																		items:[
@@ -1076,7 +1109,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																					]
 																				}
 																		]
-																	},																			
+																	},*/																			
 																	{
 																		  xtype: 'combo',
 																		  hiddenName: 'reservation_meal_plan',
@@ -1084,7 +1117,8 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																		  id:'reservation_meal_plan_event',
 																		  fieldLabel: 'Meals Plan',
 																		  submitValue: true,
-																		  anchor: "90%",
+																		  //anchor: "90%",
+																		  width: 180,
 																		  listWidth : 300,
 																		  lazyRender: false,
 																		  store: new Ext.data.ArrayStore({
@@ -1279,10 +1313,8 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																                    boxLabel: 'On Check-In',
 																                    name: 'reservation_payment_terms',
 																                    //inputValue: 'on_check_out'.
-																                    inputValue: 1,
-																                    //labelStyle: 'width:100px',
+																                    inputValue: 1
 																                  
-																                    inputValue: 'on_check_in'
 																                },{
 																                    boxLabel: 'On Check-Out',
 																                    name: 'reservation_payment_terms',
@@ -1444,6 +1476,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 													  submitValue: true,
 													  width:100,
 													  lazyRender: false,
+													  value:1,
 													  store: new Ext.data.ArrayStore({
 														  autoDestroy: true,
 													      fields: ['id', 'description'],
@@ -1894,7 +1927,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    },
 	    loadDataReservation : function(){
 	    	panel = this;
-	    	
+	    	//Ext.getCmp('event-info').hide();
 	    	/* NO ESTAN
 	    	 
 			--reservation-grid.js:1989 reservation_user_id
@@ -1928,6 +1961,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    	 * reservation_internal_notes,
 	    	 * agency_name,
 	    	 * */
+	    	Ext.getCmp("event-info").hide();
 	    	if(panel.reservationInfo !== undefined){
 		    		var nop = "";
 		        
@@ -1966,7 +2000,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 									   Ext.getCmp('guests-info').show();
 		 	    			        }
 		 	    			     });	 
-	    				 }else if(prop == "reservation_payment_terms"){
+	    				 }else {
 	    					 Ext.getCmp(prop).setValue(panel.reservationInfo[prop]);
 	    					
 	    				 }
@@ -1981,13 +2015,13 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 		    			 } else if(prop == "reservation_payment_terms"){
 		    				 var val = panel.reservationInfo[prop];
 		    				 Ext.getCmp("radio_group_id").setValue(panel.reservationInfo[prop]);
-		    				 if(val == 3){		    					 
+		    				 if(val == "3"){		    					 
 		    					 Ext.getCmp("days_advance_field").setValue(panel.reservationInfo.reservation_payment_value);
 		    				 }else
-		    				 if(val == 4){
+		    				 if(val == "4"){
 		    					 Ext.getCmp("days_credit_field").setValue(panel.reservationInfo.reservation_payment_value);
 		    				 }else
-		    				 if(val == 5){
+		    				 if(val == "5"){
 		    					 Ext.getCmp("instalments_field").setValue(panel.reservationInfo.reservation_payment_value);	    					 
 		    				 }
 		    				 
@@ -2012,8 +2046,18 @@ ReservationPanel = Ext.extend(Ext.Panel, {
     			        }
     			     });
 		    	}
+
+	    		
+	    		
+	    		/* Ext.getCmp("sub_total").setValue(panel.total_charges);	    		 
+	    		 Ext.getCmp("total_changes").setValue(panel.total_charges)
+	    		 Ext.getCmp("total_paid").setValue(panel.total_paid)
+	    		 Ext.getCmp("balance").setValue(parseFloat(panel.total_charges-panel.total_paid));*/
 	    		 //console.log(nop);
+	    		 //Ext.getCmp("reservation_type").fireEvent("select");
 	    	}
+	    	
+    		 
 	    },
 	    submitReservaion: function(type){
 	    	

@@ -87,7 +87,11 @@ public class ReservationController extends MultiActionController
 					.field("reservations.reservation_transport_notes")
 					.field("reservations.reservation_internal_notes")
 					.field("reservations.reservation_update_date")
-					.field("reservations.reservation_creation_date");
+					.field("reservations.reservation_creation_date")
+					.field("reservations.card_name")
+					.field("reservations.card_no")
+					.field("reservations.card_exp")
+					.field("reservations.card_type");
 
 			qb.join("agencies agencies",
 					"reservations.reservation_agency_id=agencies.agency_id")
@@ -518,6 +522,11 @@ public class ReservationController extends MultiActionController
 				reservation.setReservation_internal_notes(request.getParameter("reservation_internal_notes"));
 				String Update = request.getParameter("reservation_update_date");		
 				String Creation = request.getParameter("reservation_creation_date");
+	
+				reservation.setCard_name(request.getParameter("card_name"));
+				reservation.setCard_no(request.getParameter("card_no"));
+				reservation.setCard_exp(request.getParameter("card_exp"));
+				reservation.setCard_type(request.getParameter("card_type"));
 	
 				try{if(Type!= null && Type!= "" && Type.length()>0){reservation.setReservation_type(Integer.parseInt(Type));}}catch(NumberFormatException nfe){}	
 				try{if(Status!= null && Status!= "" && Status.length()>0){reservation.setReservation_status(Integer.parseInt(Status));}}catch(NumberFormatException nfe){}	

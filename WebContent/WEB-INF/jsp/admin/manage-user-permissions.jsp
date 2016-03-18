@@ -1,6 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="com.cambiolabs.citewrite.data.User" %>
-<%@ page import="com.cambiolabs.citewrite.license.LicenseManager" %>
 
 <script>
 	
@@ -17,8 +16,7 @@
 	var PL_ROOM_MANAGE = 1024; 
 	var PL_SETTINGS_MANAGE = 2048;
 
-	var IS_CITATION_PAYMENT_ENABLED = <%=LicenseManager.isCitationPaymentEnabled()%>;
-	var IS_MANAGED_PERMITS_ENABLED = <%=LicenseManager.isManagedPermitsEnabled()%>;
+	
 	
 	function hasPermission (level)
 	{

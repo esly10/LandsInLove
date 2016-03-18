@@ -43,27 +43,7 @@
 		<sec:logout logout-url="/admin/logout" logout-success-url="/admin/login" />
 	</sec:http>
 
-	<sec:http pattern="/guest/**" auto-config="true"
-		authentication-manager-ref="guestAuthManager">
-		<sec:intercept-url pattern="/guest/**" access="ROLE_GUEST" />
-		<sec:form-login login-page='/guest/login'
-			login-processing-url="/guest/doLogin"
-			authentication-success-handler-ref="loginSuccessHandler"
-			authentication-failure-handler-ref="guestFailureHandler" />
-		<sec:logout logout-url="/logout" logout-success-url="/" />
-	</sec:http>
-
-	<sec:http auto-config="true" authentication-manager-ref="ownerAuthManager">
-		<sec:intercept-url pattern="/citation/photo" access="ROLE_USER,ROLE_GUEST" />
-		<sec:intercept-url pattern="/citation/thumbnail" access="ROLE_USER,ROLE_GUEST" />
-		<sec:intercept-url pattern="/static/js/shared/*" access="ROLE_USER,ROLE_GUEST" />
-		<sec:intercept-url pattern="/**" access="ROLE_USER,ROLE_ADMIN" />
-		<sec:form-login login-page='/'
-			login-processing-url="/doLogin" authentication-success-handler-ref="loginSuccessHandler"
-			authentication-failure-handler-ref="ownerFailureHandler" />
-		<sec:logout logout-url="/logout" logout-success-url="/" />
-	</sec:http>
-
+	
 	<beans:bean
 		class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"
 		id="passwordEncoder" />
@@ -104,18 +84,6 @@
 		</sec:authentication-provider>
 	</sec:authentication-manager>
 
-	<beans:bean id="ownerDetailsService"
-		class="com.cambiolabs.citewrite.security.UserDetailsServiceImpl">
-		<beans:property name="type" value="owner" />
-	</beans:bean>
-	<sec:authentication-manager id="ownerAuthManager">
-		<sec:authentication-provider ref="ownerAuthenticationProvider"/>
-		<sec:authentication-provider
-			user-service-ref="ownerDetailsService">
-			<sec:password-encoder base64="true" hash="md5" />
-		</sec:authentication-provider>
-	</sec:authentication-manager>
-	<beans:bean id="ownerAuthenticationProvider" class=" com.cambiolabs.citewrite.interceptor.OwnerAuthenticationProvider"/>
 	
 	<!-- bean for uploading files -->
 	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
@@ -155,11 +123,6 @@
 					
 					<!-- without cache -->
 					<beans:prop key="/guest/**">0</beans:prop>
-					<beans:prop key="/owner/**">0</beans:prop>
-					<beans:prop key="/permit/**">0</beans:prop>
-					<beans:prop key="/cart/**">0</beans:prop>
-					<beans:prop key="/citation/**">0</beans:prop>
-					<beans:prop key="/service/**">0</beans:prop>
 				</beans:props>
 			</beans:property>
 		</beans:bean>

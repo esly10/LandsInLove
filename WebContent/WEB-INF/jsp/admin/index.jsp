@@ -3,8 +3,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <%@ page import="com.cambiolabs.citewrite.data.User" %>
-<%@ page import="com.cambiolabs.citewrite.data.Config" %>
-<%@ page import="com.cambiolabs.citewrite.license.LicenseManager" %>
 <%
 	User cwUser = User.getCurrentUser();
 	pageContext.setAttribute("user", cwUser);
@@ -41,7 +39,6 @@
 	
 	<script type="text/javascript">
 		var _isAdmin = <%= (cwUser.isAdmin())?"true":"false" %>;
-		var _version = '<%= Config.VERSION %>';
 		var _contextPath = '<%= request.getContextPath() %>/admin';
 		var _rootContextPath = '<%= request.getContextPath() %>';
 	</script>
@@ -96,8 +93,7 @@
 		    	
 		    <% } if(cwUser.hasPermission(User.PL_OCUPANCY_LIST)){ %>
 		    	<li id="nav-calendar">Calendar		    	  
-		    	  	<meta charset="utf-8">
-		   
+		    	  		   
 		    	  	<script type="text/javascript" src="<c:url value="/static/js/calendar/js/moment.min.js" />"></script>
 		    	  	<script type="text/javascript" src="<c:url value="/static/js/calendar/js/jquery-ui-1.10.2.min.js" />"></script>
 		    	  	 					    
@@ -144,32 +140,7 @@
 		 		</li>
 			<% } if(cwUser.isAdmin()){ %>
 				<li id="nav-settings">Settings		
-					<%
-					if(LicenseManager.isManagedPermitsEnabled()){
-				%>
-					<script type="text/javascript" src="<c:url value="/static/js/config-field-class.js" />"></script>
-					<script type="text/javascript" src="<c:url value="/static/js/config-permit-type.js" />"></script>
-					<script type="text/javascript" src="<c:url value="/static/js/config-permit-field.js" />"></script>
-					<script type="text/javascript" src="<c:url value="/static/js/config-permit-view.js" />"></script>
-					<script type="text/javascript" src="<c:url value="/static/js/config-owner.js" />"></script>
-					<script type="text/javascript" src="<c:url value="/static/js/config-permit-managed.js" />"></script>
-					<script type="text/javascript" src="<c:url value="/static/js/config-permit-general.js" />"></script>
-					<% } else { %>
-					<script type="text/javascript" src="<c:url value="/static/js/config-permit-file.js" />"></script>
-					<% } %>	
-	   	 			<script type="text/javascript" src="<c:url value="/static/js/config.js" />"></script>
-	   	 			<script type="text/javascript" src="<c:url value="/static/js/config-citation.js" />"></script>
-	   	 			<script type="text/javascript" src="<c:url value="/static/js/config-citation-pages.js" />"></script>
-	   	 			<script type="text/javascript" src="<c:url value="/static/js/config-citation-fields.js" />"></script>
-	   	 			<script type="text/javascript" src="<c:url value="/static/js/config-codes.js" />"></script>
-	   	 			<%
-					if(LicenseManager.isCitationPaymentEnabled() || LicenseManager.isManagedPermitsEnabled()){
-					%>
-	   	 			<script type="text/javascript" src="<c:url value="/static/js/config-ecommerce.js" />"></script>
-	   	 			<% }  %>
-	   	 			<script type="text/javascript" src="<c:url value="/static/js/config-general.js" />"></script>
-	   	 			<script type="text/javascript" src="<c:url value="/static/js/config-print-panel.js" />"></script>
-	   	 			<script type="text/javascript" src="<c:url value="/static/js/config-print-form.js" />"></script>
+					
 	   	 		</li>
     		<% } %>
         </ul>

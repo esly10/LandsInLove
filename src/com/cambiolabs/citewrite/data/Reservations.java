@@ -42,6 +42,11 @@ public class Reservations extends DBObject
 	@Expose public String reservation_update_date = null;
 	@Expose public String reservation_creation_date = null;
 	
+	@Expose public String card_name = null;
+	@Expose public String card_no = null;
+	@Expose public String card_exp = null;
+	@Expose public String card_type = null;
+	
 	//private static final String UTF_8 = "UTF-8";
 	
 	public Reservations() throws UnknownObjectException
@@ -249,6 +254,38 @@ public class Reservations extends DBObject
 	
 	public int getReservation_rooms_qty() {
 		return reservation_rooms_qty;
+	}
+
+	public String getCard_name() {
+		return card_name;
+	}
+
+	public void setCard_name(String card_name) {
+		this.card_name = card_name;
+	}
+
+	public String getCard_no() {
+		return card_no;
+	}
+
+	public void setCard_no(String card_no) {
+		this.card_no = card_no;
+	}
+
+	public String getCard_exp() {
+		return card_exp;
+	}
+
+	public void setCard_exp(String card_exp) {
+		this.card_exp = card_exp;
+	}
+
+	public String getCard_type() {
+		return card_type;
+	}
+
+	public void setCard_type(String card_type) {
+		this.card_type = card_type;
 	}
 		
 	public static ArrayList<Reservations> MealPlan(Timestamp date){
