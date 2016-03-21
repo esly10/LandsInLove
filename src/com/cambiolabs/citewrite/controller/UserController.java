@@ -72,6 +72,12 @@ public class UserController extends MultiActionController
 				filter.add(new DBFilter("username", "LIKE", value));
 			}
 			
+			value = request.getParameter("filter_user_lastname");
+			if(value != null && value.length() > 0)
+			{
+				filter.add(new DBFilter("last_name", "LIKE", value));
+			}
+			
 			/*value = request.getParameter("filter_officer_id");
 			if(value != null && value.length() > 0)
 			{

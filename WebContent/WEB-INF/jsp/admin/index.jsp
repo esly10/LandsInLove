@@ -66,7 +66,12 @@
 	
 	<div id="headerPanel" class="x-hide-display">
 		<div style="position: relative;">
-			<div id="header"><div></div></div>
+			<div id="header">
+				<div id="header-space")>
+					<div id="header-box"></div>
+					<div id="header-line")></div>
+				</div>
+			</div>
 	        <div id="header-user"><div id="header-user-text">
 	        <c:out value="${user.firstName} ${user.lastName}" />&nbsp;&nbsp;&nbsp;&nbsp; </div>
 	        <div id="header-user-icons">

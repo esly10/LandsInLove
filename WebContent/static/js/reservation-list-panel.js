@@ -56,11 +56,12 @@ ReservationListPanel = Ext.extend(Ext.Panel, {
 	            'reservation_internal_notes',
 	            'reservation_update_data',
 	            'reservation_creation_date',
+	            'agency_name',
 	            'card_name',
 	            'card_no', 
 	            'card_exp', 
 	            'card_type', 
-	            'name' ,'checkin','checkout'		          
+	            'name' /*,'checkin','checkout'*/		          
 	        ],
 			sortInfo: {
 				field: 'reservation_check_in',
@@ -132,7 +133,7 @@ ReservationListPanel = Ext.extend(Ext.Panel, {
 	        ,columns:[{
 	            header: "Reservation No",
 	            dataIndex: 'reservation_number',
-	            width: 60
+	            width: 100
 	        },{
 	            header: "Status",
 	            dataIndex: 'reservation_status',
@@ -151,20 +152,30 @@ ReservationListPanel = Ext.extend(Ext.Panel, {
 	        ,{
 	            header: "Guest",
 	            dataIndex: 'name',
-	            width: 150
+	            width: 120
 	        }
 	        ,{
 	            header: "Check In",
-	            dataIndex: 'checkin',
-	            width: 80
+	            dataIndex: 'reservation_check_in',
+	            width: 80,
+	        	renderer: function(value)
+	        	   { 
+	        		   return Ext.util.Format.date(value, 'Y-m-d'); 
+	        		   //return value;
+	        	   }
 	        },{
 	            header: "Check Out",
-	            dataIndex: 'checkout',
-	            width: 80
+	            dataIndex: 'reservation_check_out',
+	            width: 80,
+	        	renderer: function(value)
+	        	   { 
+	        		   return Ext.util.Format.date(value, 'Y-m-d'); 
+	        		   //return value;
+	        	   }
 	        },{
 	            header: "Agency",
 	            dataIndex: 'agency_name',
-	            width: 150
+	            width: 120
 	        }]});
 	    
 	    this.grid = new Ext.grid.GridPanel({
@@ -196,7 +207,7 @@ ReservationListPanel = Ext.extend(Ext.Panel, {
 					}, scope: this }
 	    });
 	    
-	    this.filter = new Ext.FormPanel({
+	    /*this.filter = new Ext.FormPanel({
 			bodyBorder: false,
 			border: false,
 			frame: false,
@@ -296,11 +307,168 @@ ReservationListPanel = Ext.extend(Ext.Panel, {
 	            	panel.store.load({params: {start: 0, limit: panel.pageLimit}});
 	            }
 	        }]
-		}); //filterForm
-		    
+		}); //filterForm*/
+		
+	    this.filter = new Ext.FormPanel({
+			bodyBorder: false,
+			border: false,
+			frame: false,
+			//defaultType:'textfield',
+			//labelAlign: 'top',
+			//buttonAlign:'center',
+			 buttonAlign: 'right',
+			bodyStyle: 'padding-top: 10px; ',
+			autoWidth: true,
+			defaults: { width: '30%' },
+			bodyCssClass: 'x-citewrite-panel-body',
+			items: [
+                    {
+                        layout:'column',
+                        items:[
+                        {   // column #1
+                            columnWidth: .20,
+                            layout: 'form',
+                            items: [
+									{
+										   name: 'filter_number',
+										   xtype: 'textfield', 
+										   anchor:'95%',
+										   fieldLabel: 'Res. Number'
+									},{
+											xtype: 'box',
+											height: 10
+									},{ 
+								    	   xtype: 'combo',
+								    	   hiddenName: 'filter_status',
+								    	   fieldLabel: 'Status',
+								    	   anchor:'95%',
+								    	   submitValue: true,
+								    	   typeAhead: true,
+								    	   triggerAction: 'all',
+								    	   lazyRender:true,
+								    	   mode: 'local',
+								    	   id: 'filter_status',
+								    	   autoload: true,
+								    	   store: new Ext.data.ArrayStore({
+										        id: 0,
+										        fields: [
+										            'StatusValue',
+										            'StatusDisplay'
+										        ],
+										        data: [[1, 'Confirmed'],[2, 'Canceled'],[3, 'Check In'],[4, 'Check Out'],[5, 'No Show']]  
+										    }),
+										    valueField: 'StatusValue',
+											displayField: 'StatusDisplay',
+									    	anchor:'95%',
+							            	tabIndex: 6,
+							            	allowBlank: true,
+							                forceSelection: false
+								       }
+                            ] // close items for first column
+                        },{   // column #1
+                            columnWidth: .20,
+                            layout: 'form',
+                            items: [
+                                {
+						    	   name: 'filter_guest',
+						    	   xtype: 'textfield', 
+						    	   anchor:'95%',
+						    	   fieldLabel: 'Guest Name'
+						       },{
+									xtype: 'box',
+									height: 10
+						       },
+						       {
+						    	   name: 'filter_agency',
+						    	   xtype: 'textfield', 
+						    	   anchor:'95%',
+						    	   fieldLabel: 'Agency'
+						       }
+                            ] // close items for first column
+                        },{   // column #1
+                            columnWidth: .25,
+                            layout: 'form',
+                            items: [
+                                    {
+							    	   name: 'filter_checkIn',
+							    	   fieldLabel: 'Check In',
+							    	   anchor:'95%',
+							    	   xtype: 'datefield'
+							       },{
+										xtype: 'box',
+										height: 10
+							       },
+							       {
+							    	   name: 'filter_checkOut',
+							    	   fieldLabel: 'Check Out',
+							    	   anchor:'95%',
+							    	   xtype: 'datefield'
+							       }
+                            ] // close items for first column
+                        },{   // column #1
+                            columnWidth: .30,
+                            layout: 'form',
+                            items: [
+                                {
+						            xtype: 'radiogroup',
+						            fieldLabel: 'Period Selector',
+						            id: 'filter_type',
+						            itemCls: 'x-check-group-alt',
+						            //columnHeigth: 15,
+						            columns: 2,
+						            items: [
+						                {boxLabel: 'Today', name: 'rb', inputValue: 1, height: 32},
+						                {boxLabel: 'Following Week', name: 'rb', inputValue: 2, height: 32},
+						                {boxLabel: 'Following Month', name: 'rb', inputValue: 3, height: 32},
+						                {boxLabel: 'This Year', name: 'rb', inputValue: 4}
+						            ],
+						            listeners: {
+						            	change: function(field, newValue, oldValue, eOpts){
+						            		Ext.getCmp("selected_grupbox_reservation").setValue(newValue.inputValue);
+						                }
+						            }
+						        }
+                            ] // close items for first column
+                        },{   // column #1
+                            columnWidth: .05,
+                            layout: 'form',
+                            items: [{  	  	xtype: 'button',
+                        		text: 'Apply',
+        			            width: 60,
+        			            handler: function(){
+        			               var params = panel.filter.getForm().getFieldValues();
+        			               panel.store.baseParams = params;
+        			               panel.store.load({params: {start: 0, limit: panel.pageLimit}});
+        			            }
+        			        },{
+								xtype: 'box',
+								height: 10
+        			        },{
+        			        	xtype: 'button',
+        			            text: 'Reset',
+        			            width: 60,
+        			            //height:30,
+        			            handler: function(){
+        			            	panel.filter.getForm().reset();				
+        			            	panel.store.baseParams = {};
+        			            	panel.store.load({params: {start: 0, limit: panel.pageLimit}});
+        			            }
+        			      }
+                                
+                            ] 
+                        }],
+                    },{
+                    	xtype: 'hidden',
+    					id: 'selected_grupbox_reservation',
+    					name: 'selected_grupbox_reservation',
+    					value: 0
+                    }],
+	    });
+	    
+		 
 		var config = 
 		{
-			title: 'Reservation List',
+			xtype: 'panel',
 			layout:'border',
 			border: false,
 			bodyCssClass: 'x-citewrite-panel-body',
@@ -312,18 +480,21 @@ ReservationListPanel = Ext.extend(Ext.Panel, {
 			},
 
 			items: [{
-				
-				collapsible: false,
+				title: '',
+				collapsible: true,
 			    region:'center',
 			    margins: '5 0 5 5',
 				items: [this.grid]
 			},
 			{
-				//title: 'Filter',
-				collapsible: false,
-				region:'east',
-				margins: '5 5 5 0',
-				width: 200,
+				title: 'Reservation List',
+				collapsible: true,
+				collapsed:false,
+				collapseMode: 'mini',
+				region:'north',
+				margins: '0 0 0 0',
+				//width: '100%',
+				 height:110,
 				items: [this.filter]
 			}]
 		};

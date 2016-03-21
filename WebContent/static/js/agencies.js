@@ -166,13 +166,7 @@ Ext.onReady(function(){
 		                                }
 		                            ] // close items for first column
 		                        },{   // column #1
-		                            columnWidth: .15,
-		                            layout: 'form',
-		                            items: [
-		                                    agencyCountryCombo
-		                            ] // close items for first column
-		                        },{   // column #1
-		                            columnWidth: .40,
+		                            columnWidth: .4,
 		                            layout: 'form',
 		                            items: [
 		                                {  	xtype: 'radiogroup',
@@ -185,7 +179,35 @@ Ext.onReady(function(){
 								                {boxLabel: 'Corporation', name: 'rb', inputValue: 2},
 								                {boxLabel: 'Independient', name: 'rb', inputValue: 3},
 								                {boxLabel: 'All', name: 'rb', inputValue: 4}
-								            ]
+								            ],
+								            listeners: {
+								            	change: function(field, newValue, oldValue, eOpts){
+								            		Ext.getCmp("selected_grupbox_agencies").setValue(newValue.inputValue);
+								            		//console.log('change:' + field.fieldLabel + ' ' + newValue.rb);
+								                }
+								            }
+		                                }
+		                            ] // close items for first column
+		                        },{   // column #1
+		                            columnWidth: .25,
+		                            layout: 'form',
+		                            items: [
+		                                    {   
+		                                   
+		     					    	   xtype: 'combo',
+		     					    	   id: 'filter_country',
+		     					    	   hiddenName: 'filter_country',
+		     					    	   fieldLabel: 'Country',
+		     					    	   anchor:'95%',
+		     				               tabIndex: 3, 
+		     				               submitValue: true,
+		     					           lazyRender: false,
+		     					           store: countryStore,
+		     					           displayField:'country_name',
+		     					           valueField: 'country_id',
+		     					           triggerAction: 'all',
+		     					           allowBlank: false,
+		     					           forceSelection: true
 		                                }
 		                            ] // close items for first column
 		                        },{   // column #1
@@ -194,7 +216,7 @@ Ext.onReady(function(){
 		                            items: [
 		                                {  	  	xtype: 'button',
 		                                		text: 'Apply',
-		                			            width: 30,
+		                			            width: 60,
 		                			            handler: function(){
 		                			               var params = filterForm.getForm().getFieldValues();
 		                			               store.baseParams = params;
@@ -209,7 +231,7 @@ Ext.onReady(function(){
 		                                {
 		                			        	xtype: 'button',
 		                			            text: 'Reset',
-		                			            width: 30,
+		                			            width: 60,
 		                			            //height:30,
 		                			            handler: function(){
 		                			            	filterForm.getForm().reset();					
@@ -219,86 +241,12 @@ Ext.onReady(function(){
 		                			      }
 		                            ] // close items for first column
 		                        }],
+		                    },{
+		                    	xtype: 'hidden',
+		    					id: 'selected_grupbox_agencies',
+		    					name: 'selected_grupbox_agencies',
+		    					value: 0
 		                    }],
-					/*items:[{
-					        layout:'column',
-				            border: false,
-				            bodyCssClass: 'x-citewrite-panel-body',
-				            items:[
-				            {
-				                columnWidth:.2,
-				                defaultType:'textfield',
-				                layout: 'form',
-				                border: false,
-				                bodyBorder: false,
-				                bodyCssClass: 'x-citewrite-panel-body',
-				                items: [{			       
-								    	   id: 'filter_name',
-								    	   fieldLabel: 'Name'
-								       }],
-				            }, {
-				                columnWidth:.2,
-				                defaultType:'textfield',
-				                layout: 'form',
-				                border: false,
-				                bodyBorder: false,
-				                bodyCssClass: 'x-citewrite-panel-body',
-				                items: [{	
-								    	   id: 'filter_dni',
-								    	   fieldLabel: 'Identification'
-								       }],
-				            }, {
-				                columnWidth:.25,
-				                defaultType:'textfield',
-				                layout: 'form',
-				                border: false,
-				                bodyBorder: false,
-				                bodyCssClass: 'x-citewrite-panel-body',
-				                items: [{			       
-								    	   id: 'filter_name',
-								    	   fieldLabel: 'Name'
-								       }],
-				            }, {
-				                columnWidth:.25,
-				                defaultType:'textfield',
-				                layout: 'form',
-				                border: false,
-				                bodyBorder: false,
-				                bodyCssClass: 'x-citewrite-panel-body',
-				                items: [{			       
-						                	xtype: 'radiogroup',
-								            fieldLabel: 'Type',
-								            id: 'filter_type',
-								            itemCls: 'x-check-group-alt',
-								            columns: 1,
-								            items: [
-								                {boxLabel: 'Agency Tour', name: 'rb', inputValue: 1},
-								                {boxLabel: 'Corporation', name: 'rb', inputValue: 2},
-								                {boxLabel: 'Independient', name: 'rb', inputValue: 3},
-								                {boxLabel: 'All', name: 'rb', inputValue: 4}
-								            ]
-								       }],
-				             }
-				            ]
-					}],*/
-			       /*buttons: [{
-			            text: 'Apply',
-			            width: 30,
-			            handler: function(){
-			               var params = filterForm.getForm().getFieldValues();
-			               store.baseParams = params;
-			              store.load({params: {start: 0, limit: pageLimit}});
-			            }
-			        },{
-			            text: 'Reset',
-			            width: 30,
-			            height:30,
-			            handler: function(){
-			            	filterForm.getForm().reset();					
-			            	store.baseParams = {};
-			            	store.load({params: {start: 0, limit: pageLimit}});
-			            }
-			        }]*/
 			});
 			  
 			  var content = Ext.getCmp('content-panel');
@@ -319,6 +267,7 @@ Ext.onReady(function(){
 
 						items: [{
 							//title: 'Filter',
+							title: 'Agencies',
 							collapsible: true,
 							collapsed:false,
 							collapseMode: 'mini',
@@ -328,10 +277,10 @@ Ext.onReady(function(){
 							 height:80,
 							items: [filterForm]
 						},{
-							title: 'Agencies',
+							title: '',
 							collapsible: true,
 						    region:'center',
-						    margins: '40 40 40 40',
+						    margins: '0 0 0 0',
 							items: [grid]
 						}
 						]
@@ -543,8 +492,9 @@ Ext.onReady(function(){
 		                    	    },
 		                    	    success: function(form, action) {
 		                    	    	agencyDialog.hide();
-		                    	       store.reload();
-		                    	       Ext.growl.message('Success', 'Agency has been saved.');
+		                    	    	Ext.growl.message('Success', 'Agency has been saved.');
+		                    	    	store.reload();
+		                    	    	remove: true;
 		                    	    },
 		                    	    failure: function(form, action) {
 		                    	        switch (action.failureType) {

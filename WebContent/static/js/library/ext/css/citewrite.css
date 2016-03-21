@@ -539,7 +539,7 @@ ul.x-tab-strip-bottom{
 
 .x-grid3-hd-row td, .x-grid3-row td, .x-grid3-summary-row td{	
     font: normal 14px verdana, tahoma, helvetica, sans-serif;
-    color: 575C61;
+    color: #4F5F6F;
 }
 
 .x-grid3-hd-row td {
@@ -1333,7 +1333,7 @@ div#ext-gen18 {
 .x-panel-header {
     color:#FFF;
 	 /*font-weight:bold; */
-    font-size: 12px;
+    font-size: 16px;
     font-family: verdana, helvetica, arial,sans-serif;
     /*background-image: url(../images/landsinlove/panel/white-top-bottom.png);*/
     border-color: #037dcf;

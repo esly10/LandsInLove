@@ -182,16 +182,48 @@ Ext.onReady(function(){
 		                        layout:'column',
 		                        items:[
 		                        {   // column #1
-		                            columnWidth: .40,
+		                            columnWidth: .30,
 		                            layout: 'form',
 		                            items: [
 		                                {   xtype: 'textfield', 
 		                                	id: 'filter_name',
+		                                	anchor:'95%',
 		     					    	   fieldLabel: 'Name'
 		                                }
 		                            ] // close items for first column
 		                        },{   // column #1
-		                            columnWidth: .50,
+		                            columnWidth: .30,
+		                            layout: 'form',
+		                            items: [
+		                                    {   
+		                                   
+		     					    	   xtype: 'combo',
+		     					    	   id: 'filter_market',
+		     					    	   typeAhead: true,
+		     							   triggerAction: 'all',
+		     							   lazyRender:true,
+		     							   mode: 'local',
+		     							   autoload: true,
+		     							   hiddenName: 'filter_market',
+		     							   store: new Ext.data.ArrayStore({
+		     							       id: 0,
+		     							       fields: [
+		     							           'MarketValue',
+		     							           'MarketDisplay'
+		     							        ],
+		     							        data: [[1, 'Local'],[2, 'Israeli'],[3, 'International']]
+		     							   }),
+		     							   valueField: 'MarketValue',
+		     							   displayField: 'MarketDisplay',
+		     							   fieldLabel: 'Market',
+		     						       anchor:'95%',
+		     				               tabIndex: 12,
+		     				               allowBlank: false,
+		     				               forceSelection: true
+		                                }
+		                            ] // close items for first column
+		                        },{   // column #1
+		                            columnWidth: .30,
 		                            layout: 'form',
 		                            items: [
 		                                {   xtype: 'radiogroup',
@@ -203,7 +235,13 @@ Ext.onReady(function(){
 		    					                {boxLabel: 'Guest', name: 'rb', inputValue: 1},
 		    					                {boxLabel: 'Group', name: 'rb', inputValue: 2},
 		    					                {boxLabel: 'All', name: 'rb', inputValue: 3}
-		    					            ]
+		    					            ],
+								            listeners: {
+								            	change: function(field, newValue, oldValue, eOpts){
+								            		Ext.getCmp("selected_grupbox_guest").setValue(newValue.inputValue);
+								            		//console.log('change:' + field.fieldLabel + ' ' + newValue.rb);
+								                }
+								            }
 		                                }
 		                            ] // close items for first column
 		                        },{   // column #1
@@ -212,7 +250,7 @@ Ext.onReady(function(){
 		                            items: [
 		                                {  	  	xtype: 'button',
 		                                		text: 'Apply',
-		                			            width: 30,
+		                			            width: 60,
 		                			            handler: function(){
 		                			               var params = filterForm.getForm().getFieldValues();
 		                			               store.baseParams = params;
@@ -227,7 +265,7 @@ Ext.onReady(function(){
 		                                {
 		                			        	xtype: 'button',
 		                			            text: 'Reset',
-		                			            width: 30,
+		                			            width: 60,
 		                			            //height:30,
 		                			            handler: function(){
 		                			            	filterForm.getForm().reset();					
@@ -237,6 +275,11 @@ Ext.onReady(function(){
 		                			      }
 		                            ] // close items for first column
 		                        }],
+		                    },{
+		                    	xtype: 'hidden',
+		    					id: 'selected_grupbox_guest',
+		    					name: 'selected_grupbox_guest',
+		    					value: 0
 		                    }],
 					
 			});
@@ -260,10 +303,11 @@ Ext.onReady(function(){
 						items: [{
 							collapsible: true,
 						    region:'center',
-						    margins: '40 40 40 40',
+						    margins: '0 0 0 0',
 							items: [grid]
 						},
 						{
+							title: 'Guests',
 							collapsible: true,
 							collapsed:false,
 							collapseMode: 'mini',

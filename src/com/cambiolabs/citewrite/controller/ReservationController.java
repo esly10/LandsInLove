@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
-
 import java.sql.Timestamp;
 
 import javax.servlet.ServletException;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cambiolabs.citewrite.data.Agencies;
 import com.cambiolabs.citewrite.data.Charges;
+import com.cambiolabs.citewrite.data.DateFormater;
 import com.cambiolabs.citewrite.data.ReservationRoom;
 import com.cambiolabs.citewrite.data.Reservations;
 import com.cambiolabs.citewrite.data.User;
@@ -112,46 +114,123 @@ public class ReservationController extends MultiActionController
 
 			DBFilterList filter = new DBFilterList();
 
-			String value = request.getParameter("filter_reservation_number");
+			String value = request.getParameter("filter_number");
 			if (value != null && value.length() > 0) {
 				filter.add(new DBFilter("reservations.reservation_number", "LIKE", value));
 			}
 
-			value = request.getParameter("filter_guests_name");
+			value = request.getParameter("filter_guest");
 			if (value != null && value.length() > 0) {
 				filter.add(new DBFilter("guests.name", "LIKE", value));
 			}
 
-			value = request.getParameter("filter_check_in");
+			value = request.getParameter("filter_agency");
+			if (value != null && value.length() > 0) {
+				filter.add(new DBFilter("agencies.agency_name", "LIKE", value));
+			}
+
+			value = request.getParameter("filter_checkIn");
 			if (value != null && value.length() > 0) {
 				DateParser dp = new DateParser("yyyy-MM-dd'T'HH:mm:ss").parse(value);
 				Timestamp start = dp.firstHour().getTimestamp();
 				filter.add(new DBFilter("reservations.reservation_check_in", ">=", start));
 			}
 			
-			value = request.getParameter("filter_check_out");
+			value = request.getParameter("filter_checkOut");
 			if (value != null && value.length() > 0) {
 				DateParser dp = new DateParser("yyyy-MM-dd'T'HH:mm:ss").parse(value);
 				Timestamp end = dp.lastHour().getTimestamp();
 				filter.add(new DBFilter("reservations.reservation_check_out", "<=", end));
 			}
 
-			value = request.getParameter("filter_reservation_status");
+			value = request.getParameter("filter_status");
 			if (value != null && value.length() > 0) {
 				filter.add(new DBFilter("reservations.reservation_status", "=", value));
 			}
 		
-			value = request.getParameter("filter_reservation_type");
+			/*value = request.getParameter("filter_type");
 			if (value != null && value.length() > 0) {
 				filter.add(new DBFilter("reservations.reservation_type", "=", value));
-			}
+			}*/
 
 			value = request.getParameter("filter_reservation_id");
 			if (value != null && value.length() > 0) {
 				filter.add(new DBFilter("reservations.reservation_id", "=", value));
 			}
-
 			
+			value = request.getParameter("selected_grupbox_reservation");
+			
+			//Timestamp dateEnd = new Timestamp();
+			if(value != null && value.length() > 0)
+			{
+				long now = System.currentTimeMillis();
+				Timestamp dateStart = new Timestamp(now);
+				Timestamp dateEnd = new Timestamp(now);
+				DateFormater startFormater = new DateFormater(dateStart);
+				DateFormater endFormater = new DateFormater(dateEnd);
+				GregorianCalendar startCal =startFormater.getCal() ; //05 is june as month start from 0 -11
+				GregorianCalendar endCal =endFormater.getCal() ;
+				int intValue = Integer.parseInt(value);
+				if(intValue!=0){
+					switch (intValue){
+					case 1:{
+						qb.where("'"+dateStart + "' BETWEEN reservations.reservation_check_in and  reservations.reservation_check_out");
+					}		
+					break;
+					case 2:{
+						while( startCal.get( Calendar.DAY_OF_WEEK ) != Calendar.MONDAY ){
+							startCal.add( Calendar.DATE, 1 );  
+						}
+						startCal.set(Calendar.HOUR_OF_DAY, 0);
+						startCal.set(Calendar.MINUTE, 0);
+						startCal.set(Calendar.SECOND, 0);
+						startCal.set(Calendar.MILLISECOND, 0);
+						dateStart = startFormater.getTimestampDate(startCal);	
+						endCal = startCal;
+						endCal.add(Calendar.DATE, 7);
+						endCal.set(Calendar.HOUR_OF_DAY, 0);
+						endCal.set(Calendar.MINUTE, 0);
+						endCal.set(Calendar.SECOND, 0);
+						endCal.set(Calendar.MILLISECOND, 0);
+						dateEnd = startFormater.getTimestampDate(endCal);	
+						filter.add(new DBFilter("reservations.reservation_check_in", ">=", dateStart));
+						filter.add(new DBFilter("reservations.reservation_check_in", "<=", dateEnd));
+					}		
+					break;
+					case 3:{
+												
+						int startMonth =  startFormater.getDatemonth()+1;
+						if (startMonth == 13){
+							startMonth =1;
+						}else if(startMonth == 14){
+							startMonth =2;
+						}
+						//startCal.add( Calendar.MONTH, 1 );
+						startCal.set(startFormater.getDateyear(),startMonth-1, 1, 0, 0);
+						endCal.set(startFormater.getDateyear(),startMonth, 1, 0, 0);
+						dateStart = startFormater.getTimestampDate(startCal);
+						dateEnd = startFormater.getTimestampDate(endCal);
+						filter.add(new DBFilter("reservations.reservation_check_in", ">=", dateStart));
+						filter.add(new DBFilter("reservations.reservation_check_in", "<=", dateEnd));
+						
+					}		
+					break;
+					case 4:{
+						
+						//startCal.add( Calendar.MONTH, 1 );
+						startCal.set(startFormater.getDateyear(),0, 1, 0, 0);
+						endCal.set(startFormater.getDateyear()+1,0, 1, 0, 0);
+						dateStart = startFormater.getTimestampDate(startCal);
+						dateEnd = startFormater.getTimestampDate(endCal);
+						filter.add(new DBFilter("reservations.reservation_check_in", ">=", dateStart));
+						filter.add(new DBFilter("reservations.reservation_check_in", "<=", dateEnd));
+						
+					}		
+					break;
+					}
+				}
+			}
+				
 			int start = 0;
 			int limit = 0;
 

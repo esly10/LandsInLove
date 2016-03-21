@@ -14,6 +14,8 @@ public class DateFormater {
 		@Expose public int dateyear = 0;
 		@Expose public int dayweek = 0;
 		@Expose public Timestamp datecomplete = null;
+		@Expose public GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance();
+		
 		
 		
 		public DateFormater() throws UnknownObjectException
@@ -29,8 +31,7 @@ public class DateFormater {
 		public DateFormater(Timestamp date) throws UnknownObjectException
 		{
 			this.datecomplete = date;
-			GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance();
-			cal.setTime(this.datecomplete);
+			this.cal.setTime(this.datecomplete); 
 			this.dayweek= cal.get(Calendar.DAY_OF_WEEK);
 			this.dateyear = cal.get(Calendar.YEAR);
 			this.dateday = cal.get(Calendar.DAY_OF_MONTH) ; // Note: zero based!
@@ -61,12 +62,25 @@ public class DateFormater {
 		public void setDatecomplete(Timestamp datecomplete) {
 			this.datecomplete = datecomplete;
 		}
+		public GregorianCalendar getCal() {
+			return cal;
+		}
+		public void setCal(GregorianCalendar cal) {
+			this.cal = cal;
+		}
 		public String getFormatdate() {
 			String weekday = getDayWeekName(this.dayweek);
 			String month = getMonthName(this.datemonth);
 			String LongFormat =weekday+", "+month+" "+this.dateday+", "+this.dateyear;
 			return LongFormat;
 		}
+		
+		public Timestamp getTimestampDate(GregorianCalendar cal) {
+			long millis = cal.getTimeInMillis();
+			this.datecomplete = new Timestamp(millis);
+			return this.datecomplete;
+		}
+		
 		public String getMonthName(int month) {
 			switch (month){
 				case 1: return "January";

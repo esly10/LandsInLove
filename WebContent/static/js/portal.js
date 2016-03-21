@@ -32,7 +32,7 @@ Ext.onReady(function(){
             region: 'west',
             id: 'navigation-panel', // see Ext.getCmp() below
             contentEl: 'toolsPanel',
-            //title: '',
+            title: 'Tools',
             split: true,
             width: 50,
             resizable:false,
@@ -42,8 +42,8 @@ Ext.onReady(function(){
             maxSize: 800,
             collapsible: true,
             //collapseMode: 'mini',
-            //hideCollapseTool: true,
-            split: true,
+            hideCollapseTool: true,
+            //split: true,
             paddings:'0 0 0 0',
             margins: '0 0 0 0'
         },

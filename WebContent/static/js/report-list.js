@@ -48,23 +48,24 @@ Ext.onReady(function(){
 			            {header: '', sortable: true, dataIndex: 'id', width: 48, 
 			            	renderer : function(value, meta, dataStore) {
 			            	    if(dataStore.data.id == 1) {
-			            	        meta.style = "background-color:#f91550; background-image: url(/cws/static/images/ocupancy-report.png); height:70px;";
+			            	        meta.style = "background-color:#f0359d; background-image: url(/bck/static/images/ocupancy-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
 			            	    } else if(dataStore.data.id == 2) {
-			            	    	meta.style = "background-color:#23b8b6; background-image: url(/cws/static/images/marketing-report.png); height:70px;";
+			            	    	meta.style = "background-color:#35a0f0; background-image: url(/bck/static/images/marketing-report.png);  background-repeat: no-repeat; background-position: center;  height:50px;"; 
+			            	    	
 			            	    }else if(dataStore.data.id == 3) {  
-			            	    	meta.style = "background-color:#78e835; background-image: url(/cws/static/images/group-report.png);  height:70px;";
+			            	    	meta.style = "background-color:#49e34c; background-image: url(/bck/static/images/group-report.png);  background-repeat: no-repeat; background-position: center;  height:50px;"; 
 			            	    }else if(dataStore.data.id == 4) {
-			            	    	meta.style = "background-color:#4d7aec; background-image: url(/cws/static/images/payment-report.png); height:70px;";
+			            	    	meta.style = 	"background-color:#f4dc49; background-image: url(/bck/static/images/payment-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
 			            	    }else if(dataStore.data.id == 5) {
-			            	    	meta.style = "background-color:#ff7f00; background-image: url(/cws/static/images/meal-report.png);  height:70px;";
+			            	    	meta.style = "background-color:#9838fd; background-image: url(/bck/static/images/meal-report.png);  background-repeat: no-repeat; background-position: center;  height:50px;";
 			            	    }else if(dataStore.data.id == 6) {
-			            	    	meta.style = "background-color:#ca18ab; background-image: url(/cws/static/images/security-report.png); height:70px;";
+			            	    	meta.style = "background-color:#f03535; background-image: url(/bck/static/images/security-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
 			            	    }else if(dataStore.data.id == 7) {
-			            	    	meta.style = "background-color:#ef1617; background-image: url(/cws/static/images/status-report.png);  height:70px;";
+			            	    	meta.style = "background-color:#16df9d; background-image: url(/bck/static/images/status-report.png);  background-repeat: no-repeat; background-position: center;  height:50px;";
 			            	    }else if(dataStore.data.id == 8) {
-			            	    	meta.style = "background-color:#e0d80a; background-image: url(/cws/static/images/monthly-report.png);  height:70px;";
+			            	    	meta.style = "background-color:#fd8838; background-image: url(/bck/static/images/monthly-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
 			            	    }else{
-			            	    	meta.style = "background-color:gray; background-image: url(/cws/static/images/monthly-report.png); height:70px;";
+			            	    	meta.style = "background-color:gray; background-image: url(/bck/static/images/monthly-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
 			            	    }
 			            	}		           
 			            },{header: 'Name', sortable: true, dataIndex: 'Name',
@@ -379,7 +380,7 @@ Ext.onReady(function(){
 			            border: false,
 			            frame: false,
 			            items: [{
-			            	title: 'list',
+			            	title: 'Reports',
 			                region:'west',
 			                //xtype: 'container',
 			                margins: '0 0 0 0',
@@ -403,7 +404,7 @@ Ext.onReady(function(){
 						            border: false,
 						            frame: false,
 						            items: [{
-											title: 'filter',
+											title: '',
 										    region:'west',
 										    id: 'filterRegion',
 										    margins: '0 0 0 0',
@@ -413,7 +414,7 @@ Ext.onReady(function(){
 										    width: 200,
 										    items: [filterForm]
 										},{
-											title: 'Report Display',
+											title: 'Display',
 							                 region: 'center',     // center region is required, no width/height specified
 							                 border: false,
 							                 layout: 'fit',

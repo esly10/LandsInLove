@@ -57,11 +57,11 @@ Ext.onReady(function(){
 			            sortable: true
 			        },
 			        columns: [
-			            {header: '', sortable: false, dataIndex: 'ROOM_NO', width: 60, 
+			            {header: '', sortable: false, dataIndex: 'ROOM_NO', width: 50, 
 			            	renderer : function(value, meta, chargeStore) {
-			            		meta.style = "background-color:#78e835; height:35px;";
+			            		meta.style = "background-color:#E1E1E1; height:32px;";
 			            		 if(chargeStore.data.ROOM_ID == 7 || chargeStore.data.ROOM_ID == 18) {
-				            	        meta.style = "background-color:#f91550; height:50px;";
+				            	        meta.style = "background-color:#33cc33; height:32px;";
 				            	    }
 			            }
 			           }, {header: 'Room', sortable: true, dataIndex: 'ROOM_NO'}

@@ -57,6 +57,12 @@ public class AgencyController extends MultiActionController
 				filter.add(new DBFilter("agency_name", "LIKE", value));
 			}
 			
+			value = request.getParameter("filter_country");
+			if(value != null && value.length() > 0)
+			{
+				filter.add(new DBFilter("agency_country", "=", value));
+			}
+			
 			value = request.getParameter("reservation_agency_id");
 			if(value != null && value.length() > 0)
 			{
@@ -69,13 +75,27 @@ public class AgencyController extends MultiActionController
 				filter.add(new DBFilter("agency_name", "LIKE", "%"+value+"%"));
 			}
 			
+			value = request.getParameter("selected_grupbox_agencies");
+			if(value != null && value.length() > 0)
+			{
+				int intValue = Integer.parseInt(value);
+				if(intValue!=0){
+					if(intValue>3){
+						filter.add(new DBFilter("agency_type", "<=", "3"));
+					}else{
+						filter.add(new DBFilter("agency_type", "=", value));
+					}
+				}
+					
+			}
+			
 			value = request.getParameter("filter_dni");
 			if(value != null && value.length() > 0)
 			{
 				filter.add(new DBFilter("agency_identification", "LIKE", value));
 			}
 			
-			value = request.getParameter("filter_type");
+			/*value = request.getParameter("filter_type");
 			if(value != null && value.length() > 0)
 			{
 				int intValue = Integer.parseInt(value);
@@ -84,7 +104,7 @@ public class AgencyController extends MultiActionController
 				}else{
 					filter.add(new DBFilter("agency_type", "=", value));
 				}	
-			}
+			}*/
 			
 			int start = 0;
 			int limit = 0;

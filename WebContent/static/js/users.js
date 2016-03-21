@@ -109,56 +109,92 @@ Ext.onReady(function(){
 				_userContextMenu.showAt([coords[0], coords[1]]);
 			  }
 			  
-			  var filterForm = new Ext.FormPanel({
+			 var filterForm = new Ext.FormPanel({
 					bodyBorder: false,
 					border: false,
 					frame: false,
-					defaultType:'textfield',
-					labelAlign: 'top',
-					buttonAlign:'center',
-					bodyStyle: 'padding: 10px; ',
+					//defaultType:'textfield',
+					//labelAlign: 'top',
+					//buttonAlign:'center',
+					 buttonAlign: 'right',
+					bodyStyle: 'padding-top: 10px; ',
 					autoWidth: true,
-					defaults: { width: '95%' },
+					defaults: { width: '30%' },
 					bodyCssClass: 'x-citewrite-panel-body',
-					items:[
-					       {
-					    	   id: 'filter_user_name',
-					    	   fieldLabel: 'Name'
-					       },
-					       {
-					    	   id: 'filter_user_username',
-					    	   fieldLabel: 'UserName'
-					       }/*,
-					       {
-					    	   id: 'filter_officer_id',
-					    	   fieldLabel: 'Officer ID'
-					       }*/
-					       ],
-			       buttons: [{
-			            text: 'Apply',
-			            width: 60,
-			            handler: function(){
-			               var params = filterForm.getForm().getFieldValues();
-			               store.baseParams = params;
-			              store.load({params: {start: 0, limit: pageLimit}});
-			            }
-			        },{
-			            text: 'Reset',
-			            width: 60,
-			            handler: function(){
-			            	filterForm.getForm().reset();					
-			            	store.baseParams = {};
-			            	store.load({params: {start: 0, limit: pageLimit}});
-			            }
-			        }]
+					items: [
+		                    {
+		                        layout:'column',
+		                        items:[
+		                        {   // column #1
+		                            columnWidth: .30,
+		                            layout: 'form',
+		                            items: [{
+			                            	xtype: 'textfield', 
+			 					    	   id: 'filter_user_username',
+								    	   fieldLabel: 'UserName'
+		                            }       
+		                            ] // close items for first column
+		                        },{   // column #1
+		                            columnWidth: .30,
+		                            layout: 'form',
+		                            items: [
+		                                {
+		                                	xtype: 'textfield', 
+		                                	id: 'filter_user_name',
+		                                	fieldLabel: 'First Name'
+								       }
+		                            ] // close items for first column
+		                        },{   // column #1
+		                            columnWidth: .30,
+		                            layout: 'form',
+		                            items: [{
+			                            	xtype: 'textfield', 
+			 					    	   id: 'filter_user_lastname',
+								    	   fieldLabel: 'Last Name'
+		                            }       
+		                            ] // close items for first column
+		                        },{   // column #1
+		                            columnWidth: .05,
+		                            layout: 'form',
+		                            items: [
+		                                {  	  	xtype: 'button',
+		                                		text: 'Apply',
+		                			            width: 60,
+		                			            handler: function(){
+		                			               var params = filterForm.getForm().getFieldValues();
+		                			               store.baseParams = params;
+		                			              store.load({params: {start: 0, limit: pageLimit}});
+		                			            }
+		                			        }
+		                            ] // close items for first column
+		                        },{   // column #1
+		                            columnWidth: .05,
+		                            layout: 'form',
+		                            items: [
+		                                {
+		                			        	xtype: 'button',
+		                			            text: 'Reset',
+		                			            width: 60,
+		                			            //height:30,
+		                			            handler: function(){
+		                			            	filterForm.getForm().reset();					
+		                			            	store.baseParams = {};
+		                			            	store.load({params: {start: 0, limit: pageLimit}});
+		                			            }
+		                			      }
+		                            ] // close items for first column
+		                        }],
+		                    }],
+					
 			});
+		    
 			  
 			  var content = Ext.getCmp('content-panel');
 				content.removeAll(true);
 				
 				content.add({
 						xtype: 'panel',
-						title: 'Users',
+						
 						id: 'user-content-panel',
 						layout:'border',
 						border: false,
@@ -171,16 +207,20 @@ Ext.onReady(function(){
 
 						items: [{
 							
-							collapsible: false,
+							collapsible: true,
 						    region:'center',
 						    margins: '5 0 5 5',
 							items: [grid]
 						},
 						{
-							collapsible: false,
-							region:'east',
-							margins: '5 5 5 0',
-							width: 200,
+							title: 'Users',
+							collapsible: true,
+							collapsed:false,
+							collapseMode: 'mini',
+							region:'north',
+							margins: '0 0 0 0',
+							//width: '100%',
+							 height:80,
 							items: [filterForm]
 						}]
 					});

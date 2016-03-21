@@ -23,11 +23,20 @@ body {
 	    margin: 0 0px;
        /*background: transparent url(../js/library/ext/images/landsinlove/bg-header.png) top left no-repeat;*/
    }
-   div#header div{
+   #header-box{
         /* background: transparent url(../js/library/ext/images/landsinlove/logo-blanco.png) top left no-repeat; */
 	    width: 50px;
 	    height: 40px;
 	    background-color: #0d324c;
+	        display: inline-block;
+   }
+   
+  #header-line{
+        width: 5px;
+	    height: 40px;
+	    position: absolute;
+	    background-color: #F1EEE9;
+	        display: inline-block;
    }
   
    div#header h1 span {
@@ -124,9 +133,9 @@ div#downloads-copyright a { font-size: 11px; color: #FFF; font-weight: bold; mar
 
 /* growl type messages */
 
-#msg-div { width: 250px; margin: 0px auto; height: auto; height: 100px; position: absolute;z-index: 100000;}
-#growl-msg { top: 20px; width: 250px; position: absolute; background-color: #000; border: 1px solid #000; filter: alpha(opacity=80);opacity: 0.80; }
-#growl-msg div { color: #FFF; padding: 15px; text-align: center; }
+#msg-div { width: 250px; margin: 0px auto; height: auto; height: 50px; position: absolute;z-index: 100000;}
+#growl-msg { top: 5px; width: 200px; position: absolute; background-color: #037dcf; border: 1px solid #037dcf; filter: alpha(opacity=80);opacity: 0.80; }
+#growl-msg div { color: #FFF; padding: 5px; text-align: center; }
 
 div.column-container { margin: 0px; padding: 0px; clear: both; }
 dl.config-form { clear: left; margin: 0px; padding: 0px; border: 1px solid white;;}

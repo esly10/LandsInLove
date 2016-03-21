@@ -65,8 +65,8 @@
 	             }];
 		    
 		    var config = {
-		    		title: 'Rooms',
-		    		padding: '5 5 5 5',
+		    	title: 'Rooms',
+		    	padding: '5 5 5 5',
 		        store: panel.store,
 		        trackMouseOver:false,
 		        disableSelection:false,
@@ -238,9 +238,9 @@
 								},
 								{	
 									xtype: 'combo',
-									id : 'type',
+									id : 'ROOM_TYPE',
 									name : 'ROOM_TYPE',
-									hiddenName : 'STATUS',
+									hiddenName : 'ROOM_TYPE',
 									allowBlank : false,
 									// regex:
 									// /^(?!\.?$)\d{0,9}(\.\d{0,0})?$/,
@@ -391,7 +391,7 @@
 			if(data != null){
 				 Ext.getCmp("room_id").setValue(data.ROOM_ID);
 				 Ext.getCmp("room_no").setValue(data.ROOM_NO);
-				 Ext.getCmp("type").setValue(data.ROOM_TYPE);
+				 Ext.getCmp("ROOM_TYPE").setValue(data.ROOM_TYPE);
 				 Ext.getCmp("status").setValue(data.STATUS);
 				 Ext.getCmp("location_x").setValue(data.LOCATION_X);
 				 Ext.getCmp("location_y").setValue(data.LOCATION_Y);

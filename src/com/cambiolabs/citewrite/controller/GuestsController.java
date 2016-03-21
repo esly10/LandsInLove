@@ -77,15 +77,17 @@ public class GuestsController extends MultiActionController
 				filter.add(new DBFilter("market", "=", value));
 			}
 			
-			value = request.getParameter("filter_type");
+			value = request.getParameter("selected_grupbox_guest");
 			if(value != null && value.length() > 0)
 			{
 				int intValue = Integer.parseInt(value);
-				if(intValue>2){
-					filter.add(new DBFilter("type", "<", "3"));
-				}else{
-					filter.add(new DBFilter("type", "=", value));
-				}	
+				if(intValue!=0){				
+					if(intValue>2){
+						filter.add(new DBFilter("type", "<", "3"));
+					}else{
+						filter.add(new DBFilter("type", "=", value));
+					}	
+				}
 			}
 			
 			int start = 0;

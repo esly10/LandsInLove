@@ -219,7 +219,7 @@ Ext.onReady(function(){
 		                        layout:'column',
 		                        items:[
 		                        {   // column #1
-		                            columnWidth: .25,
+		                            columnWidth: .30,
 		                            layout: 'form',
 		                            items: [
 		                                {   xtype: 'textfield', 
@@ -229,7 +229,7 @@ Ext.onReady(function(){
 		                                }
 		                            ] // close items for first column
 		                        },{   // column #1
-		                            columnWidth: .25,
+		                            columnWidth: .30,
 		                            layout: 'form',
 		                            items: [{
 		 					    	   xtype: 'combo',
@@ -261,7 +261,7 @@ Ext.onReady(function(){
 		                                    
 		                            ] // close items for first column
 		                        },{   // column #1
-		                            columnWidth: .25,
+		                            columnWidth: .30,
 		                            layout: 'form',
 		                            items: [
 		                                {   id: 'filter_type',
@@ -296,11 +296,11 @@ Ext.onReady(function(){
 		                            items: [
 		                                {  	  	xtype: 'button',
 		                                		text: 'Apply',
-		                			            width: 30,
+		                			            width: 60,
 		                			            handler: function(){
 		                			               var params = filterForm.getForm().getFieldValues();
 		                			               store.baseParams = params;
-		                			              store.load({params: {start: 0, limit: pageLimit}});
+		                			               store.load({params: {start: 0, limit: pageLimit}});
 		                			            }
 		                			        }
 		                            ] // close items for first column
@@ -311,7 +311,7 @@ Ext.onReady(function(){
 		                                {
 		                			        	xtype: 'button',
 		                			            text: 'Reset',
-		                			            width: 30,
+		                			            width: 60,
 		                			            //height:30,
 		                			            handler: function(){
 		                			            	filterForm.getForm().reset();					
@@ -341,9 +341,9 @@ Ext.onReady(function(){
 
 						items: [{
 							collapsible: true,
-							title: 'Services',
+							title: '',
 						    region:'center',
-						    margins: '40 40 40 40',
+						    margins: '0 0 0 0',
 							items: [grid]
 						},
 						{
@@ -360,12 +360,6 @@ Ext.onReady(function(){
 					});
 				//content.add(grid);
 				content.doLayout();
-			  
-				
-			
-
-				
-				
 				if(!serviceDialog)
 				{
 					
@@ -460,8 +454,9 @@ Ext.onReady(function(){
 		                    	    },
 		                    	    success: function(form, action) {
 		                    	    	serviceDialog.hide();
-		                    	       store.reload();
-		                    	       Ext.growl.message('Success', 'Service has been saved.');
+		                    	    	Ext.growl.message('Success', 'Service has been saved.');
+		                    	    	remove: true;
+		                    	    	store.reload();
 		                    	    },
 		                    	    failure: function(form, action) {
 		                    	        switch (action.failureType) {
