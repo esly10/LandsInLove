@@ -30,7 +30,7 @@ public class ServiceController extends MultiActionController
 	public void list(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -41,7 +41,7 @@ public class ServiceController extends MultiActionController
 			if(user == null || (!user.hasPermission(User.PL_SERVICE_MANAGE)))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}
 			
@@ -102,7 +102,7 @@ public class ServiceController extends MultiActionController
 			json.add("services", gson.toJsonTree(list));
 			json.addProperty("success", true);
 			
-			response.getOutputStream().print(gson.toJson(json));
+			response.getWriter().print(gson.toJson(json));
 		}
 		catch(Exception e)
 		{
@@ -114,7 +114,7 @@ public class ServiceController extends MultiActionController
 	public void save(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -127,7 +127,7 @@ public class ServiceController extends MultiActionController
 			if(user == null || (!user.hasPermission(User.PL_SERVICE_MANAGE)))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}
 			
@@ -166,23 +166,23 @@ public class ServiceController extends MultiActionController
 				}catch(NumberFormatException nfe){}	*/
 			if(!service.commit())
 			{
-				response.getOutputStream().print("{success: false, msg: 'Error saving service information.'}");
+				response.getWriter().print("{success: false, msg: 'Error saving service information.'}");
 				return;
 			}
 		}
 		catch(UnknownObjectException uoe)
 		{
-			response.getOutputStream().print("{success: false, msg: 'Invalid service id: "+serviceID+"'}");
+			response.getWriter().print("{success: false, msg: 'Invalid service id: "+serviceID+"'}");
 			return;
 		}
 		
-		response.getOutputStream().print("{success: true}");
+		response.getWriter().print("{success: true}");
 	}
 	
 	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -194,7 +194,7 @@ public class ServiceController extends MultiActionController
 			if(user == null || (!user.hasPermission(User.PL_SERVICE_MANAGE)))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}
 			
@@ -202,16 +202,16 @@ public class ServiceController extends MultiActionController
 			Services services = new Services(serviceID);
 			if(!services.delete())
 			{
-				response.getOutputStream().print("{success: false, msg: 'Error removing service.'}");
+				response.getWriter().print("{success: false, msg: 'Error removing service.'}");
 				return;
 			}
 		}
 		catch(UnknownObjectException uoe)
 		{
-			response.getOutputStream().print("{success: false, msg: 'Invalid service id'}");
+			response.getWriter().print("{success: false, msg: 'Invalid service id'}");
 			return;
 		}
 			
-		response.getOutputStream().print("{success: true}");
+		response.getWriter().print("{success: true}");
 	}
 }

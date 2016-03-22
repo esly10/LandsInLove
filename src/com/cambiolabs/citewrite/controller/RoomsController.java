@@ -3,6 +3,7 @@ package com.cambiolabs.citewrite.controller;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cambiolabs.citewrite.data.*;
 import com.cambiolabs.citewrite.db.DBFilter;
 import com.cambiolabs.citewrite.db.DBFilterList;
+import com.cambiolabs.citewrite.db.QueryBuilder;
 import com.cambiolabs.citewrite.db.UnknownObjectException;
 import com.cambiolabs.citewrite.util.CodesWatcher;
 import com.cambiolabs.citewrite.util.DateParser;
@@ -123,10 +125,111 @@ public class RoomsController extends MultiActionController
 		int count = query.count(filter);
 		
 		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new Gson();
 		String json = gson.toJson(rooms);
 		
 		response.getOutputStream().print("{count: "+count+", rooms: " + json + "}");	
+	}
+	
+	public void chargeList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
+		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		JsonObject json = new JsonObject();
+		json.addProperty("success", false);
+		
+		try
+		{
+			User user = User.getCurrentUser();
+			if(user == null || (!user.hasPermission(User.PL_CHARGES_VIEW)))
+			{
+				json.addProperty("msg", "You don't have permission to perform this action.");
+				response.getWriter().print(gson.toJson(json));
+				return;
+			}
+				String orderBy = null;
+				String sort = request.getParameter("sort");
+				
+				long now = System.currentTimeMillis();
+				Timestamp dateSend = new Timestamp(now);
+				String value = request.getParameter("date");
+				if (value != null && value.length() > 0) {
+					DateParser dp = new DateParser("yyyy-MM-dd HH:mm:ss").parse(value);
+					dateSend = dp.firstHour().getTimestamp();
+					//qb.where("'"+start + "' BETWEEN rr_reservation_in and  rr_reservation_out");
+				}
+				
+				
+				QueryBuilder qb = new QueryBuilder("rooms");
+				qb.field("DISTINCT rooms.Room_no")
+						.field("rooms.Room_id")
+						.field("rooms.Room_type")
+						.field("reservations_rooms.rr_id");
+				qb.join("reservations_rooms reservations_rooms"
+						,"reservations_rooms.rr_room_id=rooms.ROOM_ID and ('"+dateSend + "' BETWEEN rr_reservation_in and  rr_reservation_out)");
+				
+				if(sort != null && sort.length() > 0)
+				{
+					orderBy = sort;
+				}
+				else
+				{ 
+					orderBy = "Room_no";
+				}
+				
+				String dir = request.getParameter("dir");
+				if(dir != null && dir.length() > 0)
+				{
+					orderBy += " "+dir;
+				}
+				else
+				{
+					orderBy += " ASC";
+				}
+				
+				DBFilterList filter = new DBFilterList();
+				String is_delete = request.getParameter("IS_DELETE");
+				if(is_delete != null && is_delete.length() > 0){
+					filter.add(new DBFilter("IS_DELETE", DBFilter.EQ, is_delete));
+				}
+				
+				int start = 0;
+				int limit = 0;
+
+				if (request.getParameter("start") != null) {
+					try {
+						start = Integer.parseInt(request.getParameter("start"));
+					} catch (NumberFormatException nfe) {
+					}
+				}
+
+				if (request.getParameter("limit") != null) {
+					try {
+						limit = Integer.parseInt(request.getParameter("limit"));
+					} catch (NumberFormatException nfe) {
+					}
+				}
+				
+				ArrayList<Hashtable<String, String>> list = qb.orderBy(sort)
+						.orderDir(dir).where(filter).start(start).max(limit)
+						.select();
+
+				int count = list.size();
+				if (limit > 0) {
+					count = qb.count();
+				}
+				json.addProperty("count", count);
+				json.addProperty("success", true);
+				json.add("rooms", gson.toJsonTree(list));
+				
+				
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		response.getOutputStream().print(gson.toJson(json));
 	}
 	
 	public void availableList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, UnknownObjectException 
@@ -150,6 +253,7 @@ public class RoomsController extends MultiActionController
 		
 		
 		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new Gson();
 		String json = gson.toJson(roomsList);
 		
@@ -158,7 +262,7 @@ public class RoomsController extends MultiActionController
 	public ModelAndView details(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -261,7 +365,8 @@ public class RoomsController extends MultiActionController
 			
 		}
 		response.setContentType("text/json");
-		response.getOutputStream().print("{success: false, msg: 'Charges not found.'}");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().print("{success: false, msg: 'Charges not found.'}");
 		return null;
 	}
 	
@@ -275,7 +380,7 @@ public class RoomsController extends MultiActionController
 		if(user == null || !user.isAdmin())
 		{
 			json.addProperty("msg", "You don't have permission to perform this action.");
-			response.getOutputStream().print(gson.toJson(json));
+			response.getWriter().print(gson.toJson(json));
 			return;
 		}
 		
@@ -301,7 +406,7 @@ public class RoomsController extends MultiActionController
 			json.addProperty("msg", "Room not found.");
 		}
 		
-		response.getOutputStream().print(gson.toJson(json));
+		response.getWriter().print(gson.toJson(json));
 	}
 	
 	public void save(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 

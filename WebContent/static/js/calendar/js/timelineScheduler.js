@@ -263,6 +263,9 @@ var TimeScheduler = {
         
         TimeScheduler.CreateCalendar();
         TimeScheduler.FillSections(overrideCache);
+        
+        addContextMenu();
+        $jQuery('#rmenu').hide();
     },
 
     GetSelectedPeriod: function () {
@@ -1103,6 +1106,7 @@ var TimeScheduler = {
     SelectPeriod: function (name) {
         TimeScheduler.Options.SelectedPeriod = name;
         TimeScheduler.Init();
+        
     },
 
     Period_Clicked: function (event) {

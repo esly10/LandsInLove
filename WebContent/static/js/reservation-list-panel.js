@@ -202,7 +202,11 @@ ReservationListPanel = Ext.extend(Ext.Panel, {
 						{
 							event.stopEvent();
 							var record = grid.getStore().getAt(index);
-							panel.details(record.data);
+							var content = Ext.getCmp('content-panel');
+		        			content.removeAll(true);			
+		        			content.add(new ReservationPanel({'reservationInfo' : record.data}));
+		        			content.doLayout();
+		        			return;
 							
 					}, scope: this }
 	    });

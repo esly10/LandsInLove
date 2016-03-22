@@ -37,7 +37,7 @@ public class UserController extends MultiActionController
 	{
 		
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -49,7 +49,7 @@ public class UserController extends MultiActionController
 			if(currentUser == null || (!currentUser.isAdmin()))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}
 			
@@ -119,7 +119,7 @@ public class UserController extends MultiActionController
 			json.addProperty("count", count);
 			json.add("users", gson.toJsonTree(list));
 
-			response.getOutputStream().print(gson.toJson(json));
+			response.getWriter().print(gson.toJson(json));
 		}
 		catch(Exception e)
 		{
@@ -132,7 +132,7 @@ public class UserController extends MultiActionController
 	{
 		
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -145,7 +145,7 @@ public class UserController extends MultiActionController
 			if(currentUser == null || (!currentUser.isAdmin()))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}
 			
@@ -164,7 +164,7 @@ public class UserController extends MultiActionController
 			User test = User.getByUsername(user.username);
 			if(test != null && user.username.equalsIgnoreCase(test.username) && user.user_id != test.user_id)
 			{
-				response.getOutputStream().print("{success: false, msg: 'User name is already in use. Please select a different user name.'}");
+				response.getWriter().print("{success: false, msg: 'User name is already in use. Please select a different user name.'}");
 				return;
 			}
 			
@@ -194,29 +194,29 @@ public class UserController extends MultiActionController
 			
 			if(!user.commit())
 			{
-				response.getOutputStream().print("{success: false, msg: 'Error saving user information.'}");
+				response.getWriter().print("{success: false, msg: 'Error saving user information.'}");
 				return;
 			}
 		}
 		catch(UnknownObjectException uoe)
 		{
-			response.getOutputStream().print("{success: false, msg: 'Invalid device id: "+userID+"'}");
+			response.getWriter().print("{success: false, msg: 'Invalid device id: "+userID+"'}");
 			return;
 		}
 		catch(NumberFormatException nfe)
 		{
-			response.getOutputStream().print("{success: false, msg: 'Invalid value for next citation number'}");
+			response.getWriter().print("{success: false, msg: 'Invalid value for next citation number'}");
 			return;
 		}
 		
-		response.getOutputStream().print("{success: true}");
+		response.getWriter().print("{success: true}");
 	}
 	
 	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -229,7 +229,7 @@ public class UserController extends MultiActionController
 			if(currentUser == null || (!currentUser.isAdmin()))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}
 			
@@ -237,36 +237,36 @@ public class UserController extends MultiActionController
 			User user = new User(userID);
 			if(!user.delete())
 			{
-				response.getOutputStream().print("{success: false, msg: 'Error removing user.'}");
+				response.getWriter().print("{success: false, msg: 'Error removing user.'}");
 				return;
 			}
 		}
 		catch(UnknownObjectException uoe)
 		{
-			response.getOutputStream().print("{success: false, msg: 'Invalid user id'}");
+			response.getWriter().print("{success: false, msg: 'Invalid user id'}");
 			return;
 		}
 		catch(NumberFormatException nfe)
 		{
-			response.getOutputStream().print("{success: false, msg: 'Invalid user id'}");
+			response.getWriter().print("{success: false, msg: 'Invalid user id'}");
 			return;
 		}
 		
-		response.getOutputStream().print("{success: true}");
+		response.getWriter().print("{success: true}");
 	}
 	
 	public void authenticated(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		User authUser = User.getCurrentUser();
 		if(authUser == null)
 		{
-			response.getOutputStream().print("{success: false}");
+			response.getWriter().print("{success: false}");
 		}
 		else
 		{
-			response.getOutputStream().print("{success: true}");
+			response.getWriter().print("{success: true}");
 		}
 	}
 	
@@ -277,9 +277,10 @@ public class UserController extends MultiActionController
 		
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
 		String json = gson.toJson(user);
 
-		response.getOutputStream().print("{user: " + json + "}");
+		response.getWriter().print("{user: " + json + "}");
 	}
 	
 	public void saveAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
@@ -287,6 +288,7 @@ public class UserController extends MultiActionController
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
 		json.addProperty("success", false);
 		
 		User user = User.getCurrentUser();
@@ -300,7 +302,7 @@ public class UserController extends MultiActionController
 			PasswordConfig passwordConfig = PasswordConfig.get(AuthorizationType.USER);
 			if(!passwordConfig.isValid(pwd)){
 				json.addProperty("msg", passwordConfig.getMessage());
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;	
 			}
 			user.setPassword(pwd);
@@ -309,19 +311,19 @@ public class UserController extends MultiActionController
 		User test = User.getByUsername(user.username);
 		if(test != null && user.username.equalsIgnoreCase(test.username) && user.user_id != test.user_id)
 		{
-			response.getOutputStream().print("{success: false, msg: 'User name is already in use. Please select a different user name.'}");
+			response.getWriter().print("{success: false, msg: 'User name is already in use. Please select a different user name.'}");
 			return;
 		}
 
 		if(!user.commit())
 		{
-			response.getOutputStream().print("{success: false, msg: 'Error saving account information.'}");
+			response.getWriter().print("{success: false, msg: 'Error saving account information.'}");
 			return;
 		}
 		
 		json.addProperty("success", true);
 		json.add("user",gson.toJsonTree(user));
-		response.getOutputStream().print(gson.toJson(json));
+		response.getWriter().print(gson.toJson(json));
 	}
 	
 	private AuthenticationManager authenticationManager = null;
@@ -335,6 +337,7 @@ public class UserController extends MultiActionController
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
 		json.addProperty("success", false);
 		
 		
@@ -375,35 +378,35 @@ public class UserController extends MultiActionController
 								json.addProperty("success", true);
 								json.addProperty("msg", "Password changed successfully.");
 								json.addProperty("redirect", request.getContextPath() + "/admin/");
-								response.getOutputStream().print(gson.toJson(json));
+								response.getWriter().print(gson.toJson(json));
 								return null;
 							
 							}
 							else
 							{
 								json.addProperty("msg", "Unknown error change password. Please contact the administrator.");
-								response.getOutputStream().print(gson.toJson(json));
+								response.getWriter().print(gson.toJson(json));
 								return null;
 							}
 						}
 						else
 						{
 							json.addProperty("msg", pasworConfig.getMessage());
-							response.getOutputStream().print(gson.toJson(json));
+							response.getWriter().print(gson.toJson(json));
 							return null;
 						}
 					}
 					else
 					{
 						json.addProperty("msg", "New password cannot be the same as your current password.");
-						response.getOutputStream().print(gson.toJson(json));
+						response.getWriter().print(gson.toJson(json));
 						return null;
 					}
 				}
 				else
 				{
 					json.addProperty("msg", "Username or Password invalid");
-					response.getOutputStream().print(gson.toJson(json));
+					response.getWriter().print(gson.toJson(json));
 					return null;
 				}
 			

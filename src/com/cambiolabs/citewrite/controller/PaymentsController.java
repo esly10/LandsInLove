@@ -32,7 +32,7 @@ public class PaymentsController extends MultiActionController
 	{
 		
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -43,7 +43,7 @@ public class PaymentsController extends MultiActionController
 			if(user == null || (!user.hasPermission(User.PL_AGENCY_MANAGE)))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}*/
 			
@@ -113,7 +113,7 @@ public class PaymentsController extends MultiActionController
 			json.add("payments", gson.toJsonTree(list));
 			json.addProperty("success", true);
 			
-			response.getOutputStream().print(gson.toJson(json));
+			response.getWriter().print(gson.toJson(json));
 		}
 		catch(Exception e)
 		{
@@ -125,7 +125,7 @@ public class PaymentsController extends MultiActionController
 	public void save(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -139,7 +139,7 @@ public class PaymentsController extends MultiActionController
 			if(user == null || (!user.hasPermission(User.PL_AGENCY_MANAGE)))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}*/
 			
@@ -176,23 +176,23 @@ public class PaymentsController extends MultiActionController
 		
 			if(!payment.commit())
 			{
-				response.getOutputStream().print("{success: false, msg: 'Error saving Payment information.'}");
+				response.getWriter().print("{success: false, msg: 'Error saving Payment information.'}");
 				return;
 			}
 		}
 		catch(UnknownObjectException uoe)
 		{
-			response.getOutputStream().print("{success: false, msg: 'Invalid payment id: "+ID+"'}");
+			response.getWriter().print("{success: false, msg: 'Invalid payment id: "+ID+"'}");
 			return;
 		}
 		
-		response.getOutputStream().print("{success: true, payment_id: "+payment.payment_id+"}");
+		response.getWriter().print("{success: true, payment_id: "+payment.payment_id+"}");
 	}
 	
 	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -204,7 +204,7 @@ public class PaymentsController extends MultiActionController
 			if(user == null || (!user.hasPermission(User.PL_AGENCY_MANAGE)))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}*/
 			
@@ -212,16 +212,16 @@ public class PaymentsController extends MultiActionController
 			Payments payment = new Payments(ID);
 			if(!payment.delete())
 			{
-				response.getOutputStream().print("{success: false, msg: 'Error removing payment.'}");
+				response.getWriter().print("{success: false, msg: 'Error removing payment.'}");
 				return;
 			}
 		}
 		catch(UnknownObjectException uoe)
 		{
-			response.getOutputStream().print("{success: false, msg: 'Invalid payment id'}");
+			response.getWriter().print("{success: false, msg: 'Invalid payment id'}");
 			return;
 		}
 			
-		response.getOutputStream().print("{success: true}");
+		response.getWriter().print("{success: true}");
 	}
 }

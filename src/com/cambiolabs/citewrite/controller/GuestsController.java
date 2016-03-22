@@ -27,7 +27,7 @@ public class GuestsController extends MultiActionController
 	{
 		
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -136,7 +136,7 @@ public class GuestsController extends MultiActionController
 	{
 		
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -201,7 +201,7 @@ public class GuestsController extends MultiActionController
 	public void save(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -285,7 +285,7 @@ public class GuestsController extends MultiActionController
 	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);

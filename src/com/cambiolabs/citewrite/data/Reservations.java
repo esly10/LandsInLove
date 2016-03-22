@@ -3,7 +3,11 @@ package com.cambiolabs.citewrite.data;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cambiolabs.citewrite.db.DBConnection;
+import com.cambiolabs.citewrite.db.DBFilter;
+import com.cambiolabs.citewrite.db.DBFilterList;
 import com.cambiolabs.citewrite.db.DBObject;
 import com.cambiolabs.citewrite.db.UnknownObjectException;
 import com.google.gson.annotations.Expose;
@@ -47,6 +51,9 @@ public class Reservations extends DBObject
 	@Expose public String card_exp = null;
 	@Expose public String card_type = null;
 	
+	
+	
+	
 	//private static final String UTF_8 = "UTF-8";
 	
 	public Reservations() throws UnknownObjectException
@@ -64,6 +71,43 @@ public class Reservations extends DBObject
 		}
 	}
 	
+	public boolean deleteRooms() throws UnknownObjectException{
+
+		boolean rv = true;			
+	
+		ReservationRoom rRoom = new ReservationRoom();
+		
+		DBFilterList filter = new DBFilterList();
+		filter.add(new DBFilter("rr_reservation_id", "=", this.reservation_id));
+		ArrayList<ReservationRoom> rList = (ArrayList<ReservationRoom>)rRoom.get(0, 10000, "rr_reservation_id desc", filter);			
+		
+		DBConnection conn = null;
+		try
+		{
+			conn = new DBConnection();
+			for(ReservationRoom room :rList){
+								
+				conn.execute("DELETE from reservations_rooms where rr_id="+room.rr_id);
+			}
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			if(conn != null)
+			{
+				conn.close();
+				conn = null;
+			}
+		}
+	
+	
+		return rv;
+	
+	}
 	
 	public int getReservation_id() {
 		return reservation_id;
@@ -268,9 +312,7 @@ public class Reservations extends DBObject
 		return card_no;
 	}
 
-	public void setCard_no(String card_no) {
-		this.card_no = card_no;
-	}
+	
 
 	public String getCard_exp() {
 		return card_exp;
@@ -287,7 +329,25 @@ public class Reservations extends DBObject
 	public void setCard_type(String card_type) {
 		this.card_type = card_type;
 	}
-		
+
+		public void setCard_no(String ccNumber)
+	{
+		if(ccNumber == null || ccNumber.length() == 0) //anything less than 13 is not valid
+		{
+			this.card_no = "";
+		}
+		else
+		{
+			this.card_no = ccNumber;
+			
+			//need to mask the credit card and remove the cvv
+		    int end = this.card_no.length() - 4;
+		    
+		    this.card_no = this.card_no.substring(0, 4) + StringUtils.repeat("*", end - 4) + this.card_no.substring(end) ;
+		    
+		}
+	}
+	
 	public static ArrayList<Reservations> MealPlan(Timestamp date){
 	ArrayList<Reservations> reservations = new ArrayList<Reservations>();
 	DBConnection conn = null;

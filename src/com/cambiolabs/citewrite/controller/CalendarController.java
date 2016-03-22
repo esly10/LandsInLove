@@ -125,15 +125,17 @@ public class CalendarController extends MultiActionController
 		int count = query.count(filter);
 		
 		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new Gson();
 		String json = gson.toJson(rooms);
 		
-		response.getOutputStream().print("{count: "+count+", rooms: " + json + "}");	
+		response.getWriter().print("{count: "+count+", rooms: " + json + "}");	
 	}
 	
 	public void listCalendar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
  		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -226,7 +228,7 @@ public class CalendarController extends MultiActionController
 			e.printStackTrace();
 		}
 
-		response.getOutputStream().print(gson.toJson(json));
+		response.getWriter().print(gson.toJson(json));
 
 	}
 	
@@ -242,19 +244,20 @@ public class CalendarController extends MultiActionController
 		checkout = checkout.replace("T", " ");
 		
 		@SuppressWarnings("unchecked")
-		ArrayList<Rooms> roomsList = rooms.noReceivedRooms(DateParser.toTimestamp(checkin,"yyyy-M-dd HH:mm:ss"), DateParser.toTimestamp(checkout,"yyyy-M-dd HH:mm:ss"));
+		ArrayList<Rooms> roomsList = rooms.noReceivedRooms(0,DateParser.toTimestamp(checkin,"yyyy-M-dd HH:mm:ss"), DateParser.toTimestamp(checkout,"yyyy-M-dd HH:mm:ss"));
 		
 		
 		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new Gson();
 		String json = gson.toJson(roomsList);
 		
-		response.getOutputStream().print("{rooms: " + json + "}");	
+		response.getWriter().print("{rooms: " + json + "}");	
 	}
 	public ModelAndView panel(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -263,7 +266,7 @@ public class CalendarController extends MultiActionController
 		if(user == null || (!user.hasPermission(User.PL_CHARGES_VIEW)))
 		{
 
-			response.getOutputStream().print("You don't have permission to perform this action.");
+			response.getWriter().print("You don't have permission to perform this action.");
 			return null;
 		}
 		
@@ -290,7 +293,8 @@ public class CalendarController extends MultiActionController
 			
 		}
 		response.setContentType("text/json");
-		response.getOutputStream().print("{success: false, msg: 'Charges not found.'}");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().print("{success: false, msg: 'Charges not found.'}");
 		return null;
 	}
 	

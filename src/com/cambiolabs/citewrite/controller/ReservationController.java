@@ -42,7 +42,7 @@ public class ReservationController extends MultiActionController
 	{
 		
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -53,7 +53,7 @@ public class ReservationController extends MultiActionController
 			if(user == null || (!user.hasPermission(User.PL_RESERVATION_MANAGE)))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}
 			
@@ -265,7 +265,7 @@ public class ReservationController extends MultiActionController
 			e.printStackTrace();
 		}
 
-		response.getOutputStream().print(gson.toJson(json));
+		response.getWriter().print(gson.toJson(json));
 	}
 	
 	
@@ -274,7 +274,7 @@ public class ReservationController extends MultiActionController
 	{
 		
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -285,7 +285,7 @@ public class ReservationController extends MultiActionController
 			if(user == null || (!user.hasPermission(User.PL_RESERVATION_MANAGE)))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}
 			
@@ -370,7 +370,7 @@ public class ReservationController extends MultiActionController
 	{
 		
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -381,7 +381,7 @@ public class ReservationController extends MultiActionController
 			if(user == null || (!user.hasPermission(User.PL_RESERVATION_MANAGE)))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}
 			
@@ -467,7 +467,7 @@ public class ReservationController extends MultiActionController
 			json.add("charges", gson.toJsonTree(list));
 			json.addProperty("success", true);
 			
-			response.getOutputStream().print(gson.toJson(json));
+			response.getWriter().print(gson.toJson(json));
 		}
 		catch(Exception e)
 		{
@@ -478,7 +478,7 @@ public class ReservationController extends MultiActionController
 	public void saveCharges(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -491,7 +491,7 @@ public class ReservationController extends MultiActionController
 			if(user == null || (!user.hasPermission(User.PL_RESERVATION_MANAGE)))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}
 			
@@ -532,23 +532,23 @@ public class ReservationController extends MultiActionController
 				
 			if(!charges.commit())
 			{
-				response.getOutputStream().print("{success: false, msg: 'Error saving reservation information.'}");
+				response.getWriter().print("{success: false, msg: 'Error saving reservation information.'}");
 				return;
 			}
 		}
 		catch(UnknownObjectException uoe)
 		{
-			response.getOutputStream().print("{success: false, msg: 'Invalid reservation id: "+ID+"'}");
+			response.getWriter().print("{success: false, msg: 'Invalid reservation id: "+ID+"'}");
 			return;
 		}
 		
-		response.getOutputStream().print("{success: true}");
+		response.getWriter().print("{success: true}");
 	}
 	
 	public void save(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -561,7 +561,7 @@ public class ReservationController extends MultiActionController
 			if(user == null || (!user.hasPermission(User.PL_RESERVATION_MANAGE)))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}
 			
@@ -650,7 +650,9 @@ public class ReservationController extends MultiActionController
 				return;
 			}else {
 				
+				if(Rooms.length() > 0){
 				String[] stringArray = Rooms.split(";");
+					reservation.deleteRooms();
 				for (int i = 0; i < stringArray.length; i++) {
 			         String roomId = stringArray[i];
 			         ReservationRoom reservationRoom = new ReservationRoom();
@@ -661,6 +663,7 @@ public class ReservationController extends MultiActionController
 			         reservationRoom.commit();
 			         
 			    }
+				}				
 				
 				json.addProperty("success", true);
 				json.addProperty("reservation_id", reservation.reservation_id);
@@ -672,13 +675,13 @@ public class ReservationController extends MultiActionController
 			return;
 		}
 		
-		response.getOutputStream().print(gson.toJson(json));
+		response.getWriter().print(gson.toJson(json));
 	}
 	
 	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		response.setContentType("text/json");
-		
+		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
 		json.addProperty("success", false);
@@ -690,7 +693,7 @@ public class ReservationController extends MultiActionController
 			if(user == null || (!user.hasPermission(User.PL_RESERVATION_MANAGE)))
 			{
 				json.addProperty("msg", "You don't have permission to perform this action.");
-				response.getOutputStream().print(gson.toJson(json));
+				response.getWriter().print(gson.toJson(json));
 				return;
 			}
 			
@@ -698,16 +701,52 @@ public class ReservationController extends MultiActionController
 			Reservations reservation = new Reservations(reservationID);
 			if(!reservation.delete())
 			{
-				response.getOutputStream().print("{success: false, msg: 'Error removing reservation.'}");
+				response.getWriter().print("{success: false, msg: 'Error removing reservation.'}");
 				return;
 			}
 		}
 		catch(UnknownObjectException uoe)
 		{
-			response.getOutputStream().print("{success: false, msg: 'Invalid reservation id'}");
+			response.getWriter().print("{success: false, msg: 'Invalid reservation id'}");
 			return;
 		}
 			
-		response.getOutputStream().print("{success: true}");
+		response.getWriter().print("{success: true}");
+	}
+	
+	public void deleteCharges(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
+		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		JsonObject json = new JsonObject();
+		json.addProperty("success", false);
+		
+		int chargeID = 0;
+		try
+		{
+			User user = User.getCurrentUser();
+			if(user == null || (!user.hasPermission(User.PL_RESERVATION_MANAGE)))
+			{
+				json.addProperty("msg", "You don't have permission to perform this action.");
+				response.getWriter().print(gson.toJson(json));
+				return;
+			}
+			
+			chargeID = Integer.parseInt(request.getParameter("charge_id"));
+			Charges charge = new Charges(chargeID);
+			if(!charge.delete())
+			{
+				response.getWriter().print("{success: false, msg: 'Error removing Charge.'}");
+				return;
+			}
+		}
+		catch(UnknownObjectException uoe)
+		{
+			response.getWriter().print("{success: false, msg: 'Invalid charge id'}");
+			return;
+		}
+			
+		response.getWriter().print("{success: true, msg: 'Charge removed.'}");
 	}
 }

@@ -71,6 +71,7 @@ public class ReportController extends MultiActionController
 	{
 
 		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
 		ModelAndView mv =  new ModelAndView();
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		JsonObject json = new JsonObject();
@@ -161,7 +162,8 @@ public class ReportController extends MultiActionController
 			
 		}
 		response.setContentType("text/json");
-		response.getOutputStream().print("{success: false, msg: 'Report not found.'}");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().print("{success: false, msg: 'Report not found.'}");
 		return null;
 			
 	}

@@ -31,12 +31,12 @@ ChargeGeneralPanel = Ext.extend(Ext.Panel, {
 			{
 				xtype: 'panel',
 			    //title: 'Charges',
-			    id: 'chargetab-general-' + panel.charge.ROOM_ID,
+			    id: 'chargetab-general-' + panel.charge.room_id,
 			    padding: 5,
 			    bodyCssClass: 'x-citewrite-panel-body',
 			    autoScroll: true,
 			    buttonAlign: 'left',
-			    autoLoad : { url : _contextPath + '/rooms/details', scripts : true, params: {room_id: panel.charge.ROOM_ID, date: panel.date.value } },
+			    autoLoad : { url : _contextPath + '/rooms/details', scripts : true, params: {room_id: panel.charge.room_id, date: panel.date.value } },
 			    buttons:  buttons
 			};
 			Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -73,7 +73,7 @@ ChargeGeneralPanel = Ext.extend(Ext.Panel, {
 								   icon: Ext.MessageBox.ERROR
 								});
 						   },
-						   params: { room_id: panel.charge.ROOM_ID, xaction: 'get' }
+						   params: { room_id: panel.charge.room_id, xaction: 'get' }
 						});
 				},
 				text: 'Edit'});

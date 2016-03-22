@@ -26,20 +26,24 @@ Ext.onReady(function(){
 		manageCharges.on('click', function(){
 			var chargeStore = new Ext.data.JsonStore
 			({
-				url: _contextPath + '/rooms/list',
+				url: _contextPath + '/rooms/chargeList',
 				root: 'rooms',
 		        totalProperty: 'count',
 		        remoteSort: true,
 		        fields: [
-		            'ROOM_ID',
-		            'ROOM_NO',
-		            'ROOM_TYPE',
-		            'STATUS',
-		            'LOCATION_X',
-		            'LOCATION_Y'		            		            
+		                 /*'ROOM_ID',
+				            'ROOM_NO',
+				            'ROOM_TYPE',
+				            'STATUS',
+				            'LOCATION_X',
+				            'LOCATION_Y'*/		   
+		            'room_no',
+		            'room_id',
+		            'room_type',
+		            'rr_id'     		            
 		        ],
 				sortInfo: {
-					field: 'ROOM_NO',
+					field: 'room_no',
 					direction: 'ASC'
 				},
 				baseParams: {IS_DELETE: 0 },
@@ -57,14 +61,34 @@ Ext.onReady(function(){
 			            sortable: true
 			        },
 			        columns: [
-			            {header: '', sortable: false, dataIndex: 'ROOM_NO', width: 50, 
+			               {header: 'Room', sortable: true, dataIndex: 'room_no', width: 50, 
+					            	renderer : function(value, meta, chargeStore) {
+					            		meta.style = "background-color:#E1E1E1; height:32px; font-size: 16px";
+					            		 if(chargeStore.data.rr_id != "") {
+						            	        meta.style = "background-color:#33cc33; height:32px; color: #FFFFFF; font-size: 16px; font-weight: bold;";
+						            	       
+						            	    }
+					            		 return	 chargeStore.data.room_no;
+					            	}
+			                  },
+				            {header: '', sortable: false, dataIndex: 'room_no', width: 100, 
+				            	renderer : function(value, meta, chargeStore) {
+				            		//meta.style = "background-color:#E1E1E1; height:32px;";
+				            		if(chargeStore.data.rr_id != "") {
+					            	        //meta.style = "background-color:#33cc33; height:32px; color: #FFFFFF; font-weight: bold;";
+					            	        return "Used";
+					            	    }
+				            		 return "Empty";
+				            }
+			           } 
+			           /*{header: '', sortable: false, dataIndex: 'room_no', width: 50, 
 			            	renderer : function(value, meta, chargeStore) {
 			            		meta.style = "background-color:#E1E1E1; height:32px;";
-			            		 if(chargeStore.data.ROOM_ID == 7 || chargeStore.data.ROOM_ID == 18) {
+			            		 if(chargeStore.data.room_id == 7 || chargeStore.data.room_id == 18) {
 				            	        meta.style = "background-color:#33cc33; height:32px;";
 				            	    }
 			            }
-			           }, {header: 'Room', sortable: true, dataIndex: 'ROOM_NO'}
+			           }, {header: 'Room', sortable: true, dataIndex: 'room_no'}*/
 			        ]
 			    });
 			    this.viewConfig = {
@@ -131,7 +155,15 @@ Ext.onReady(function(){
 								id: 'filter_date',
 								name: 'filter_date',
 								listeners : {
-								    render : function(datefield) {
+									select: function (t,n,o) {
+								    	chargeStore.baseParams = {date: t.value};
+								    	chargeStore.load({params: {start: 0, limit: pageLimit}});
+						            },
+						            change: function (t,n,o) {
+								    	chargeStore.baseParams = {date: t.value};
+								    	chargeStore.load({params: {start: 0, limit: pageLimit}});
+						            },
+								   render : function(datefield) {
 								        datefield.setValue(new Date());
 								    }
 								}
