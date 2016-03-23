@@ -40,7 +40,6 @@ public class ReservationController extends MultiActionController
 	@SuppressWarnings("unchecked")
 	public void reservationList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		
 		response.setContentType("text/json");
 		response.setCharacterEncoding("UTF-8");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();

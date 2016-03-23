@@ -379,27 +379,38 @@ div.citation-notes .citation-note .note { margin-bottom: 5px; }
 	width: 100%;
 }
 
+
+.mealplan table {
+	border-collapse: collapse;
+	text-align: left;
+	width: 100%;
+}
+
 .mealplan {
-	font: normal 12px/150% Verdana, Arial, Helvetica, sans-serif;
+	font: normal 12px/150% Verdana, Helvetica, sans-serif;
 	background: #fff;
 	overflow: hidden;
+	border: 1px solid #FFFFFC;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
 }
 
 .mealplan table td,.datagrid table th {
-	padding: 7px 3px;
+	padding: 5px 5px;
 }
 
 .mealplan table thead th {
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #A65B1A
-		), color-stop(1, #7F4614));
-	background: -moz-linear-gradient(center top, #A65B1A 5%, #7F4614 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#A65B1A',
-		endColorstr='#7F4614');
-	background-color: #A65B1A;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #4F5F6F
+		), color-stop(1, #4F5F6F));
+	background: -moz-linear-gradient(center top, #4F5F6F 5%, #4F5F6F 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4F5F6F',
+		endColorstr='#4F5F6F');
+	background-color: #4F5F6F;
 	color: #FFFFFF;
-	font-size: 14px;
-	font-weight: bold;
-	border-left: 0px solid #BF691E;
+	font-size:  16px;
+	font-weight: normal;
+	padding: 5px 3px;
 }
 
 .mealplan table thead th:first-child {
@@ -407,10 +418,14 @@ div.citation-notes .citation-note .note { margin-bottom: 5px; }
 }
 
 .mealplan table tbody td {
-	color: #7F4614;
+	color: #4F5F6F;
 	font-size: 12px;
-	border-bottom: 1px solid #E1EEF4;
 	font-weight: normal;
+}
+
+.mealplan table tbody .alt td {
+	background: #E1E1E1;
+	color: #4F5F6F;
 }
 
 .mealplan table tbody td:first-child {
@@ -422,8 +437,8 @@ div.citation-notes .citation-note .note { margin-bottom: 5px; }
 }
 
 .mealplan table tfoot td div {
-	border-top: 1px solid #A65B1A;
-	background: #F0E5CC;
+	border-top: 1px solid #FFFFFC;
+	background: #E1E1E1;
 }
 
 .mealplan table tfoot td {
@@ -452,24 +467,24 @@ div.citation-notes .citation-note .note { margin-bottom: 5px; }
 	padding: 2px 8px;
 	margin: 1px;
 	color: #FFFFFF;
-	border: 1px solid #A65B1A;
+	border: 1px solid #999999;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #A65B1A
-		), color-stop(1, #7F4614));
-	background: -moz-linear-gradient(center top, #A65B1A 5%, #7F4614 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#A65B1A',
-		endColorstr='#7F4614');
-	background-color: #A65B1A;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #4F5F6F
+		), color-stop(1, #4F5F6F));
+	background: -moz-linear-gradient(center top, #4F5F6F 5%, #4F5F6F 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4F5F6F',
+		endColorstr='#4F5F6F');
+	background-color: #4F5F6F;
 }
 
 .mealplan table tfoot ul.active,.datagrid table tfoot ul a:hover {
 	text-decoration: none;
-	border-color: #7F4614;
+	border-color: #999697;
 	color: #FFFFFF;
 	background: none;
-	background-color: #A65B1A;
+	background-color: #4F5F6F;
 }
 
 div.dhtmlx_window_active,div.dhx_modal_cover_dv {

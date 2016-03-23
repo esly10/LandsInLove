@@ -12,8 +12,8 @@
 				<dt></dt><dd></dd>	 
 			<dt>Reservation #:</dt>	<dd><c:out value="${reservation.reservation_number}" />		
 				<c:choose>
-				    <c:when test="${reservation.reservation_status == '1'}"> ||  Fit.</c:when>
-				    <c:when test="${reservation.reservation_status == '2'}"> ||  Group.</c:when>    
+				    <c:when test="${reservation.reservation_type == '1'}"> ||  Fit.</c:when>
+				    <c:when test="${reservation.reservation_type == '2'}"> ||  Group.</c:when>    
 				    <c:otherwise> ||  Event.</c:otherwise>
 				</c:choose>
 			</dd>	

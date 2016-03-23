@@ -94,11 +94,85 @@ public class ReportController extends MultiActionController
 				}		
 				break;
 				case 2:{
-									
+					long now = System.currentTimeMillis();
+					Timestamp dateStart = new Timestamp(now);
+					Timestamp dateEnd = new Timestamp(now);
+					Timestamp dateNow = new Timestamp(now);
+					
+					String start = request.getParameter("start");
+					start = start.replace("T", " ");
+					
+					String end = request.getParameter("end");
+					end = end.replace("T", " ");
+					try
+						{
+							dateStart = Timestamp.valueOf(start);
+							dateEnd = Timestamp.valueOf(end);
+						}
+						catch(NumberFormatException nfe){
+							json.addProperty("msg", "Invalid date, please select valid date");
+							response.getOutputStream().print(gson.toJson(json));
+							return null;
+						}
+					DateFormater formaterStart = new DateFormater(dateStart);
+					DateFormater formaterEnd = new DateFormater(dateEnd);
+					DateFormater formaterNow = new DateFormater(dateNow);
+					ArrayList<Reservations> reservations = null;
+					
+					reservations = Reservations.Marketing(dateStart, dateEnd);
+				
+					
+					if (reservations.size()==0){
+							ModelAndView msg =  new ModelAndView("no_result_report","message",
+									"No reservations related on the date indicated: "+ dateStart.toString());
+							return msg;
+						}else{
+							mv =  new ModelAndView("marketing_report");
+							if (reservations != null){
+								mv.addObject("reservations", reservations);
+								mv.addObject("start", formaterStart);
+								mv.addObject("end", formaterEnd);
+								mv.addObject("now", formaterNow);
+							}
+							mv.addObject("user", user);
+							
+						}
 				}		
 				break;
 				case 3:{
+					long now = System.currentTimeMillis();
+					Timestamp dateStart = new Timestamp(now);
 					
+					String date = request.getParameter("start");
+					date = date.replace("T", " ");
+					try
+						{
+							dateStart = Timestamp.valueOf(date);
+						}
+						catch(NumberFormatException nfe){
+							json.addProperty("msg", "Invalid date, please select valid date");
+							response.getOutputStream().print(gson.toJson(json));
+							return null;
+						}
+					DateFormater mydate = new DateFormater(dateStart);
+					ArrayList<Reservations> reservations = null;
+					reservations = Reservations.EventsReport(dateStart);
+					String test = mydate.getFormatdate();
+					
+					if (reservations.size()==0){
+							ModelAndView msg =  new ModelAndView("no_result_report","message",
+									"No reservations related on the date indicated: "+ dateStart.toString());
+							return msg;
+						}else{
+							mv =  new ModelAndView("groups_report");
+							if (reservations != null){
+								mv.addObject("reservations", reservations);
+								mv.addObject("date", mydate);
+							
+							}
+							mv.addObject("user", user);
+							
+						}
 				}		
 				break;
 				case 4:{
@@ -147,7 +221,26 @@ public class ReportController extends MultiActionController
 				}		
 				break;
 				case 7:{
+					long now = System.currentTimeMillis();
+					Timestamp dateStart = new Timestamp(now);
 					
+					DateFormater mydate = new DateFormater(dateStart);
+					ArrayList<Reservations> reservations = null;
+					reservations = Reservations.StatusesUnhandled(dateStart);
+					String test = mydate.getFormatdate();
+					
+					if (reservations.size()==0){
+							ModelAndView msg =  new ModelAndView("no_result_report","message",
+									"No reservations related on the date indicated: "+ dateStart.toString());
+							return msg;
+						}else{
+							mv =  new ModelAndView("statuses_report");
+							if (reservations != null){
+								mv.addObject("reservations", reservations);
+								mv.addObject("date", mydate);
+							}
+							mv.addObject("user", user);
+						}
 				}		
 				break;
 				case 8:{

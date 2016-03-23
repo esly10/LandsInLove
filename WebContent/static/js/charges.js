@@ -32,7 +32,7 @@ Ext.onReady(function(){
 		        remoteSort: true,
 		        fields: [
 		                 /*'ROOM_ID',
-				            'ROOM_NO',
+				            'room_no',
 				            'ROOM_TYPE',
 				            'STATUS',
 				            'LOCATION_X',
@@ -61,34 +61,26 @@ Ext.onReady(function(){
 			            sortable: true
 			        },
 			        columns: [
-			               {header: 'Room', sortable: true, dataIndex: 'room_no', width: 50, 
+			               {header: '', sortable: true, dataIndex: 'room_no', width: 20, 
 					            	renderer : function(value, meta, chargeStore) {
-					            		meta.style = "background-color:#E1E1E1; height:32px; font-size: 16px";
+					            		meta.style = "background-color:#4f5f6f; color: #FFFFFF; height:32px; font-size: 12px; width: 20px; ";
 					            		 if(chargeStore.data.rr_id != "") {
-						            	        meta.style = "background-color:#33cc33; height:32px; color: #FFFFFF; font-size: 16px; font-weight: bold;";
+						            	        meta.style = "background-color:#33cc33; height:32px; color: #FFFFFF; font-size: 12px; font-weight: bold; width: 20px;";
 						            	       
 						            	    }
 					            		 return	 chargeStore.data.room_no;
 					            	}
 			                  },
-				            {header: '', sortable: false, dataIndex: 'room_no', width: 100, 
+				            {header: 'Room Status', sortable: false, dataIndex: 'room_no', width: 110, 
 				            	renderer : function(value, meta, chargeStore) {
-				            		//meta.style = "background-color:#E1E1E1; height:32px;";
+				            		meta.style = "background-color:#E1E1E1; height:32px; width: 110px;";
 				            		if(chargeStore.data.rr_id != "") {
-					            	        //meta.style = "background-color:#33cc33; height:32px; color: #FFFFFF; font-weight: bold;";
+					            	        meta.style = "background-color:#ccff99; height:32px; font-weight: bold; width: 110px;";
 					            	        return "Used";
 					            	    }
 				            		 return "Empty";
 				            }
 			           } 
-			           /*{header: '', sortable: false, dataIndex: 'room_no', width: 50, 
-			            	renderer : function(value, meta, chargeStore) {
-			            		meta.style = "background-color:#E1E1E1; height:32px;";
-			            		 if(chargeStore.data.room_id == 7 || chargeStore.data.room_id == 18) {
-				            	        meta.style = "background-color:#33cc33; height:32px;";
-				            	    }
-			            }
-			           }, {header: 'Room', sortable: true, dataIndex: 'room_no'}*/
 			        ]
 			    });
 			    this.viewConfig = {
@@ -124,7 +116,7 @@ Ext.onReady(function(){
 			    		var record = grid.getStore().getAt(index);
 			    		var tabs = Ext.getCmp('chargetabs');
 
-			    		var chargePanel = tabs.find('id', 'Room-' + record.data.ROOM_ID + ' (' + Ext.getCmp('filter_date') + ')');
+			    		var chargePanel = tabs.find('id', 'Room-' + record.data.room_id + ' (' + Ext.getCmp('filter_date') + ')');
 			    		if(chargePanel.length > 0)
 			    		{
 			    			tabs.setActiveTab(chargePanel[0]);
@@ -276,7 +268,7 @@ Ext.onReady(function(){
 											   icon: Ext.MessageBox.ERROR
 											});
 									   },
-									   params: { charge_id: record.data.ROOM_NO }
+									   params: { charge_id: record.data.room_no }
 									});
 								}
 							});
@@ -354,8 +346,8 @@ Ext.onReady(function(){
 				initComponent: function()
 			    {
 					var config = {
-							id: 'Room-' + this.charge.ROOM_ID + ' (' + this.date.value+ ')',
-							title:'Room- '+ this.charge.ROOM_NO + ' (' + this.date.value+ ')',
+							id: 'Room-' + this.charge.room_id + ' (' + this.date.value+ ')',
+							title:'Room- '+ this.charge.room_id + ' (' + this.date.value+ ')',
 							tabPosition: 'bottom',
 							activeTab: 0,
 							closable: true,

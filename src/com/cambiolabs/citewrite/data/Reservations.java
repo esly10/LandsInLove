@@ -2,6 +2,8 @@ package com.cambiolabs.citewrite.data;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -11,6 +13,7 @@ import com.cambiolabs.citewrite.db.DBFilterList;
 import com.cambiolabs.citewrite.db.DBObject;
 import com.cambiolabs.citewrite.db.UnknownObjectException;
 import com.google.gson.annotations.Expose;
+
 import java.sql.ResultSet;
 
 public class Reservations extends DBObject
@@ -378,6 +381,99 @@ public class Reservations extends DBObject
 		}
 		return reservations;
 	}
+	
+	public static ArrayList<Reservations> EventsReport(Timestamp date){
+		ArrayList<Reservations> reservations = new ArrayList<Reservations>();
+		DBConnection conn = null;
+			try 
+			{
+				conn = new DBConnection();
+				String sql = "SELECT * FROM reservations where ('"+ date +"' <= reservation_check_in and reservation_type = 3) ";
+				if(conn.query(sql))
+				{
+					Reservations resrervation = new Reservations();
+					while(conn.fetch(resrervation))
+					{
+						reservations.add(resrervation);
+						resrervation = new Reservations();
+					}
+				}
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				if(conn != null)
+				{
+					conn.close();
+				}
+			}
+			return reservations;
+		}
+	
+	public static ArrayList<Reservations> Marketing(Timestamp start, Timestamp end){
+		ArrayList<Reservations> reservations = new ArrayList<Reservations>();
+		DBConnection conn = null;
+			try 
+			{
+				conn = new DBConnection();
+				String sql = "SELECT * FROM reservations where '"+ start +"' <= reservation_check_in and '"+ end +"' >= reservation_check_in";
+				if(conn.query(sql))
+				{
+					Reservations resrervation = new Reservations();
+					while(conn.fetch(resrervation))
+					{
+						reservations.add(resrervation);
+						resrervation = new Reservations();
+					}
+				}
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				if(conn != null)
+				{
+					conn.close();
+				}
+			}
+			return reservations;
+		}
+	
+	public static ArrayList<Reservations> StatusesUnhandled(Timestamp date){
+		ArrayList<Reservations> reservations = new ArrayList<Reservations>();
+		DBConnection conn = null;
+			try 
+			{
+				conn = new DBConnection();
+				String sql = "SELECT * FROM reservations ";
+				if(conn.query(sql))
+				{
+					Reservations resrervation = new Reservations();
+					while(conn.fetch(resrervation))
+					{
+						reservations.add(resrervation);
+						resrervation = new Reservations();
+					}
+				}
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				if(conn != null)
+				{
+					conn.close();
+				}
+			}
+			return reservations;
+	}
 
 	public String getRooms() {
 		String roomsResult = "";
@@ -417,6 +513,42 @@ public class Reservations extends DBObject
 			e.printStackTrace();
 		}
 		return null;
+	}
+	public String getAgencyName() {
+		try {
+			Agencies agency = new Agencies (this.reservation_agency_id);
+			return agency.agency_name;
+		} catch (UnknownObjectException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public String getUserName() {
+		try {
+			User user = new User (this.reservation_user_id);
+			return user.username +" ("+user.first_name+" "+user.last_name+")";
+		} catch (UnknownObjectException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String getCheckInFormated() {
+		return getFormatDate(this.reservation_check_in);
+	}
+	public String getCheckOutFormated() {
+		return getFormatDate(this.reservation_check_out);
+	}
+	
+	
+	public String getFormatDate(Timestamp Date) {
+		GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance();
+		cal.setTime(Date); 
+		int dateyear = cal.get(Calendar.YEAR);
+		int dateday = cal.get(Calendar.DAY_OF_MONTH) ; // Note: zero based!
+		int datemonth = cal.get(Calendar.MONTH);
+		String Format =dateday+"/"+datemonth+"/ "+dateyear;
+		return Format;
 	}
 		
 }

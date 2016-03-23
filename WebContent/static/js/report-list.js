@@ -109,13 +109,14 @@ Ext.onReady(function(){
 			    		Ext.getCmp("report_id").setValue(record.data.id);
 			    		Ext.getCmp("report_name").setValue(record.data.Name);
 			    		if(record.data.id== 4 || record.data.id== 7 ){
-			    			Ext.getCmp("filterRegion").collapse();
+			    			Ext.getCmp("filterRegion").expand();
 			    			Ext.getCmp("filter_start").hide();
 				    		Ext.getCmp("filter_end").hide();
 				    		Ext.getCmp("filter_year").hide();
 				    		Ext.getCmp("filter_pay").hide();
 				    		Ext.getCmp("filter_pdf").hide();
-				    		Ext.getCmp("filter_button").hide();				    		
+				    		Ext.getCmp("filter_button").show();
+				    		Ext.getCmp("filter_pdf").hide();
 			    		}else if(record.data.id== 1 || record.data.id== 2 ){
 			    			Ext.getCmp("filterRegion").expand();
 			    			Ext.getCmp("filter_start").show();
