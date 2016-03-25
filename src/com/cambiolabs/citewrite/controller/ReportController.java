@@ -12,7 +12,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -37,7 +39,7 @@ import com.cambiolabs.citewrite.data.Agencies;
 import com.cambiolabs.citewrite.data.Charges;
 import com.cambiolabs.citewrite.data.DateFormater;
 import com.cambiolabs.citewrite.data.Guests;
-
+import com.cambiolabs.citewrite.data.Payments;
 import com.cambiolabs.citewrite.data.ReservationRoom;
 import com.cambiolabs.citewrite.data.Reservations;
 import com.cambiolabs.citewrite.data.Rooms;
@@ -90,7 +92,54 @@ public class ReportController extends MultiActionController
 			int type = Integer.parseInt(request.getParameter("report_id"));
 			switch (type){
 				case 1:{
+					long now = System.currentTimeMillis();
+					Timestamp dateStart = new Timestamp(now);
+					Timestamp dateEnd = new Timestamp(now);
+					Timestamp dateNow = new Timestamp(now);
 					
+					String start = request.getParameter("start");
+					start = start.replace("T", " ");
+					
+					String end = request.getParameter("end");
+					end = end.replace("T", " ");
+					try
+						{
+							dateStart = Timestamp.valueOf(start);
+							dateEnd = Timestamp.valueOf(end);
+						}
+						catch(NumberFormatException nfe){
+							json.addProperty("msg", "Invalid date, please select valid date");
+							response.getOutputStream().print(gson.toJson(json));
+							return null;
+						}
+					DateFormater formaterStart = new DateFormater(dateStart);
+					DateFormater formaterEnd = new DateFormater(dateEnd);
+					Timestamp dateAdd = null;
+					ArrayList<DateFormater> calendar = new ArrayList<DateFormater>();
+					while((formaterStart.datecomplete.before(dateEnd)) || (formaterStart.datecomplete.equals(dateEnd))){
+						calendar.add(formaterStart);
+						dateAdd =formaterStart.getAddDays(formaterStart.datecomplete);
+						formaterStart = new DateFormater(dateAdd);
+					}
+					
+					DateFormater formaterNow = new DateFormater(dateStart);
+					
+					
+					if (calendar.size()==0){
+							ModelAndView msg =  new ModelAndView("no_result_report","message",
+									"No reservations related on the date indicated: "+ dateStart.toString());
+							return msg;
+						}else{
+							mv =  new ModelAndView("expected_report");
+							if (calendar != null){
+								mv.addObject("calendar", calendar);
+								mv.addObject("start", formaterStart);
+								mv.addObject("end", formaterEnd);
+								mv.addObject("now", formaterNow);
+							}
+							mv.addObject("user", user);
+							
+						}
 				}		
 				break;
 				case 2:{
@@ -217,7 +266,85 @@ public class ReportController extends MultiActionController
 				}		
 				break;
 				case 6:{
+					long now = System.currentTimeMillis();
+					Timestamp dateStart = new Timestamp(now);
+					Timestamp dateEnd = new Timestamp(now);
+					Timestamp dateNow = new Timestamp(now);
+					int method = 0;
+					String start = request.getParameter("start");
+					start = start.replace("T", " ");
 					
+					String end = request.getParameter("end");
+					end = end.replace("T", " ");
+					
+					String pay = request.getParameter("type");
+					String password = null;
+					password=request.getParameter("password");
+					if(password == null || !password.equals("1234"))
+					{
+						response.getOutputStream().print("Incorrect Password!");
+						return null;
+					}
+					try
+						{
+							dateStart = Timestamp.valueOf(start);
+							dateEnd = Timestamp.valueOf(end);
+							method = Integer.parseInt(pay);
+						}
+						catch(NumberFormatException nfe){
+							json.addProperty("msg", "Invalid date, please select valid date");
+							response.getOutputStream().print(gson.toJson(json));
+							return null;
+						}
+					
+					DateFormater mydate = new DateFormater(dateNow);
+					DateFormater formaterStart = new DateFormater(dateStart);
+					DateFormater formaterWhile = new DateFormater(dateStart);
+					DateFormater formaterEnd = new DateFormater(dateEnd);
+					Timestamp dateAdd = null;
+					ArrayList<DateFormater> calendar = new ArrayList<DateFormater>();
+					while((formaterWhile.datecomplete.before(dateEnd)) || (formaterStart.datecomplete.equals(dateEnd))){
+						calendar.add(formaterWhile);
+						dateAdd =formaterWhile.getAddMonths(formaterWhile.datecomplete);
+						formaterWhile = new DateFormater(dateAdd);
+					}
+					ArrayList<Payments> payments = null;
+					if (method == 0 || method==6){
+						payments = Payments.getPaymentsAll(dateStart, dateEnd);
+					}else{
+						payments = Payments.getPayments(dateStart, dateEnd, method);
+					}
+					
+						String paymentMethod = "All";
+						
+						switch (method){
+							case 0: paymentMethod = "all";break;
+							case 1: paymentMethod = "Credit Card";break;
+							case 2: paymentMethod = "Transaction";break;
+							case 3: paymentMethod = "Check";break;
+							case 4: paymentMethod = "Cash";break;
+							case 5: paymentMethod = "Other";break;
+							case 6: paymentMethod = "All";break;
+							default: paymentMethod = "All";break;                             
+						}						
+				
+					if (payments.size()==0){
+							ModelAndView msg =  new ModelAndView("no_result_report","message",
+									"No payments related on the date indicated: "+ dateStart.toString());
+							return msg;
+						}else{
+							mv =  new ModelAndView("payments_reports");
+							if (payments != null){
+								mv.addObject("calendar", calendar);
+								mv.addObject("paymentMethod", paymentMethod);
+								mv.addObject("payments", payments);
+								mv.addObject("date", mydate);
+								mv.addObject("start", formaterStart);
+								mv.addObject("end", formaterEnd);
+							}
+							mv.addObject("user", user);
+							
+						}
 				}		
 				break;
 				case 7:{
@@ -244,7 +371,58 @@ public class ReportController extends MultiActionController
 				}		
 				break;
 				case 8:{
+					long now = System.currentTimeMillis();
+					int year = 2000;
+					Timestamp dateEnd = new Timestamp(now);
+					Timestamp dateNow = new Timestamp(now);
 					
+					String yearString = request.getParameter("year");
+					try
+						{
+							year = Integer.parseInt(yearString);
+						}
+						catch(NumberFormatException nfe){
+							json.addProperty("msg", "Invalid year, please select valid date");
+							response.getOutputStream().print(gson.toJson(json));
+							return null;
+						}
+					
+					DateFormater formaterStart = new DateFormater(dateNow);
+					DateFormater formaterNow = new DateFormater(dateNow);
+					Timestamp dateAdd = null;
+					ArrayList<Timestamp> months = new ArrayList<Timestamp>();
+					ArrayList<DateFormater> calendar = new ArrayList<DateFormater>();
+					int totalGuests =0;
+					int totalNights = 0;
+					for (int i=0; i<12; i++){
+						months.add(formaterStart.getYearPerMonth(year, i));
+					
+					}
+					for(int x=0;x<months.size();x++) {
+						formaterStart = new DateFormater(months.get(x));
+						totalGuests += formaterStart.getMonthGuests();
+						totalNights += formaterStart.getMonthNights();
+						calendar.add(formaterStart);
+					}
+						
+					if (months.size()==0){
+							ModelAndView msg =  new ModelAndView("no_result_report","message",
+									"No reservations related on the date indicated: "+ year);
+							return msg;
+						}else{
+							mv =  new ModelAndView("year_report");
+							if (months != null){
+								mv.addObject("calendar", calendar);
+								mv.addObject("months", months);
+								mv.addObject("start", formaterStart);
+								mv.addObject("year", year);
+								mv.addObject("totalGuests", totalGuests);
+								mv.addObject("totalNights", totalNights);
+								mv.addObject("now", formaterNow);
+							}
+							mv.addObject("user", user);
+							
+						}
 				}		
 				break;
 			}

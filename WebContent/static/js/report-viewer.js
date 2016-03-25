@@ -22,7 +22,7 @@ ReportViewerPanel = Ext.extend(Ext.Panel, {
 			    autoLoad : { 	url : _contextPath + '/report/reportList', 
 			    				scripts : true, 
 			    				//params: {report_id: panel.report_id, date: panel.date.value }, 
-			    				params: {report_id: panel.report_id, start: panel.start, end: panel.end, year: panel.year, type: panel.type } },
+			    				params: {report_id: panel.report_id, start: panel.start, end: panel.end, year: panel.year, type: panel.type, password: panel.password} },
 			    buttons:  buttons
 			};
 			Ext.apply(this, Ext.apply(this.initialConfig, config));

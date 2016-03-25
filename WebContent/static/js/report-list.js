@@ -22,9 +22,9 @@ Ext.onReady(function(){
 			
 			var yearStore = new Ext.data.Store({
 				 data: [
-				        [1, "2010"],[2, "2011"],[3, "2012"],[4, "2013"],[5, "2014"],[6, "2015"],[7, "2016"],
-				        [8, "2017"],[9, "2018"],[10, "2019"],[11, "2020"],[12, "2021"],[13, "2022"],[14, "2023"],
-				        [15, "2024"],[16, "2025"],[17, "2026"],[18, "2027"],[19, "2028"],[20, "2029"],[21, "2030"]
+				        [2010, "2010"],[2011, "2011"],[2012, "2012"],[2013, "2013"],[2014, "2014"],[2015, "2015"],[2016, "2016"],
+				        [2017, "2017"],[2018, "2018"],[2019, "2019"],[2020, "2020"],[2021, "2021"],[2022, "2022"],[2023, "2023"],
+				        [2024, "2024"],[2025, "2025"],[2026, "2026"],[2027, "2027"],[2028, "2028"],[2029, "2029"],[2030, "2030"]
 				        ],
 				reader: new Ext.data.ArrayReader( { id: 'id' },	['id',  'Name',]) 
 			}) ;
@@ -117,6 +117,7 @@ Ext.onReady(function(){
 				    		Ext.getCmp("filter_pdf").hide();
 				    		Ext.getCmp("filter_button").show();
 				    		Ext.getCmp("filter_pdf").hide();
+				    		Ext.getCmp("filter_password").hide();				    		
 			    		}else if(record.data.id== 1 || record.data.id== 2 ){
 			    			Ext.getCmp("filterRegion").expand();
 			    			Ext.getCmp("filter_start").show();
@@ -125,6 +126,7 @@ Ext.onReady(function(){
 				    		Ext.getCmp("filter_pay").hide();
 				    		Ext.getCmp("filter_button").show();
 				    		Ext.getCmp("filter_pdf").hide();
+				    		Ext.getCmp("filter_password").hide();
 			    		}else if(record.data.id== 3 || record.data.id== 5){
 			    			Ext.getCmp("filterRegion").expand();
 			    			Ext.getCmp("filter_start").show();
@@ -133,14 +135,18 @@ Ext.onReady(function(){
 				    		Ext.getCmp("filter_pay").hide();
 				    		Ext.getCmp("filter_button").show();
 				    		Ext.getCmp("filter_pdf").hide();
+				    		Ext.getCmp("filter_password").hide();
 			    		}if(record.data.id== 6){
 			    			Ext.getCmp("filterRegion").expand();
 			    			Ext.getCmp("filter_start").show();
 				    		Ext.getCmp("filter_end").show();
 				    		Ext.getCmp("filter_year").hide();
 				    		Ext.getCmp("filter_pay").show();
+				    		Ext.getCmp("filter_pay").setValue(6);
 				    		Ext.getCmp("filter_button").show();
 				    		Ext.getCmp("filter_pdf").hide();
+				    		Ext.getCmp("filter_password").show();
+				    		Ext.getCmp("filter_password").setValue("");
 			    		}else if(record.data.id== 8){
 			    			Ext.getCmp("filterRegion").expand();
 			    			Ext.getCmp("filter_start").hide();
@@ -149,6 +155,7 @@ Ext.onReady(function(){
 				    		Ext.getCmp("filter_pay").hide();
 				    		Ext.getCmp("filter_button").show();
 				    		Ext.getCmp("filter_pdf").hide();
+				    		Ext.getCmp("filter_password").hide();
 			    		}
 			    		
 			    	}
@@ -252,6 +259,13 @@ Ext.onReady(function(){
 						            	allowBlank: true,
 						                forceSelection: false
 								},{
+									xtype: 'textfield',
+									id: 'filter_password',
+									name: 'filter_password',								
+									fieldLabel: 'Password', 
+									anchor:'90%',
+									inputType: 'password'
+								},{
 									xtype: 'button',
                             		text: 'Create Report',
                             		id: 'filter_button',
@@ -270,6 +284,7 @@ Ext.onReady(function(){
 	            			            	var end = Ext.getCmp('filter_end').getValue();
 	            			            	var year = Ext.getCmp('filter_year').getValue();
 	            			            	var type = Ext.getCmp('filter_pay').getValue();
+	            			            	var password = Ext.getCmp('filter_password').getValue();
 	            				    		var tabs = Ext.getCmp('reporttabs');
 	
 	            				    		var reportPanel = tabs.find('id', 'Report-' + report_name);
@@ -286,6 +301,7 @@ Ext.onReady(function(){
 	            				    											end: end, 
 	            				    											year: year, 
 	            				    											type: type,
+	            				    											password: password
 	            				    											});
 	            								tabs.add(reportPanel);
 	            								tabs.setActiveTab(reportPanel.id);
@@ -310,7 +326,7 @@ Ext.onReady(function(){
             			            	var end = Ext.getCmp('filter_end').getValue();
             			            	var year = Ext.getCmp('filter_year').getValue();
             			            	var type = Ext.getCmp('filter_pay').getValue();
-            				    		            			    			
+            			            	var password = Ext.getCmp('filter_password').getValue(); 			
             			    			var body = Ext.getBody();
             			    			var frame = Ext.get('hiddenform-iframe');
             			    			if(frame != undefined)
@@ -325,7 +341,7 @@ Ext.onReady(function(){
             			    		        id: 'hiddenform-iframe',
             			    		        name: 'hidden-iframe',
             			    		        src: _contextPath + "/report/exportPDF?report_id="+ id + "&report_name=" + report_name
-            			    		        + "&start=" + start + "&end=" + end + "&year=" + year  + "&type=" + type
+            			    		        + "&start=" + start + "&end=" + end + "&year=" + year  + "&type=" + type+ "&password=" + password
             			    		      });    		
             			    		
             			            }
@@ -359,7 +375,7 @@ Ext.onReady(function(){
 							enableTabScroll: true,
 						    items: [
 						            new ReportViewerPanel({report_id: this.report_id, start: this.start, 
-						            						end: this.end, year: this.year, type: this.type})						           
+						            						end: this.end, year: this.year, type: this.type, password: this.password})						           
 								   ]
 						        };
 					

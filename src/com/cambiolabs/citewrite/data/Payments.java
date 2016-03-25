@@ -1,7 +1,11 @@
 package com.cambiolabs.citewrite.data;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
+import com.cambiolabs.citewrite.db.DBConnection;
 import com.cambiolabs.citewrite.db.DBObject;
 import com.cambiolabs.citewrite.db.UnknownObjectException;
 import com.google.gson.annotations.Expose;
@@ -117,9 +121,148 @@ public class Payments extends DBObject
 	public void setReservation_id(int reservation_id) {
 		this.reservation_id = reservation_id;
 	}
+	public String getReceiveDateFormated() {
+		return getFormatDate(this.receive_date);
+	}
+	public String getGuestName() {
+		try {
+			Reservations reservation = new Reservations (this.reservation_id);
+			Guests guests = new Guests (reservation.reservation_guest_id);	
+			return guests.name;
+		} catch (UnknownObjectException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public String getAgencyName() {
+		try {
+			Reservations reservation = new Reservations (this.reservation_id);
+			Agencies agency = new Agencies (reservation.reservation_agency_id);
+			return agency.agency_name;
+		} catch (UnknownObjectException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public String getReservationNumber() {
+		try {
+			Reservations reservation = new Reservations (this.reservation_id);
+			return reservation.reservation_number;
+		} catch (UnknownObjectException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
+	public static ArrayList<Payments> getPayments(Timestamp start, Timestamp end, int method){
+		ArrayList<Payments> payments = new ArrayList<Payments>();
+		DBConnection conn = null;
+			try 
+			{
+				conn = new DBConnection();
+				String sql = "SELECT * FROM payments where '"+ start +"' <= receive_date and '"+ end +"' >= receive_date and payment_method = "+method;
+				
+				if(conn.query(sql))
+				{
+					Payments paid = new Payments();
+					while(conn.fetch(paid))
+					{
+						payments.add(paid);
+						paid = new Payments();
+					}
+				}
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				if(conn != null)
+				{
+					conn.close();
+				}
+			}
+			return payments;
+		}
 	
+	public static ArrayList<Payments> getPaymentsAll(Timestamp start, Timestamp end){
+		ArrayList<Payments> payments = new ArrayList<Payments>();
+		DBConnection conn = null;
+			try 
+			{
+				conn = new DBConnection();
+				String sql = "SELECT * FROM payments where '"+ start +"' <= receive_date and '"+ end +"' >= receive_date";
+				
+				if(conn.query(sql))
+				{
+					Payments paid = new Payments();
+					while(conn.fetch(paid))
+					{
+						payments.add(paid);
+						paid = new Payments();
+					}
+				}
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				if(conn != null)
+				{
+					conn.close();
+				}
+			}
+			return payments;
+		}
 	
-
+	public String getMonth() {
+		GregorianCalendar calendar = (GregorianCalendar) Calendar.getInstance();
+		calendar.setTime(this.receive_date); 
 		
+		int month = calendar.get(Calendar.MONTH);
+		
+		switch (month){
+			case 0: return "January";
+			case 1: return "February";
+			case 2: return "March";
+			case 3: return "April";
+			case 4: return "May";
+			case 5: return "June";
+			case 6: return "July";
+			case 7: return "August";
+			case 8: return "September";
+			case 9: return "October";
+			case 10: return "November";
+			case 11: return "December";
+		}
+		return null;
+	}	
+	public int getMonthNumber() {
+		GregorianCalendar calendar = (GregorianCalendar) Calendar.getInstance();
+		calendar.setTime(this.receive_date); 
+		
+		int month = calendar.get(Calendar.MONTH);
+		
+		return month-1;
+	}
+	public int getYear() {
+		GregorianCalendar calendar = (GregorianCalendar) Calendar.getInstance();
+		calendar.setTime(this.receive_date); 
+		
+		int year = calendar.get(Calendar.YEAR);
+		
+		return year;
+	}
+	public String getFormatDate(Timestamp Date) {
+		GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance();
+		cal.setTime(Date); 
+		int dateyear = cal.get(Calendar.YEAR);
+		int dateday = cal.get(Calendar.DAY_OF_MONTH) ; // Note: zero based!
+		int datemonth = cal.get(Calendar.MONTH);
+		String Format =dateday+"/"+datemonth+"/ "+dateyear;
+		return Format;
+	}
 }

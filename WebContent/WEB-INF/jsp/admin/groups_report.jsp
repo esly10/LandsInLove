@@ -37,10 +37,10 @@
 						
 						<dt><c:out value="${item.checkInFormated}" /></dt> <dd></dd>
 						<dt><c:choose>
-						    <c:when test="${reservation.reservation_status == '1'}">Confirmed.</c:when>
-						    <c:when test="${reservation.reservation_status == '2'}">Canceled.</c:when>  
-						    <c:when test="${reservation.reservation_status == '3'}">Check in.</c:when>  
-						    <c:when test="${reservation.reservation_status == '4'}">Check out.</c:when>  
+						    <c:when test="${item.reservation_status == '1'}">Confirmed.</c:when>
+						    <c:when test="${item.reservation_status == '2'}">Canceled.</c:when>  
+						    <c:when test="${item.reservation_status == '3'}">Check in.</c:when>  
+						    <c:when test="${item.reservation_status == '4'}">Check out.</c:when>  
 						    <c:otherwise>No show.</c:otherwise>
 						</c:choose></dt>
 						<dd><c:choose>
@@ -53,7 +53,7 @@
 						<dt>Agency:</dt><dd><c:out value="${item.agencyName}"/></dd>
 						<dt>Attended:</dt><dd><c:out value="${item.userName}" /></dd>
 						<dt></dt><dd></dd>
-						<dt></dt><dd></dd>
+						
 					</dl>
 				</div>
 				
@@ -67,7 +67,7 @@
 						<dt>Guides:</dt><dd><c:out value="${item.reservation_guides}" /></dd>
 						<dt style="text-decoration: underline;">Total:</dt><dd style="text-decoration: underline;"><c:out value="${item.reservation_rooms_occupancy}" /> </dd>
 						<dt></dt><dd></dd>
-						<dt></dt><dd></dd>
+						
 					</dl>
 				</div>
 				<div style="width: 33%; float: right;">
@@ -80,7 +80,7 @@
 						<dt>Service:</dt><dd><c:out value="${item.reservation_service_notes}"/></dd>
 						<dt>Internal:</ cvdt><dd><c:out value="${item.reservation_internal_notes}"/></dd>	
 						<dt></dt><dd></dd>
-						<dt></dt><dd></dd>
+						
 					</dl>	
 				</div>
 				</div>

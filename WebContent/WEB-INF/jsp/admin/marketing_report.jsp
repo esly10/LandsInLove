@@ -57,7 +57,7 @@
 						<dt>Transport:</dt><dd><c:out value="${item.reservation_transport_notes}"/></dd>		
 						<dt>Service:</dt><dd><c:out value="${item.reservation_service_notes}"/></dd>
 						<dt>Internal:</dt><dd><c:out value="${item.reservation_internal_notes}"/></dd>	
-						
+						<dt></dt><dd></dd>
 					</dl>	
 				</div>
 				</div>
