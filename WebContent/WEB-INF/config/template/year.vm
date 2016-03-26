@@ -126,6 +126,10 @@
 			background: none;
 			background-color: #4F5F6F;
 		}
+		dl {}
+		dl.list dt { clear: left; float: left; width: 130px; font-weight: bold;  height: 15px; line-height: 15px; margin-bottom: 2px; white-space: nowrap; color: #0D324C; }
+		dl.list dd { margin-left:105px; /*width: 300px;*/ overflow: hidden; height: 15px; line-height: 15px; margin-bottom: 10px; color: #4F5F6F;}
+		dl.list dt.spacer { height: 10px; line-height:0px; width: 275px; margin-bottom: 0px; float: none; }
 		
 		div.dhtmlx_window_active,div.dhx_modal_cover_dv {
 			position: fixed !important;
@@ -137,43 +141,44 @@
 	<div style="width: 100%; float: left;">
 		<div style="width: 100%; float: left;">
 			<dl class="list" style="font-size:14px;">
-				<dt style="background:#FFFFFF; color:#802CD8; text-align:center; padding:5px; font-size:24px;">Meal Plan Report</dt>	
-				<dd style="background:#FFFFFF; color:#802CD8; text-align:center; padding:5px; font-size:24px;"></dd> 	
-				<dt style="background:#FFFFFF; color:#CA337E; text-align:left; padding:5px; font-size:14px;">${date.formatdate}</dt>	
-				<dd style="background:#FFFFFF; color:#CA337E; text-align:center; padding:5px; font-size:14px;"></dd> 	
-				<dt></dt><dd></dd>	
+				<dt style="background:#FFFFFF; color:#fd8838; text-align:center; padding:5px; font-size:24px;">Occupancy Month Report</dt>	
+				<dd style="background:#FFFFFF; color:#fd8838; text-align:center; padding:5px; font-size:24px;"></dd> 	
+				<dt style="background:#FFFFFF; color:#cc9900; text-align:left; padding:5px; font-size:14px;">${now.formatdate}</dt>	
+				<dd style="background:#FFFFFF; color:#cc9900; text-align:center; padding:5px; font-size:14px;"></dd> 	
+				<hr>
+				<dt style="background:#fd8838; color:#FFFFFF; text-align:left; padding:2px; font-size:18px;">Year: ${year}</dt>	
+				<dd style="background:#fd8838; color:#FFFFFF; text-align:center; padding:2px; font-size:20px;"></dd> 	
 			</dl>
 		</div>	
 	</div>	
-		<div class="mealplan" style="width: 100%; float: left;">
-		 <hr>  
-		<table>
+	<div class="mealplan" style="width: 100%; float: left;">
+	<table>
 			  <thead>
 				  <tr>
-				    <th>Room No</th><th>Guest Name</th><th>Qty</th><th>Plan</th><th style="text-align:center;">Breakfast</th> <th style="text-align:center;">Launch</th><th style="text-align:center;">Dinner</th>
+				    <th>Month</th><th>Nights</th><th>Guests</th>
 				  </tr>
 			  </thead>
-			 #foreach($item in ${reservations})
 			
-			 <tr> 
-			 		<td>${item.rooms}</td>
-			 		<td>${item.guestName}</td>
-					<td>${item.reservation_rooms_occupancy}</td> 
-					<td>${item.mealPlanName}</td>
-					<td style="text-align:center;"><input type="checkbox"></td>
-					<td style="text-align:center;"><input type="checkbox"></td>
-					<td style="text-align:center;"><input type="checkbox"></td>								
+			 #foreach($item in ${calendar})	
+			 <tr>
+			 		<td>${item.month}</td>
+			 		<td>${item.monthNights}</td>
+					<td>${item.monthGuests}</td> 					
 			 </tr>		
 			#end
+			<tr>
+			 							
+			 </tr>
 			<tfoot>
-				<tr>
-					<td colspan="7"><div id="paging">
-							
+				<tr style="text-width: bold; font-size:14px; background:#E1E1E1;" >
+					<td>TOTAL</td>
+			 		<td>${totalNights}</td>
+					<td>${totalGuests}</td> 
 				</tr>
 			</tfoot>
 			<tbody></tbody>
 		</table>
 		 <hr>  
-	</div>		
+	</div>	
 </body>
 </html>

@@ -134,46 +134,76 @@
 
 </head>
 <body onload="myFunction();">
-	<div style="width: 100%; float: left;">
+		<div style="width: 100%; float: left;">
 		<div style="width: 100%; float: left;">
 			<dl class="list" style="font-size:14px;">
-				<dt style="background:#FFFFFF; color:#802CD8; text-align:center; padding:5px; font-size:24px;">Meal Plan Report</dt>	
-				<dd style="background:#FFFFFF; color:#802CD8; text-align:center; padding:5px; font-size:24px;"></dd> 	
-				<dt style="background:#FFFFFF; color:#CA337E; text-align:left; padding:5px; font-size:14px;">${date.formatdate}</dt>	
-				<dd style="background:#FFFFFF; color:#CA337E; text-align:center; padding:5px; font-size:14px;"></dd> 	
+				<dt style="background:#FFFFFF; color:#49e34c; text-align:center; padding:5px; font-size:24px;">Group Events Report</dt>	
+				<dd style="background:#FFFFFF; color:#49e34c; text-align:center; padding:5px; font-size:24px;"></dd> 	
+				<dt style="background:#FFFFFF; color:#f4dc49; text-align:left; padding:5px; font-size:14px;">${date.formatdate} </dt>	
+				<dd style="background:#FFFFFF; color:#f4dc49; text-align:center; padding:5px; font-size:14px;"></dd> 	
 				<dt></dt><dd></dd>	
+				<dt style="background:#4f5f6f; color:#FFFFFF; text-align:center; padding:5px; font-size:14px;">Next one day tours since:</dt>	
+				<dd style="background:#4f5f6f; color:#FFFFFF; text-align:center; padding:5px; font-size:14px;">${date.formatdate}</dd> 	
 			</dl>
 		</div>	
 	</div>	
-		<div class="mealplan" style="width: 100%; float: left;">
-		 <hr>  
-		<table>
-			  <thead>
-				  <tr>
-				    <th>Room No</th><th>Guest Name</th><th>Qty</th><th>Plan</th><th style="text-align:center;">Breakfast</th> <th style="text-align:center;">Launch</th><th style="text-align:center;">Dinner</th>
-				  </tr>
-			  </thead>
-			 #foreach($item in ${reservations})
-			
-			 <tr> 
-			 		<td>${item.rooms}</td>
-			 		<td>${item.guestName}</td>
-					<td>${item.reservation_rooms_occupancy}</td> 
-					<td>${item.mealPlanName}</td>
-					<td style="text-align:center;"><input type="checkbox"></td>
-					<td style="text-align:center;"><input type="checkbox"></td>
-					<td style="text-align:center;"><input type="checkbox"></td>								
-			 </tr>		
+	
+	<div>	
+	
+	<hr size="2" color="#4f5f6f">
+		
+		 #foreach($item in ${reservations})
+		<div style="width: 100%; float: left;">
+		
+				<div style="width: 33%; float: left;">
+					<dl class="list"; style="font-size:14px;">
+						<dt style="background:#FFFFFF; color:#00cc00; text-align:left; padding:2px; font-size:18px;">
+						${reservation.typeName}</dt>
+						<dd style="background:#FFFFFF; color:#00cc00; text-align:left; padding:2px; font-size:18px;"></dd>	
+						<hr style="color:#00cc00;"/>
+						<dt></dt><dd></dd>	
+						<dt>${item.checkInFormated}</dt> <dd></dd>
+						
+						<dt>${reservation.statusName}</dt>
+						<dd>${item.mealPlanName}</dd>
+						<dt>Agency:</dt><dd>${item.agencyName}</dd>
+						<dt>Attended:</dt><dd>${item.userName}</dd>
+						<dt></dt><dd></dd>
+						
+					</dl>
+				</div>
+				
+				<div style="width: 34%; float: left;">
+					<dl class="list"; style="font-size:14px;">
+						<dt style="background:#FFFFFF; color:#00cc00; text-align:left; padding:2px; font-size:18px;">${item.guestName}</dt><dd style="background:#FFFFFF; color:#00cc00; text-align:left; padding:2px; font-size:18px;"></dd>
+						<hr>
+						<dt></dt><dd></dd>	
+						<dt>Adults:</dt><dd>${item.reservation_adults}</dd>
+						<dt>Children:</dt><dd>${item.reservation_children}</dd>
+						<dt>Guides:</dt><dd>${item.reservation_guides}</dd>
+						<dt style="text-decoration: underline;">Total:</dt><dd style="text-decoration: underline;">${item.reservation_rooms_occupancy} </dd>
+						<dt></dt><dd></dd>
+						
+					</dl>
+				</div>
+				<div style="width: 33%; float: right;">
+					<dl class="list"; style="font-size:14px;">
+					<dt style="background:#FFFFFF; color:#00cc00; text-align:left; padding:2px; font-size:18px;"></dt><dd style="background:#FFFFFF; color:#e6b800; text-align:right; padding:2px; font-size:18px;">${item.reservation_number}</dd>
+					<hr>
+					<dt></dt><dd></dd>	
+						<dt>Notes</dt><dd></dd>
+						<dt>Transport:</dt><dd>${item.reservation_transport_notes}</dd>		
+						<dt>Service:</dt><dd>${item.reservation_service_notes}</dd>
+						<dt>Internal:</ cvdt><dd>${item.reservation_internal_notes}</dd>	
+						<dt></dt><dd></dd>
+						
+					</dl>	
+				</div>
+				</div>
+				
+				<hr size="2" color="#4f5f6f">
+				
 			#end
-			<tfoot>
-				<tr>
-					<td colspan="7"><div id="paging">
-							
-				</tr>
-			</tfoot>
-			<tbody></tbody>
-		</table>
-		 <hr>  
-	</div>		
+		</div>	
 </body>
 </html>

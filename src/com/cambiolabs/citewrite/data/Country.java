@@ -13,7 +13,6 @@ public class Country  extends DBObject
 	@Expose public String country_code = null;
 	@Expose public String country_name = null;
 		
-	private static final String UTF_8 = "UTF-8";
 	
 	public Country() throws UnknownObjectException
 	{

@@ -172,8 +172,14 @@ public class PaymentsController extends MultiActionController
 				payment.setPayment_notes(request.getParameter("payment_notes"));
 				payment.setAmount(Float.parseFloat(request.getParameter("amount")));
 				payment.setTransaction_no(Integer.parseInt(request.getParameter("transaction_no")));
-				payment.setPayment_method(request.getParameter("payment_method"));
+				String method =request.getParameter("payment_method");
 		
+				try{
+					if(method!= "" && method.length()>0){
+						 payment.setPayment_method(Integer.parseInt(method));
+					}
+				}catch(NumberFormatException nfe){}	
+				
 			if(!payment.commit())
 			{
 				response.getWriter().print("{success: false, msg: 'Error saving Payment information.'}");

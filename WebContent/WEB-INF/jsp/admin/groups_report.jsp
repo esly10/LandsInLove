@@ -27,29 +27,14 @@
 		
 				<div style="width: 33%; float: left;">
 					<dl class="list"; style="font-size:14px;">
-						<dt style="background:#FFFFFF; color:#00cc00; text-align:left; padding:2px; font-size:18px;"><c:choose>
-							    <c:when test="${item.reservation_type == '1'}">  Fit.</c:when>
-							    <c:when test="${item.reservation_type == '2'}">  Group.</c:when>    
-							    <c:otherwise> Event.</c:otherwise>
-							</c:choose></dt><dd style="background:#FFFFFF; color:#00cc00; text-align:left; padding:2px; font-size:18px;"></dd>	
+						<dt style="background:#FFFFFF; color:#00cc00; text-align:left; padding:2px; font-size:18px;"><c:out value="${item.typeName}" />
+						</dt><dd style="background:#FFFFFF; color:#00cc00; text-align:left; padding:2px; font-size:18px;"></dd>	
 						<hr style="color:#00cc00;"/>
 						<dt></dt><dd></dd>	
 						
 						<dt><c:out value="${item.checkInFormated}" /></dt> <dd></dd>
-						<dt><c:choose>
-						    <c:when test="${item.reservation_status == '1'}">Confirmed.</c:when>
-						    <c:when test="${item.reservation_status == '2'}">Canceled.</c:when>  
-						    <c:when test="${item.reservation_status == '3'}">Check in.</c:when>  
-						    <c:when test="${item.reservation_status == '4'}">Check out.</c:when>  
-						    <c:otherwise>No show.</c:otherwise>
-						</c:choose></dt>
-						<dd><c:choose>
-						    <c:when test="${item.reservation_meal_plan == '1'}">Breakfast.</c:when>
-						    <c:when test="${item.reservation_meal_plan == '2'}">Half Board.</c:when>  
-						    <c:when test="${item.reservation_meal_plan == '3'}">Special Full Board.</c:when>  
-						    <c:when test="${item.reservation_meal_plan == '4'}">None.</c:when>  
-						    <c:otherwise>No show.</c:otherwise>
-							</c:choose></dd>
+						<dt><c:out value="${reservation.statusName}" /></dt>
+						<dd><c:out value="${item.mealPlanName}" /></dd>
 						<dt>Agency:</dt><dd><c:out value="${item.agencyName}"/></dd>
 						<dt>Attended:</dt><dd><c:out value="${item.userName}" /></dd>
 						<dt></dt><dd></dd>

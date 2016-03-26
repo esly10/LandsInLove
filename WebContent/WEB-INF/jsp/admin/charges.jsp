@@ -10,30 +10,10 @@
 				<dt style="background:#00BBFF; color:#FFFFFF; text-align:center; padding:5px; font-size:14px;">Reservation Info:</dt>	
 				<dd style="background:#00BBFF; color:#FFFFFF; text-align:center; padding:5px; font-size:14px;"></dd> 	
 				<dt></dt><dd></dd>	 
-			<dt>Reservation #:</dt>	<dd><c:out value="${reservation.reservation_number}" />		
-				<c:choose>
-				    <c:when test="${reservation.reservation_type == '1'}"> ||  Fit.</c:when>
-				    <c:when test="${reservation.reservation_type == '2'}"> ||  Group.</c:when>    
-				    <c:otherwise> ||  Event.</c:otherwise>
-				</c:choose>
-			</dd>	
-			<dt>Room #:</dt><dd><c:out value="${room.ROOM_NO}" />
-				<c:choose>
-				    <c:when test="${room.ROOM_TYPE == '1'}"> ||  Double.</c:when>
-				    <c:when test="${room.ROOM_TYPE == '2'}"> ||  Single.</c:when>    
-				    <c:when test="${room.ROOM_TYPE == '3'}"> ||  Superior.</c:when>        
-				    <c:otherwise>Family Room.</c:otherwise>
-				</c:choose>
+			<dt>Reservation #:</dt>	<dd><c:out value="${reservation.reservation_number}" />	- <c:out value="${item.typeName}" /></dd>	
+			<dt>Room #:</dt><dd><c:out value="${room.ROOM_NO}" />-	<c:out value="${room.typeName}" />
 				</dd>
-				<dt>Status:</dt><dd>
-					<c:choose>
-					    <c:when test="${reservation.reservation_status == '1'}">Confirmed.</c:when>
-					    <c:when test="${reservation.reservation_status == '2'}">Canceled.</c:when>  
-					    <c:when test="${reservation.reservation_status == '3'}">Check in.</c:when>  
-					    <c:when test="${reservation.reservation_status == '4'}">Check out.</c:when>  
-					    <c:otherwise>No show.</c:otherwise>
-					</c:choose>
-				</dd>
+				<dt>Status:</dt><dd><c:out value="${reservation.statusName}" /></dd>
 			</dl>
 		</div>
 		
@@ -46,13 +26,7 @@
 				<dt>Check out:</dt><dd><c:out value="${reservation.reservation_check_out}"/> (<c:out value="${reservation.reservation_nights}" /> Nights)</dd>
 				<dt>Occupancy:</dt><dd><c:out value="${reservation.reservation_adults}" /> ( <c:out value="${reservation.reservation_adults}"/> Adults, 
 				<c:out value="${reservation.reservation_children}"/> Children, <c:out value="${reservation.reservation_guides}"/> Guides.)</dd>
-				<dt>Meal Plan:</dt><dd><c:choose>
-					    <c:when test="${reservation.reservation_meal_plan == '1'}">Breakfast.</c:when>
-					    <c:when test="${reservation.reservation_meal_plan == '2'}">Half Board.</c:when>  
-					    <c:when test="${reservation.reservation_meal_plan == '3'}">Special Full Board.</c:when>  
-					    <c:when test="${reservation.reservation_meal_plan == '4'}">None.</c:when>  
-					    <c:otherwise>No show.</c:otherwise>
-					</c:choose></dd>
+				<dt>Meal Plan:</dt><dd><c:out value="${item.mealPlanName}" /></dd>
 				<dt></dt><dd></dd>
 			</dl>
 		</div>

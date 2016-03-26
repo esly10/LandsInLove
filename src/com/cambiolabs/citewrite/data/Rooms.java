@@ -1,6 +1,7 @@
 package com.cambiolabs.citewrite.data; // FIXIT change landsinlove path
 
 import java.util.ArrayList;
+
 import com.cambiolabs.citewrite.db.DBConnection;
 import com.cambiolabs.citewrite.db.DBObject;
 import com.cambiolabs.citewrite.db.UnknownObjectException;
@@ -142,6 +143,14 @@ public class Rooms extends DBObject
 		ROOM_ID = rOOM_ID;
 	}
 
-	
+	public String getTypeName() {
+		try {
+			RoomType type = new RoomType (this.ROOM_TYPE);
+			return type.getRoom_type_description();
+		} catch (UnknownObjectException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }

@@ -373,7 +373,8 @@ div.citation-notes .citation-note .note { margin-bottom: 5px; }
 }
 .tableCharge tr:first-child td:last-child{
 	border-width:0px 0px 1px 1px;
-}.mealplan table {
+}
+.mealplan table {
 	border-collapse: collapse;
 	text-align: left;
 	width: 100%;

@@ -533,6 +533,36 @@ public class Reservations extends DBObject
 		return null;
 	}
 	
+	public String getStatusName() {
+		try {
+			ReservationStatus status = new ReservationStatus (this.reservation_status);
+			return status.getReservation_status_description();
+		} catch (UnknownObjectException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String getMealPlanName() {
+		try {
+			MealPlan plan = new MealPlan (this.reservation_meal_plan);
+			return plan.getMeal_plan_description();
+		} catch (UnknownObjectException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String getTypeName() {
+		try {
+			ReservationType type = new ReservationType (this.reservation_type);
+			return type.getReservation_type_description();
+		} catch (UnknownObjectException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public String getCheckInFormated() {
 		return getFormatDate(this.reservation_check_in);
 	}

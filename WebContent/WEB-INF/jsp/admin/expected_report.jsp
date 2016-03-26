@@ -29,10 +29,10 @@
 						<dd style="background:#E1E1E1; color:#f0359d; text-align:center; padding:5px; font-size:14px;"></dd> 
 						<hr>	
 						<dt style="text-decoration: underline;">Hotel Guest:</dt><dd style="text-decoration: underline;"></dd>
-						<dt>Morning:</dt><dd><c:out value="${item.morningOccupancy}" />&nbsp&nbsp&nbsp&nbsp  <c:out value="${item.morningRooms}" /></dd>
-						<dt>Check-Outs:</dt><dd><c:out value="${item.checkoutsRes}" /> &nbsp&nbsp&nbsp&nbsp  <c:out value="${item.checkoutsRooms}" /></dd>
-						<dt>Check-Ins:</dt><dd><c:out value="${item.checkinsRes}" /> &nbsp&nbsp&nbsp&nbsp  <c:out value="${item.checkinsRooms}" /></dd>
-						<dt>Evening:</dt><dd><c:out value="${item.eveningOccupancy}" /> &nbsp&nbsp&nbsp&nbsp  <c:out value="${item.eveningRooms}" /></dd>
+						<dt>Morning:</dt><dd><c:out value="${item.morningOccupancy}" />  <c:out value="${item.morningRooms}" /></dd>
+						<dt>Check-Outs:</dt><dd><c:out value="${item.checkoutsRes}" />  <c:out value="${item.checkoutsRooms}" /></dd>
+						<dt>Check-Ins:</dt><dd><c:out value="${item.checkinsRes}" />   <c:out value="${item.checkinsRooms}" /></dd>
+						<dt>Evening:</dt><dd><c:out value="${item.eveningOccupancy}" />  <c:out value="${item.eveningRooms}" /></dd>
 						
 						<dt></dt><dd></dd>
 					</dl>

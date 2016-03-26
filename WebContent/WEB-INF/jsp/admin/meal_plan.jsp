@@ -29,13 +29,7 @@
 			 		<td><c:out value="${item.rooms}" /></td>
 			 		<td><c:out value="${item.guestName}" /></td>
 					<td><c:out value="${item.reservation_rooms_occupancy}" /></td> 
-					<td><c:choose>
-					    <c:when test="${item.reservation_meal_plan == '1'}">Breakfast.</c:when>
-					    <c:when test="${item.reservation_meal_plan == '2'}">Half Board.</c:when>  
-					    <c:when test="${item.reservation_meal_plan == '3'}">Special Full Board.</c:when>  
-					    <c:when test="${item.reservation_meal_plan == '4'}">None.</c:when>  
-					    <c:otherwise>No show.</c:otherwise>
-					</c:choose></td>
+					<td><c:out value="${item.mealPlanName}" /></td>
 					<td style="text-align:center;"><input type="checkbox"></td>
 					<td style="text-align:center;"><input type="checkbox"></td>
 					<td style="text-align:center;"><input type="checkbox"></td>								

@@ -16,7 +16,7 @@ public class Payments extends DBObject
 	@Expose public int payment_id = 0;
 	@Expose public int reservation_id = 0;	
 	@Expose public Timestamp payment_date = null;	
-	@Expose public String payment_method = null;
+	@Expose public int payment_method = 0;
 	@Expose public Timestamp receive_date = null;
 	@Expose public int transaction_no = 0;
 	@Expose public String back_account = null;
@@ -58,11 +58,11 @@ public class Payments extends DBObject
 		this.payment_date = payment_date;
 	}
 
-	public String getPayment_method() {
+	public int getPayment_method() {
 		return payment_method;
 	}
 
-	public void setPayment_method(String payment_method) {
+	public void setPayment_method(int payment_method) {
 		this.payment_method = payment_method;
 	}
 
@@ -148,6 +148,15 @@ public class Payments extends DBObject
 		try {
 			Reservations reservation = new Reservations (this.reservation_id);
 			return reservation.reservation_number;
+		} catch (UnknownObjectException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public String getMethodName() {
+		try {
+			PaymentMethod method = new PaymentMethod (this.payment_method);
+			return method.getPayment_method_description();
 		} catch (UnknownObjectException e) {
 			e.printStackTrace();
 		}

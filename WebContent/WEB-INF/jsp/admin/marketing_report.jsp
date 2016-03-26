@@ -26,20 +26,14 @@
 				<div style="width: 33%; float: left;">
 					<dl class="list"; style="font-size:14px;">
 						<dt></dt><dd></dd>	
-						<dt><c:out value="${item.reservation_number}" />	</dt><dd>	
-							<c:choose>
-							    <c:when test="${item.reservation_type == '1'}">  Fit.</c:when>
-							    <c:when test="${item.reservation_type == '2'}">  Group.</c:when>    
-							    <c:otherwise> Event.</c:otherwise>
-							</c:choose>
-						</dd>	
+						<dt><c:out value="${item.reservation_number}" />	</dt>
+						<dd><c:out value="${item.typeName}" /></dd>	
 						<dt>Guest:</dt><dd><c:out value="${item.guestName}"/></dd>
 						<dt>Agency:</dt><dd><c:out value="${item.agencyName}"/></dd>
 						<dt>Attended:</dt><dd><c:out value="${item.userName}" /></dd>
 						<dt></dt><dd></dd>
 					</dl>
 				</div>
-				
 				<div style="width: 34%; float: left;">
 					<dl class="list"; style="font-size:14px;">
 						<dt></dt><dd></dd>	

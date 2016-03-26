@@ -29,11 +29,7 @@
 				<c:when test="${item.reservation_status == '1'}">
 				 	<tr>
 						<td><c:out value="${item.reservation_number}" /></td>
-						 	<td><c:choose>
-							    <c:when test="${item.reservation_type == '1'}">  Fit.</c:when>
-							    <c:when test="${item.reservation_type == '2'}">  Group.</c:when>    
-							    <c:otherwise> Event.</c:otherwise>
-							</c:choose></td>
+						<td><c:out value="${item.typeName}" /></td>
 						<td><c:out value="${item.checkInFormated}" /></td> 
 						<td><c:out value="${item.checkOutFormated}" /></td>
 						<td><c:out value="${item.guestName}" /></td>
@@ -52,11 +48,7 @@
 					<c:when test="${item.reservation_status == '0'}">
 					 	<tr>
 							<td><c:out value="${item.reservation_number}" /></td>
-							 	<td><c:choose>
-								    <c:when test="${item.reservation_type == '1'}">  Fit.</c:when>
-								    <c:when test="${item.reservation_type == '2'}">  Group.</c:when>    
-								    <c:otherwise> Event.</c:otherwise>
-								</c:choose></td>
+							<td><c:out value="${item.typeName}" /></td>
 							<td><c:out value="${item.checkInFormated}" /></td> 
 							<td><c:out value="${item.checkOutFormated}" /></td>
 							<td><c:out value="${item.guestName}" /></td>

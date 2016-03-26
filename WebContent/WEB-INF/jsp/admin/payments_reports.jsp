@@ -30,14 +30,7 @@
 							  	<tr>
 										<td><c:out value="${item.receiveDateFormated}" /></td> 
 										<td><c:out value="${item.reservationNumber}" /></td> 
-										
-										<td><c:choose>
-											    <c:when test="${item.payment_method == '1'}">  Credit card.</c:when>
-											    <c:when test="${item.payment_method == '2'}">  Transaction.</c:when>   
-											    <c:when test="${item.payment_method == '3'}">  Check.</c:when>
-											    <c:when test="${item.payment_method == '4'}">  Cash.</c:when>   
-											    <c:otherwise> Other.</c:otherwise>
-										</c:choose></td>
+										<td><c:out value="${item.methodName}" /></td> 
 										<td><c:out value="${item.transaction_no}" /></td>
 										<td><c:out value="${item.amount}" /></td>
 										<td><c:out value="${item.guestName}" /></td>

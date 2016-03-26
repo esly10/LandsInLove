@@ -447,14 +447,156 @@ public class ReportController extends MultiActionController
 			int type = Integer.parseInt(request.getParameter("report_id"));
 			switch (type){
 				case 1:{
+					String htmlFile = "";
+					HashMap<String, Object> model = new HashMap<String, Object>();
+					long now = System.currentTimeMillis();
+					Timestamp dateStart = new Timestamp(now);
+					Timestamp dateEnd = new Timestamp(now);
+					Timestamp dateNow = new Timestamp(now);
+					
+					String start = request.getParameter("start");
+					start = start.replace("T", " ");
+					
+					String end = request.getParameter("end");
+					end = end.replace("T", " ");
+					start ="2016-03-20 00:00:00";
+					end ="2016-04-01 00:00:00";
+					try
+						{
+							dateStart = Timestamp.valueOf(start);
+							dateEnd = Timestamp.valueOf(end);
+						}
+						catch(NumberFormatException nfe){
+							
+						}
+					DateFormater formaterStart = new DateFormater(dateStart);
+					DateFormater formaterEnd = new DateFormater(dateEnd);
+					Timestamp dateAdd = null;
+					ArrayList<DateFormater> calendar = new ArrayList<DateFormater>();
+					while((formaterStart.datecomplete.before(dateEnd)) || (formaterStart.datecomplete.equals(dateEnd))){
+						calendar.add(formaterStart);
+						dateAdd =formaterStart.getAddDays(formaterStart.datecomplete);
+						formaterStart = new DateFormater(dateAdd);
+					}
+					
+					DateFormater formaterNow = new DateFormater(dateStart);
+					if (calendar.size()!=0){
+						model.put("calendar", calendar);
+						model.put("start", formaterStart);
+						model.put("end", formaterEnd);
+						model.put("now", formaterNow);
+					}
+					try 
+					{
+						htmlFile =  VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "config/template/expected.vm", model);
+					} 
+					catch (Exception e) 
+					{
+						
+					}
+					Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+					JsonObject json = new JsonObject();
+					json.addProperty("success", true);
+					json.addProperty("html", htmlFile);
+						
+					response.setContentType("text/html");			
+					response.getOutputStream().print(htmlFile);	
 					
 				}		
 				break;
 				case 2:{
-									
+					String htmlFile = "";
+					HashMap<String, Object> model = new HashMap<String, Object>();
+					long now = System.currentTimeMillis();
+					Timestamp dateStart = new Timestamp(now);
+					Timestamp dateEnd = new Timestamp(now);
+					Timestamp dateNow = new Timestamp(now);
+					
+					String start = request.getParameter("start");
+					start = start.replace("T", " ");
+					
+					String end = request.getParameter("end");
+					end = end.replace("T", " ");
+					start ="2016-03-20 00:00:00";
+					end ="2016-04-01 00:00:00";
+					try
+						{
+							dateStart = Timestamp.valueOf(start);
+							dateEnd = Timestamp.valueOf(end);
+						}
+						catch(NumberFormatException nfe){
+						
+						}
+					DateFormater formaterStart = new DateFormater(dateStart);
+					DateFormater formaterEnd = new DateFormater(dateEnd);
+					DateFormater formaterNow = new DateFormater(dateNow);
+					ArrayList<Reservations> reservations = null;
+					
+					reservations = Reservations.Marketing(dateStart, dateEnd);
+					if (reservations.size()!=0){
+						model.put("reservations", reservations);
+						model.put("start", formaterStart);
+						model.put("end", formaterEnd);
+						model.put("now", formaterNow);
+					}
+					try 
+					{
+						htmlFile =  VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "config/template/marketing.vm", model);
+					} 
+					catch (Exception e) 
+					{
+						
+					}
+					Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+					JsonObject json = new JsonObject();
+					json.addProperty("success", true);
+					json.addProperty("html", htmlFile);
+						
+					response.setContentType("text/html");			
+					response.getOutputStream().print(htmlFile);		
+					
+								
 				}		
 				break;
 				case 3:{
+					String htmlFile = "";
+					HashMap<String, Object> model = new HashMap<String, Object>();
+					long now = System.currentTimeMillis();
+					Timestamp dateStart = new Timestamp(now);
+					
+					String date = request.getParameter("start");
+					date = date.replace("T", " ");
+					date ="2016-03-31 00:00:00";
+					try
+						{
+							dateStart = Timestamp.valueOf(date);
+						}
+						catch(NumberFormatException nfe){
+							
+						}
+					DateFormater mydate = new DateFormater(dateStart);
+					ArrayList<Reservations> reservations = null;
+					reservations = Reservations.EventsReport(dateStart);
+					String test = mydate.getFormatdate();
+					if (reservations.size()!=0){
+						model.put("reservations", reservations);
+						model.put("date", mydate);
+					}
+					try 
+					{
+						htmlFile =  VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "config/template/groups.mv", model);
+					} 
+					catch (Exception e) 
+					{
+						
+					}
+					Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+					JsonObject json = new JsonObject();
+					json.addProperty("success", true);
+					json.addProperty("html", htmlFile);
+						
+					response.setContentType("text/html");			
+					response.getOutputStream().print(htmlFile);		
 					
 				}		
 				break;
@@ -470,13 +612,8 @@ public class ReportController extends MultiActionController
 					Timestamp dateStart = new Timestamp(now);
 					
 					String date = request.getParameter("start");
-					date ="2016-01-21 00:00:00";
-					DateFormat formatter = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss z");
-					
-					//Date formatdate = (Date)formatter.parse(dateStart);
-					//Date formatdate2 = (Date)formatter.parse(date);
-					 //YYYY-MM-DDThh:mm:ss TZD
-					//date = date.replace("T", " ");
+					date ="2016-03-31 00:00:00";
+					//DateFormat formatter = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss z");
 					
 					try
 					{
@@ -489,8 +626,10 @@ public class ReportController extends MultiActionController
 					ArrayList<Reservations> reservations = null;
 					reservations = Reservations.MealPlan(dateStart);
 					String test = mydate.getFormatdate();
-					model.put("reservations", reservations);
-					model.put("date", mydate);
+					if (reservations.size()!=0){
+						model.put("reservations", reservations);
+						model.put("date", mydate);
+					}
 													
 					try 
 					{
@@ -505,25 +644,196 @@ public class ReportController extends MultiActionController
 					JsonObject json = new JsonObject();
 					json.addProperty("success", true);
 					json.addProperty("html", htmlFile);
-					
-					//response.setContentType("text/json");	
-					
-					//response.getWriter().print(gson.toJson(json));	
+						
 					response.setContentType("text/html");			
 					response.getOutputStream().print(htmlFile);		
 					
 				}		
 				break;
 				case 6:{
+					String htmlFile = "";
+					HashMap<String, Object> model = new HashMap<String, Object>();
+					long now = System.currentTimeMillis();
+					Timestamp dateStart = new Timestamp(now);
+					Timestamp dateEnd = new Timestamp(now);
+					Timestamp dateNow = new Timestamp(now);
+					int method = 0;
+					String start = request.getParameter("start");
+					start = start.replace("T", " ");
 					
+					String end = request.getParameter("end");
+					end = end.replace("T", " ");
+					start ="2015-03-31 00:00:00";
+					end ="2017-03-31 00:00:00";
+					String pay = request.getParameter("type");
+					String password = null;
+					password=request.getParameter("password");
+					if(password == null || !password.equals("1234"))
+					{
+						response.getOutputStream().print("Incorrect Password!");
+					}
+					try
+						{
+							dateStart = Timestamp.valueOf(start);
+							dateEnd = Timestamp.valueOf(end);
+							method = Integer.parseInt(pay);
+						}
+						catch(NumberFormatException nfe){
+							
+						}
+					
+					DateFormater mydate = new DateFormater(dateNow);
+					DateFormater formaterStart = new DateFormater(dateStart);
+					DateFormater formaterWhile = new DateFormater(dateStart);
+					DateFormater formaterEnd = new DateFormater(dateEnd);
+					Timestamp dateAdd = null;
+					ArrayList<DateFormater> calendar = new ArrayList<DateFormater>();
+					while((formaterWhile.datecomplete.before(dateEnd)) || (formaterStart.datecomplete.equals(dateEnd))){
+						calendar.add(formaterWhile);
+						dateAdd =formaterWhile.getAddMonths(formaterWhile.datecomplete);
+						formaterWhile = new DateFormater(dateAdd);
+					}
+					ArrayList<Payments> payments = null;
+					if (method == 0 || method==6){
+						payments = Payments.getPaymentsAll(dateStart, dateEnd);
+					}else{
+						payments = Payments.getPayments(dateStart, dateEnd, method);
+					}
+					
+						String paymentMethod = "All";
+						
+						switch (method){
+							case 0: paymentMethod = "all";break;
+							case 1: paymentMethod = "Credit Card";break;
+							case 2: paymentMethod = "Transaction";break;
+							case 3: paymentMethod = "Check";break;
+							case 4: paymentMethod = "Cash";break;
+							case 5: paymentMethod = "Other";break;
+							case 6: paymentMethod = "All";break;
+							default: paymentMethod = "All";break;                             
+						}						
+				
+						if (payments.size()!=0){
+							model.put("calendar", calendar);
+							model.put("paymentMethod", paymentMethod);
+							model.put("payments", payments);
+							model.put("date", mydate);
+							model.put("start", formaterStart);
+							model.put("end", formaterEnd);
+						}
+						
+						try 
+						{
+							htmlFile =  VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "config/template/payments.vm", model);
+						} 
+						catch (Exception e) 
+						{
+							
+						}
+						Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+						JsonObject json = new JsonObject();
+						json.addProperty("success", true);
+						json.addProperty("html", htmlFile);
+							
+						response.setContentType("text/html");			
+						response.getOutputStream().print(htmlFile);		
 				}		
 				break;
 				case 7:{
+					String htmlFile = "";
+					HashMap<String, Object> model = new HashMap<String, Object>();
+					long now = System.currentTimeMillis();
+					Timestamp dateStart = new Timestamp(now);
 					
+					DateFormater mydate = new DateFormater(dateStart);
+					ArrayList<Reservations> reservations = null;
+					reservations = Reservations.StatusesUnhandled(dateStart);
+					String test = mydate.getFormatdate();
+					if (reservations.size()!=0){
+						model.put("reservations", reservations);
+						model.put("date", mydate);
+					}
+					
+					try 
+					{
+						htmlFile =  VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "config/template/statuses.vm", model);
+					} 
+					catch (Exception e) 
+					{
+						
+					}
+					Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+					JsonObject json = new JsonObject();
+					json.addProperty("success", true);
+					json.addProperty("html", htmlFile);
+						
+					response.setContentType("text/html");			
+					response.getOutputStream().print(htmlFile);		
 				}		
 				break;
 				case 8:{
+					String htmlFile = "";
+					HashMap<String, Object> model = new HashMap<String, Object>();
+					long now = System.currentTimeMillis();
+					int year = 2000;
+					Timestamp dateEnd = new Timestamp(now);
+					Timestamp dateNow = new Timestamp(now);
 					
+					String yearString = request.getParameter("year");
+					try
+						{
+							year = Integer.parseInt(yearString);
+						}
+						catch(NumberFormatException nfe){
+							
+						}
+					
+					DateFormater formaterStart = new DateFormater(dateNow);
+					DateFormater formaterNow = new DateFormater(dateNow);
+					Timestamp dateAdd = null;
+					ArrayList<Timestamp> months = new ArrayList<Timestamp>();
+					ArrayList<DateFormater> calendar = new ArrayList<DateFormater>();
+					int totalGuests =0;
+					int totalNights = 0;
+					for (int i=0; i<12; i++){
+						months.add(formaterStart.getYearPerMonth(year, i));
+					
+					}
+					for(int x=0;x<months.size();x++) {
+						formaterStart = new DateFormater(months.get(x));
+						totalGuests += formaterStart.getMonthGuests();
+						totalNights += formaterStart.getMonthNights();
+						calendar.add(formaterStart);
+					}
+					
+					//model.put("user", user);
+					
+					
+					if (months.size()!=0){ 
+						model.put("calendar", calendar);
+						model.put("months", months);
+						model.put("start", formaterStart);
+						model.put("year", year);
+						model.put("totalGuests", totalGuests);
+						model.put("totalNights", totalNights);
+						model.put("now", formaterNow);
+					}
+					try 
+					{
+						htmlFile =  VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "config/template/year.vm", model);
+					} 
+					catch (Exception e) 
+					{
+						
+					}
+								
+					Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+					JsonObject json = new JsonObject();
+					json.addProperty("success", true);
+					json.addProperty("html", htmlFile);
+						
+					response.setContentType("text/html");			
+					response.getOutputStream().print(htmlFile);		
 				}		
 				break;
 			}

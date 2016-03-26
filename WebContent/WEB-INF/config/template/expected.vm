@@ -126,6 +126,10 @@
 			background: none;
 			background-color: #4F5F6F;
 		}
+		dl {}
+		dl.list dt { clear: left; float: left; width: 130px; font-weight: bold;  height: 15px; line-height: 15px; margin-bottom: 2px; white-space: nowrap; color: #0D324C; }
+		dl.list dd { margin-left:105px; /*width: 300px;*/ overflow: hidden; height: 15px; line-height: 15px; margin-bottom: 10px; color: #4F5F6F;}
+		dl.list dt.spacer { height: 10px; line-height:0px; width: 275px; margin-bottom: 0px; float: none; }
 		
 		div.dhtmlx_window_active,div.dhx_modal_cover_dv {
 			position: fixed !important;
@@ -134,46 +138,70 @@
 
 </head>
 <body onload="myFunction();">
+	
 	<div style="width: 100%; float: left;">
 		<div style="width: 100%; float: left;">
 			<dl class="list" style="font-size:14px;">
-				<dt style="background:#FFFFFF; color:#802CD8; text-align:center; padding:5px; font-size:24px;">Meal Plan Report</dt>	
-				<dd style="background:#FFFFFF; color:#802CD8; text-align:center; padding:5px; font-size:24px;"></dd> 	
-				<dt style="background:#FFFFFF; color:#CA337E; text-align:left; padding:5px; font-size:14px;">${date.formatdate}</dt>	
-				<dd style="background:#FFFFFF; color:#CA337E; text-align:center; padding:5px; font-size:14px;"></dd> 	
+				<dt style="background:#FFFFFF; color:#f0359d; text-align:center; padding:5px; font-size:24px;">Expected occupancy Report</dt>	
+				<dd style="background:#FFFFFF; color:#f0359d; text-align:center; padding:5px; font-size:24px;"></dd> 	
+				<dt style="background:#FFFFFF; color:#f03535; text-align:left; padding:5px; font-size:14px;">${now.formatdate} - ${end.formatdate}</dt>	
+				<dd style="background:#FFFFFF; color:#f03535; text-align:center; padding:5px; font-size:14px;"></dd> 	
 				<dt></dt><dd></dd>	
 			</dl>
 		</div>	
 	</div>	
-		<div class="mealplan" style="width: 100%; float: left;">
-		 <hr>  
-		<table>
-			  <thead>
-				  <tr>
-				    <th>Room No</th><th>Guest Name</th><th>Qty</th><th>Plan</th><th style="text-align:center;">Breakfast</th> <th style="text-align:center;">Launch</th><th style="text-align:center;">Dinner</th>
-				  </tr>
-			  </thead>
-			 #foreach($item in ${reservations})
-			
-			 <tr> 
-			 		<td>${item.rooms}</td>
-			 		<td>${item.guestName}</td>
-					<td>${item.reservation_rooms_occupancy}</td> 
-					<td>${item.mealPlanName}</td>
-					<td style="text-align:center;"><input type="checkbox"></td>
-					<td style="text-align:center;"><input type="checkbox"></td>
-					<td style="text-align:center;"><input type="checkbox"></td>								
-			 </tr>		
-			#end
-			<tfoot>
-				<tr>
-					<td colspan="7"><div id="paging">
-							
-				</tr>
-			</tfoot>
-			<tbody></tbody>
-		</table>
-		 <hr>  
-	</div>		
+	
+	<div>	
+	
+	<hr size="2" color="#4f5f6f">
+		
+		 #foreach($item in ${calendar})
+		<div style="width: 100%; float: left;">
+		
+				<div style="width: 33%; float: left;">
+					<dl class="list"; style="font-size:14px;">
+						<dt style="background:#E1E1E1; color:#f0359d; text-align:left; padding:5px; font-size:14px;">${item.formatdate}</dt>	
+						<dd style="background:#E1E1E1; color:#f0359d; text-align:center; padding:5px; font-size:14px;"></dd> 
+						<hr>	
+						<dt style="text-decoration: underline;">Hotel Guest:</dt><dd style="text-decoration: underline;"></dd>
+						<dt>Morning:</dt><dd>${item.morningOccupancy}   ${item.morningRooms}</dd>
+						<dt>Check-Outs:</dt><dd> ${item.checkoutsRes}   ${item.checkoutsRooms}</dd>
+						<dt>Check-Ins:</dt><dd>${item.checkinsRes}   ${item.checkinsRooms}</dd>
+						<dt>Evening:</dt><dd>${item.eveningOccupancy}  ${item.eveningRooms}</dd>
+						
+						<dt></dt><dd></dd>
+					</dl>
+				</div>
+				
+				<div style="width: 34%; float: left;">
+					<dl class="list"; style="font-size:14px;">
+						<dt style="background:#E1E1E1; color:#f0359d; text-align:left; padding:5px; font-size:14px;"></dt>	
+						<dd style="background:#E1E1E1; color:#f0359d; text-align:center; padding:5px; font-size:14px;"></dd> 
+						<hr>	
+						<dt style="text-decoration: underline;">Groups:</dt><dd style="text-decoration: underline;"></dd>
+						#foreach($group in ${item.groups})
+							<dt style="width: 10px;"></dt><dd>${group}</dd>
+						#end			
+						<dt></dt><dd></dd>
+					</dl>
+				</div>
+				<div style="width: 33%; float: right;">
+					<dl class="list"; style="font-size:14px;">
+						<dt style="background:#E1E1E1; color:#f0359d; text-align:left; padding:5px; font-size:14px;"></dt>	
+						<dd style="background:#E1E1E1; color:#f0359d; text-align:center; padding:5px; font-size:14px;"></dd> 
+						<hr>		
+						<dt style="text-decoration: underline;">Events:</dt><dd style="text-decoration: underline;"></dd>
+						#foreach($event in ${item.events})
+							<dt style="width: 10px;"></dt><dd>${event}</dd>
+						#end
+						<dt></dt><dd></dd>
+					</dl>	
+				</div>
+				</div>
+				
+				<hr size="2" color="#4f5f6f">
+				
+			#end	
+		</div>
 </body>
 </html>
