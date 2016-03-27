@@ -135,6 +135,7 @@
 </head>
 <body onload="myFunction();">
 	<div style="width: 100%; float: left;">
+	<img src="${imgUrl}/static/images/bg-header-report.png" width="673" height="75" alt="header">
 		<div style="width: 100%; float: left;">
 			<dl class="list" style="font-size:14px;">
 				<dt style="background:#FFFFFF; color:#802CD8; text-align:center; padding:5px; font-size:24px;">Meal Plan Report</dt>	

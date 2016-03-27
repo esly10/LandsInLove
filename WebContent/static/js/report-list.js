@@ -29,10 +29,25 @@ Ext.onReady(function(){
 				reader: new Ext.data.ArrayReader( { id: 'id' },	['id',  'Name',]) 
 			}) ;
 			
-			var payTypeStore = new Ext.data.Store({
+			/*var payTypeStore = new Ext.data.Store({
 				 data: [[1, "Credit Card"],[2, "Transaction"],[3, "Check"],[4, "Cash"],[5, "Other"],[6, "All"]],
 				reader: new Ext.data.ArrayReader( { id: 'id' },	['id',  'Name',]) 
-			}) ;
+			}) ;*/
+			
+			var payTypeStore = new Ext.data.JsonStore({
+				root: 'method',
+				url: _contextPath + '/report/paymentTypeList',
+				totalProperty: 'count',
+				fields: [ 'payment_method_id','payment_method_description'],
+				remoteSort: true,
+				autoLoad: true,
+				sortInfo: {
+						field: 'payment_method_id',
+						direction: 'ASC'
+					}
+
+			});
+			
 			
 			var ReportList = function(viewer, config) {
 			    this.viewer = viewer;
@@ -142,7 +157,7 @@ Ext.onReady(function(){
 				    		Ext.getCmp("filter_end").show();
 				    		Ext.getCmp("filter_year").hide();
 				    		Ext.getCmp("filter_pay").show();
-				    		Ext.getCmp("filter_pay").setValue(6);
+				    		Ext.getCmp("filter_pay").setValue(7);
 				    		Ext.getCmp("filter_button").show();
 				    		Ext.getCmp("filter_pdf").hide();
 				    		Ext.getCmp("filter_password").show();
@@ -192,9 +207,9 @@ Ext.onReady(function(){
 								name: 'filter_start',
 								renderer: Ext.util.Format.dateRenderer('Y-m-d'),
 								listeners : {
-								    render : function(datefield) {
-								        datefield.setValue(new Date().format('m/d/Y'));
-								    }
+									 render : function(datefield) {
+									        datefield.setValue(new Date());
+									  }
 								}
 							   
 							
@@ -253,8 +268,8 @@ Ext.onReady(function(){
 							    	   mode: 'local',
 							    	   autoload: true,
 							    	   store: payTypeStore,
-									    valueField: 'id',
-									    displayField: 'Name',
+									    valueField: 'payment_method_id',
+									    displayField: 'payment_method_description',
 								    	anchor:'90%',
 						            	allowBlank: true,
 						                forceSelection: false
@@ -286,7 +301,17 @@ Ext.onReady(function(){
 	            			            	var type = Ext.getCmp('filter_pay').getValue();
 	            			            	var password = Ext.getCmp('filter_password').getValue();
 	            				    		var tabs = Ext.getCmp('reporttabs');
-	
+	            				    		if(id == 6 && password != '1234')
+	        	                    		{
+	        		                    		Ext.Msg.show({
+	        			            				   title:'Permission Message',
+	        			            				   msg: 'Password Invalid.',
+	        			            				   buttons: Ext.Msg.OK,
+	        			            				   icon: Ext.MessageBox.ERROR
+	        			            				});
+	        		                    		
+	        		                    		return false;
+	        	                    		}
 	            				    		var reportPanel = tabs.find('id', 'Report-' + report_name);
 	            				    		if(reportPanel.length > 0)
 	            				    		{
@@ -334,14 +359,33 @@ Ext.onReady(function(){
             			    				frame.remove();
             			    			}
             			    			
+            			    			if(id == 6 && password != '1234')
+        	                    		{
+        		                    		Ext.Msg.show({
+        			            				   title:'Permission Message',
+        			            				   msg: 'Password Invalid.',
+        			            				   buttons: Ext.Msg.OK,
+        			            				   icon: Ext.MessageBox.ERROR
+        			            				});
+        		                    		
+        		                    		return false;
+        	                    		}
+            			    			
             			    			
             			    			frame = body.createChild({
             			    		        tag: 'iframe',
             			    		        cls: 'x-hidden',
             			    		        id: 'hiddenform-iframe',
+            			    		        method: 'get',
             			    		        name: 'hidden-iframe',
+            			    		       
+            			    				scripts : true, 
+            			    				
+            			    				//params: {report_id: id, start:start, end:end, year:year, type:type, password: password},
+            			   
             			    		        src: _contextPath + "/report/exportPDF?report_id="+ id + "&report_name=" + report_name
-            			    		        + "&start=" + start + "&end=" + end + "&year=" + year  + "&type=" + type+ "&password=" + password
+            			    		        + "&start=" + start.getTime() + "&end=" + end.getTime() + "&year=" + year  + "&type=" + type+ "&password=" + password
+            			    				 //src : _contextPath + '/report/exportPDF?'+params, 
             			    		      });    		
             			    		
             			            }

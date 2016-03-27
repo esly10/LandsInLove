@@ -48,7 +48,7 @@
 				endColorstr='#4F5F6F');
 			background-color: #4F5F6F;
 			color: #FFFFFF;
-			font-size:  16px;
+			font-size:  12px;
 			font-weight: normal;
 			padding: 5px 3px;
 		}
@@ -139,6 +139,7 @@
 </head>
 <body onload="myFunction();">
 	<div style="width: 100%; float: left;">
+	<img src="${imgUrl}/static/images/bg-header-report.png" width="673" height="75" alt="header">
 		<div style="width: 100%; float: left;">
 			<dl class="list" style="font-size:14px;">
 				<dt style="background:#FFFFFF; color:#f03535; text-align:center; padding:5px; font-size:24px;">Payments Report</dt>	
@@ -153,7 +154,7 @@
 		<table>
 			  <thead>
 				  <tr>
-				    <th>Received</th><th>Res Number</th><th>Payment Method</th><th>Transaction No.</th><th>Amount</th> <th>Guest Name</th><th>Agency Name</th>
+				    <th>Received</th><th>Reservation</th><th>Pay Method</th><th>Transaction.</th><th>Amount</th> <th>Guest</th><th>Agency</th>
 				  </tr>
 			  </thead>
 			  	#foreach($cal in ${calendar})	

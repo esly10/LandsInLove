@@ -33,7 +33,7 @@
 						<dt></dt><dd></dd>	
 						
 						<dt><c:out value="${item.checkInFormated}" /></dt> <dd></dd>
-						<dt><c:out value="${reservation.statusName}" /></dt>
+						<dt><c:out value="${item.statusName}" /></dt>
 						<dd><c:out value="${item.mealPlanName}" /></dd>
 						<dt>Agency:</dt><dd><c:out value="${item.agencyName}"/></dd>
 						<dt>Attended:</dt><dd><c:out value="${item.userName}" /></dd>

@@ -27,7 +27,7 @@
 		}
 		
 		.mealplan {
-			font: normal 12px/150% Verdana, Helvetica, sans-serif;
+			font: normal 10px/150% Verdana, Helvetica, sans-serif;
 			background: #fff;
 			overflow: hidden;
 			border: 1px solid #FFFFFC;
@@ -48,7 +48,7 @@
 				endColorstr='#4F5F6F');
 			background-color: #4F5F6F;
 			color: #FFFFFF;
-			font-size:  16px;
+			font-size:  12px;
 			font-weight: normal;
 			padding: 5px 3px;
 		}
@@ -139,6 +139,7 @@
 </head>
 <body onload="myFunction();">
 	<div style="width: 100%; float: left;">
+	<img src="${imgUrl}/static/images/bg-header-report.png" width="673" height="75" alt="header">
 		<div style="width: 100%; float: left;">
 			<dl class="list" style="font-size:14px;">
 				<dt style="background:#FFFFFF; color:#16df9d; text-align:center; padding:5px; font-size:24px;">Unhandled Statuses Report</dt>	
@@ -154,10 +155,10 @@
 		<table>
 			  <thead>
 				  <tr>
-				    <th>Res No</th><th>Type</th><th>Check In</th><th>Check Out</th><th>Guest</th> <th>Agency</th><th>Rooms</th><th>Created</th>
+				    <th>Res No</th><th>Type</th><th>CheckIn</th><th>CheckOut</th><th>Guest</th> <th>Agency</th><th>Rooms</th>
 				  </tr>
 			  </thead>
-			  <tr style="background:#E1E1E1;"><td colspan=8; style="color:#19BF89; text-align:left; font-size:18px; font-style:bold;">Confirmed </td> </tr>
+			  <tr style="background:#E1E1E1;"><td colspan=7; style="color:#19BF89; text-align:left; font-size:18px; font-style:bold;">Confirmed </td> </tr>
 			
 			 #foreach($item in ${reservations})
 			 	#if ( $item.reservation_status == "1" )<tr><td>${item.reservation_number}</td>
@@ -167,13 +168,13 @@
 					<td>${item.guestName}</td>
 					<td>${item.agencyName}</td>
 					<td>${item.reservation_rooms}</td>
-					<td>${item.reservation_creation_date}</td> 
+					
 				</tr>
 				#end
 			#end	
 			
 			<tr></tr>
-			<tr style="background:#E1E1E1;"><td colspan=8; style="color:#19BF89; text-align:left; font-size:18px;">Open </td> </tr>
+			<tr style="background:#E1E1E1;"><td colspan=7; style="color:#19BF89; text-align:left; font-size:18px;">Open </td> </tr>
 			 #foreach($item in ${reservations})
 			 	#if ( $item.reservation_status == "0" )<tr><td>${item.reservation_number}</td>
 			 		#if ( $item.reservation_type == "1" )<td>Fit</td>
@@ -185,7 +186,7 @@
 					<td>${item.guestName}</td>
 					<td>${item.agencyName}</td>
 					<td>${item.reservation_rooms}</td>
-					<td>${item.reservation_creation_date}</td> 
+					
 				</tr>
 				#end
 			#end	

@@ -34,7 +34,7 @@
 		
 	<link rel="SHORTCUT ICON" HREF="<c:url value="/favicon.ico" />" />
 </head>
-<body style="padding: 0px; margin: 0px;">
+<body style="padding: 0px; margin: 0px;  background-image:url(../static/images/bgLogin.png); background-repeat:repeat-x; background-position:top; background-size: auto 100%;">
 <div id="login-frame">	
 	<div id="site-frame">
 		<div id="login-header"><div></div></div>

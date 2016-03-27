@@ -37,10 +37,13 @@ import au.com.bytecode.opencsv.CSVWriter;
 
 import com.cambiolabs.citewrite.data.Agencies;
 import com.cambiolabs.citewrite.data.Charges;
+import com.cambiolabs.citewrite.data.Country;
 import com.cambiolabs.citewrite.data.DateFormater;
 import com.cambiolabs.citewrite.data.Guests;
+import com.cambiolabs.citewrite.data.PaymentMethod;
 import com.cambiolabs.citewrite.data.Payments;
 import com.cambiolabs.citewrite.data.ReservationRoom;
+import com.cambiolabs.citewrite.data.ReservationType;
 import com.cambiolabs.citewrite.data.Reservations;
 import com.cambiolabs.citewrite.data.Rooms;
 import com.cambiolabs.citewrite.data.User;
@@ -309,25 +312,15 @@ public class ReportController extends MultiActionController
 						formaterWhile = new DateFormater(dateAdd);
 					}
 					ArrayList<Payments> payments = null;
-					if (method == 0 || method==6){
+					if (method == 0 || method==7){
 						payments = Payments.getPaymentsAll(dateStart, dateEnd);
 					}else{
 						payments = Payments.getPayments(dateStart, dateEnd, method);
 					}
 					
-						String paymentMethod = "All";
-						
-						switch (method){
-							case 0: paymentMethod = "all";break;
-							case 1: paymentMethod = "Credit Card";break;
-							case 2: paymentMethod = "Transaction";break;
-							case 3: paymentMethod = "Check";break;
-							case 4: paymentMethod = "Cash";break;
-							case 5: paymentMethod = "Other";break;
-							case 6: paymentMethod = "All";break;
-							default: paymentMethod = "All";break;                             
-						}						
-				
+					String paymentMethod = "All";
+					PaymentMethod payment = new PaymentMethod(method);
+					paymentMethod = payment.getPayment_method_description();
 					if (payments.size()==0){
 							ModelAndView msg =  new ModelAndView("no_result_report","message",
 									"No payments related on the date indicated: "+ dateStart.toString());
@@ -478,7 +471,8 @@ public class ReportController extends MultiActionController
 						dateAdd =formaterStart.getAddDays(formaterStart.datecomplete);
 						formaterStart = new DateFormater(dateAdd);
 					}
-					
+					String imgUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+					model.put("imgUrl", imgUrl);
 					DateFormater formaterNow = new DateFormater(dateStart);
 					if (calendar.size()!=0){
 						model.put("calendar", calendar);
@@ -531,7 +525,8 @@ public class ReportController extends MultiActionController
 					DateFormater formaterEnd = new DateFormater(dateEnd);
 					DateFormater formaterNow = new DateFormater(dateNow);
 					ArrayList<Reservations> reservations = null;
-					
+					String imgUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+					model.put("imgUrl", imgUrl);
 					reservations = Reservations.Marketing(dateStart, dateEnd);
 					if (reservations.size()!=0){
 						model.put("reservations", reservations);
@@ -566,7 +561,7 @@ public class ReportController extends MultiActionController
 					
 					String date = request.getParameter("start");
 					date = date.replace("T", " ");
-					date ="2016-03-31 00:00:00";
+					date ="2016-03-23 00:00:00";
 					try
 						{
 							dateStart = Timestamp.valueOf(date);
@@ -578,6 +573,8 @@ public class ReportController extends MultiActionController
 					ArrayList<Reservations> reservations = null;
 					reservations = Reservations.EventsReport(dateStart);
 					String test = mydate.getFormatdate();
+					String imgUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+					model.put("imgUrl", imgUrl);
 					if (reservations.size()!=0){
 						model.put("reservations", reservations);
 						model.put("date", mydate);
@@ -612,6 +609,8 @@ public class ReportController extends MultiActionController
 					Timestamp dateStart = new Timestamp(now);
 					
 					String date = request.getParameter("start");
+					long test = Long.parseLong(date);
+					Timestamp test2 = new Timestamp(test);
 					date ="2016-03-31 00:00:00";
 					//DateFormat formatter = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss z");
 					
@@ -625,7 +624,9 @@ public class ReportController extends MultiActionController
 					DateFormater mydate = new DateFormater(dateStart);
 					ArrayList<Reservations> reservations = null;
 					reservations = Reservations.MealPlan(dateStart);
-					String test = mydate.getFormatdate();
+					//String test = mydate.getFormatdate();
+					String imgUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+					model.put("imgUrl", imgUrl);
 					if (reservations.size()!=0){
 						model.put("reservations", reservations);
 						model.put("date", mydate);
@@ -694,25 +695,19 @@ public class ReportController extends MultiActionController
 						formaterWhile = new DateFormater(dateAdd);
 					}
 					ArrayList<Payments> payments = null;
-					if (method == 0 || method==6){
+					if (method == 0 || method==7){
 						payments = Payments.getPaymentsAll(dateStart, dateEnd);
 					}else{
 						payments = Payments.getPayments(dateStart, dateEnd, method);
 					}
-					
-						String paymentMethod = "All";
 						
-						switch (method){
-							case 0: paymentMethod = "all";break;
-							case 1: paymentMethod = "Credit Card";break;
-							case 2: paymentMethod = "Transaction";break;
-							case 3: paymentMethod = "Check";break;
-							case 4: paymentMethod = "Cash";break;
-							case 5: paymentMethod = "Other";break;
-							case 6: paymentMethod = "All";break;
-							default: paymentMethod = "All";break;                             
-						}						
-				
+						String paymentMethod = "All";
+						PaymentMethod payment = new PaymentMethod(method);
+						paymentMethod = payment.getPayment_method_description();
+						
+						
+						String imgUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+						model.put("imgUrl", imgUrl);
 						if (payments.size()!=0){
 							model.put("calendar", calendar);
 							model.put("paymentMethod", paymentMethod);
@@ -749,6 +744,8 @@ public class ReportController extends MultiActionController
 					ArrayList<Reservations> reservations = null;
 					reservations = Reservations.StatusesUnhandled(dateStart);
 					String test = mydate.getFormatdate();
+					String imgUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+					model.put("imgUrl", imgUrl);
 					if (reservations.size()!=0){
 						model.put("reservations", reservations);
 						model.put("date", mydate);
@@ -808,7 +805,8 @@ public class ReportController extends MultiActionController
 					
 					//model.put("user", user);
 					
-					
+					String imgUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+					model.put("imgUrl", imgUrl);
 					if (months.size()!=0){ 
 						model.put("calendar", calendar);
 						model.put("months", months);
@@ -846,7 +844,71 @@ public class ReportController extends MultiActionController
 		
 }
 	
+	public void paymentTypeList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
+		
+		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		JsonObject json = new JsonObject();
+		json.addProperty("success", false);
 	
+		try
+		{
+			User user = User.getCurrentUser();
+			
+			String sort = request.getParameter("sort");
+			String dir = request.getParameter("dir");
+			
+			DBFilterList filter = new DBFilterList();
+			
+			String value = request.getParameter("filter_id");
+			if(value != null && value.length() > 0)
+			{
+				filter.add(new DBFilter("name", "LIKE", value));
+			}
+			
+			int start = 0;
+			int limit = 0;
+			
+			if(request.getParameter("start") != null)
+			{
+				try
+				{
+					start = Integer.parseInt(request.getParameter("start"));
+				}
+				catch(NumberFormatException nfe){}
+			}
+			
+			if(request.getParameter("limit") != null)
+			{
+				try
+				{
+					limit = Integer.parseInt(request.getParameter("limit"));
+				}
+				catch(NumberFormatException nfe){}
+			}
+			
+			PaymentMethod method = new PaymentMethod();
+			ArrayList<PaymentMethod> list = (ArrayList<PaymentMethod>)method.get(start, limit, sort + " " + dir, filter);
+		
+			int count = list.size();
+			if(limit > 0)
+			{
+				count = method.count(filter);
+			}
+			
+			json.addProperty("count", count);
+			json.add("method", gson.toJsonTree(list));
+			json.addProperty("success", true);
+			
+			response.getOutputStream().print(gson.toJson(json));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 	
 	
 	

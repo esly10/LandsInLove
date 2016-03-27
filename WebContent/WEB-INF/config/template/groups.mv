@@ -126,6 +126,9 @@
 			background: none;
 			background-color: #4F5F6F;
 		}
+		dl.list dt { clear: left; float: left; width: 130px; font-weight: bold;  height: 15px; line-height: 15px; margin-bottom: 2px; white-space: nowrap; color: #0D324C; }
+		dl.list dd { margin-left:105px; /*width: 300px;*/ overflow: hidden; height: 15px; line-height: 15px; margin-bottom: 10px; color: #4F5F6F;}
+		dl.list dt.spacer { height: 10px; line-height:0px; width: 275px; margin-bottom: 0px; float: none; }
 		
 		div.dhtmlx_window_active,div.dhx_modal_cover_dv {
 			position: fixed !important;
@@ -135,6 +138,7 @@
 </head>
 <body onload="myFunction();">
 		<div style="width: 100%; float: left;">
+		<img src="${imgUrl}/static/images/bg-header-report.png" width="673" height="75" alt="header">
 		<div style="width: 100%; float: left;">
 			<dl class="list" style="font-size:14px;">
 				<dt style="background:#FFFFFF; color:#49e34c; text-align:center; padding:5px; font-size:24px;">Group Events Report</dt>	
@@ -158,13 +162,13 @@
 				<div style="width: 33%; float: left;">
 					<dl class="list"; style="font-size:14px;">
 						<dt style="background:#FFFFFF; color:#00cc00; text-align:left; padding:2px; font-size:18px;">
-						${reservation.typeName}</dt>
+						${item.typeName}</dt>
 						<dd style="background:#FFFFFF; color:#00cc00; text-align:left; padding:2px; font-size:18px;"></dd>	
 						<hr style="color:#00cc00;"/>
 						<dt></dt><dd></dd>	
 						<dt>${item.checkInFormated}</dt> <dd></dd>
 						
-						<dt>${reservation.statusName}</dt>
+						<dt>${item.statusName}</dt>
 						<dd>${item.mealPlanName}</dd>
 						<dt>Agency:</dt><dd>${item.agencyName}</dd>
 						<dt>Attended:</dt><dd>${item.userName}</dd>

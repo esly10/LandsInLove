@@ -99,14 +99,14 @@ dl.details dt { clear: left; float: left; font-weight: normal; padding-bottom: 5
 dl.details dd { margin-left: 125px; padding-bottom: 5px; position: relative; margin-bottom: 5px; min-height: 16px; }
 
 /* login page styles */
-div#login-frame { background: transparent url(../images/bg-header.png) no-repeat top center; text-align:center; }
-div#site-frame { width: 334px; position: relative; margin: 0px auto; }
-div#login-header { width: 295px; height: 44px; margin: 0px auto 10px auto; padding-top: 30px; }
-div#login-header div { width: 311px; height: 44px; margin: 0px auto; background: transparent url(../images/logo-login.png) no-repeat; }
-div#login-body div#top { width: 334px; height: 40px; background: transparent url(../images/bg-login-top.png) no-repeat; }
-div#login-body div#middle { padding: 15px 0px; width: 334px; background: transparent url(../images/bg-login-middle.png) repeat-y; }
-div#login-body div#bottom { width: 334px; height: 16px; background: transparent url(../images/bg-login-bottom.png) no-repeat; }
-div#login-copyright { padding-top: 5px; font-size: 11px; color: #727886; width: 334px; text-align: center; }
+div#login-frame {text-align:center; }
+div#site-frame { width: 600px; position: relative; margin: 0px auto; }
+div#login-header { width: 600px;  height: 40%; margin: 0px auto 0px auto; padding-top: 10%;}
+div#login-header div { width:600px; height: 80%; margin: 0px auto; background: transparent url(../images/logo-login.png) no-repeat; }
+div#login-body div#top { width: 600px; height: 40px; background: transparent url(../images/bg-login-top.png) no-repeat; }
+div#login-body div#middle { padding: 15px 0px; width: 600px; background: transparent url(../images/bg-login-middle.png) repeat-y; }
+div#login-body div#bottom { width: 600px; height: 16px; background: transparent url(../images/bg-login-bottom.png) no-repeat; }
+div#login-copyright { padding-top: 5px; font-size: 16px; color: #E1E1E1; width: 600px; text-align: center; }
 div#login-copyright a { font-size: 11px; color: #FFF; font-weight: bold; margin-top: 5px; text-decoration: none; display: block; }
 
 form { margin: 0px; padding: 0px; }
