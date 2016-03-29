@@ -31,6 +31,8 @@
 	<bean class="com.cambiolabs.citewrite.controller.ReportController">
 		<property name="velocityEngine" ref="velocityEngine"/>
 	</bean>
-	
+	<bean class="com.cambiolabs.citewrite.controller.RoomsController">
+		<property name="velocityEngine" ref="velocityEngine"/>
+	</bean>
 	
 </beans>

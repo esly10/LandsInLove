@@ -4,16 +4,12 @@
 <%! private int Contador = 0; %>
 <meta charset="utf-8">
 
-<link href="<c:url value="/static/js/calendar/css/jquery-ui.css" />" rel="stylesheet" type="text/css" />
-<link href="<c:url value="/static/js/calendar/css/jquery.ui.theme.css" />" rel="stylesheet" type="text/css" />
-
 <link href="<c:url value="/static/js/calendar/css/timelineScheduler.css" />" rel="stylesheet" type="text/css" />
 <link href="<c:url value="/static/js/calendar/css/timelineScheduler.styling.css" />" rel="stylesheet" type="text/css" />
 <link href="<c:url value="/static/js/calendar/css/calendar.css" />" rel="stylesheet" type="text/css" />
         
 <script type="text/javascript" src="<c:url value="/static/js/calendar-code.js" />"></script>	
-
-<div class="calendar"></div>
+<div class="calendar" id="calendar-div"></div>
 <div class="realtime-info"></div>
 
 <div class="hide" id="rmenu">
@@ -25,6 +21,18 @@
  </div>
 
 <style>
+	@page {
+	        size:A3 landscape;
+	        margin: 0;
+	        height: 510mm;
+	    }
+    @media print {
+        html, body {
+            width: 510mm;
+            height: 510mm;
+            -webkit-print-color-adjust: exact;       
+        }
+    }    
 	.show {
 	    z-index:1000;
 	    position: absolute;

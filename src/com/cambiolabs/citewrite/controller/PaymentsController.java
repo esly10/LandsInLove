@@ -3,6 +3,7 @@ package com.cambiolabs.citewrite.controller;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import com.cambiolabs.citewrite.data.Payments;
 import com.cambiolabs.citewrite.data.User;
 import com.cambiolabs.citewrite.db.DBFilter;
 import com.cambiolabs.citewrite.db.DBFilterList;
+import com.cambiolabs.citewrite.db.QueryBuilder;
 import com.cambiolabs.citewrite.db.UnknownObjectException;
 import com.cambiolabs.citewrite.util.DateParser;
 import com.google.gson.Gson;
@@ -57,6 +59,23 @@ public class PaymentsController extends MultiActionController
 			if(dir == null){
 				dir = " ";
 			}
+			
+			QueryBuilder qb = new QueryBuilder("payments");
+			qb.field("DISTINCT payments.payment_id")
+					.field("payments.reservation_id")
+					.field("payments.payment_date")
+					.field("payments.payment_method")					
+					.field("payments.receive_date")
+					.field("payments.transaction_no")
+					.field("payments.back_account")
+					.field("payments.amount")
+					.field("payments.bill_to")
+					.field("payments.payment_notes");	
+
+			qb.join("payment_method payment_method",
+					"payments.payment_method=payment_method.payment_method_id")
+					.field("payment_method.payment_method_description");
+			
 			
 			DBFilterList filter = new DBFilterList();			
 			
@@ -100,13 +119,16 @@ public class PaymentsController extends MultiActionController
 				catch(NumberFormatException nfe){}
 			}
 			
-			Payments payments = new Payments();
-			ArrayList<Payments> list = (ArrayList<Payments>)payments.get(start, limit, sort + " " + dir, filter);
+			ArrayList<Hashtable<String, String>> list = qb.orderBy(sort)
+					.orderDir(dir)
+					.where(filter)
+					.start(start)
+					.max(limit)
+					.select();
 		
 			int count = list.size();
-			if(limit > 0)
-			{
-				count = payments.count(filter);
+			if (limit > 0) {
+				count = qb.count();
 			}
 			
 			json.addProperty("count", count);
@@ -170,7 +192,6 @@ public class PaymentsController extends MultiActionController
 				payment.setBack_account(request.getParameter("back_account"));
 				payment.setBill_to(request.getParameter("bill_to"));
 				payment.setPayment_notes(request.getParameter("payment_notes"));
-				payment.setAmount(Float.parseFloat(request.getParameter("amount")));
 				payment.setTransaction_no(Integer.parseInt(request.getParameter("transaction_no")));
 				String method =request.getParameter("payment_method");
 		
@@ -180,6 +201,13 @@ public class PaymentsController extends MultiActionController
 					}
 				}catch(NumberFormatException nfe){}	
 				
+				if(method.equals("5")){
+					payment.setAmount(-Float.parseFloat(request.getParameter("amount")));
+				}
+				else {
+					payment.setAmount(Float.parseFloat(request.getParameter("amount")));
+				}
+		
 			if(!payment.commit())
 			{
 				response.getWriter().print("{success: false, msg: 'Error saving Payment information.'}");

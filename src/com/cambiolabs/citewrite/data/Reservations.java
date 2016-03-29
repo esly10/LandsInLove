@@ -12,6 +12,7 @@ import com.cambiolabs.citewrite.db.DBFilter;
 import com.cambiolabs.citewrite.db.DBFilterList;
 import com.cambiolabs.citewrite.db.DBObject;
 import com.cambiolabs.citewrite.db.UnknownObjectException;
+import com.cambiolabs.citewrite.util.DateParser;
 import com.google.gson.annotations.Expose;
 
 import java.sql.ResultSet;
@@ -28,6 +29,7 @@ public class Reservations extends DBObject
 	@Expose public int reservation_user_id = 0;
 	@Expose public Timestamp reservation_check_in = null;
 	@Expose public Timestamp reservation_check_out = null;
+	@Expose public Timestamp reservation_event_date = null;
 	@Expose public int reservation_rooms_qty = 0;
 	@Expose public int reservation_rooms_occupancy = 0;
 	@Expose public String reservation_rooms = null;
@@ -36,6 +38,7 @@ public class Reservations extends DBObject
 	@Expose public int reservation_children = 0;
 	@Expose public int reservation_guides = 0;
 	@Expose public int reservation_meal_plan = 0;
+	@Expose public int reservation_event_participants = 0;
 	@Expose public int reservation_rate_type = 0;
 	@Expose public int reservation_payment_terms = 0;
 	@Expose public int reservation_payment_value = 0;
@@ -48,12 +51,11 @@ public class Reservations extends DBObject
 	@Expose public String reservation_internal_notes = null;
 	@Expose public String reservation_update_date = null;
 	@Expose public String reservation_creation_date = null;
-	
 	@Expose public String card_name = null;
 	@Expose public String card_no = null;
 	@Expose public String card_exp = null;
 	@Expose public String card_type = null;
-	
+	@Expose public int reservation_tax = 0;
 	
 	
 	
@@ -72,6 +74,42 @@ public class Reservations extends DBObject
 			this.reservation_id = reservation_id;
 			this.populate();
 		}
+	}
+	
+	public MealPlan getMealPlan() throws UnknownObjectException
+	{
+		MealPlan mealPlan = new MealPlan(this.reservation_meal_plan);
+		return mealPlan;
+	}
+	
+	public Payments getLastPayment() throws UnknownObjectException
+	{
+	
+		Payments payment = new Payments();
+		
+		DBFilterList filter = new DBFilterList();
+		filter.add(new DBFilter("reservation_id", "=", this.reservation_id));
+		ArrayList<Payments> list = (ArrayList<Payments>)payment.get(0, 0, "payment_id DESC", filter);
+		for(Payments pay: list){
+			return  pay;
+		}
+		return null;
+	}
+	
+	public Guests getGuest() throws UnknownObjectException
+	{
+		Guests Guest = new Guests(this.reservation_guest_id);
+		return Guest;
+	}
+	
+	public ArrayList<Charges> getCharges() throws UnknownObjectException
+	{
+	
+		Charges charges = new Charges();
+		
+		DBFilterList filter = new DBFilterList();
+		filter.add(new DBFilter("charge_reservation_id", "=", this.reservation_id));
+		return (ArrayList<Charges>)charges.get(0, 10000, "charge_id desc", filter);	
 	}
 	
 	public boolean deleteRooms() throws UnknownObjectException{
@@ -112,6 +150,22 @@ public class Reservations extends DBObject
 	
 	}
 	
+	public Timestamp getReservation_event_date() {
+		return reservation_event_date;
+	}
+
+	public void setReservation_event_date(Timestamp reservation_event_date) {
+		this.reservation_event_date = reservation_event_date;
+	}
+
+	public int getReservation_tax() {
+		return reservation_tax;
+	}
+
+	public void setReservation_tax(int reservation_tax) {
+		this.reservation_tax = reservation_tax;
+	}
+
 	public int getReservation_id() {
 		return reservation_id;
 	}
@@ -156,6 +210,29 @@ public class Reservations extends DBObject
 	public void setReservation_status(int reservation_status) {
 		this.reservation_status = reservation_status;
 	}
+	
+	public int getReservation_event_participants() {
+		return reservation_event_participants;
+	}
+
+	public void setReservation_event_participants(int reservation_event_participants) {
+		this.reservation_event_participants = reservation_event_participants;
+	}
+
+	public void setReservation_status_by_string(String reservation_status) {
+		if(reservation_status.equalsIgnoreCase("Confirmmed")){
+			this.reservation_status = 4;
+		}else if(reservation_status.equalsIgnoreCase("Canceled")){
+			this.reservation_status = 5;
+		}else if(reservation_status.equalsIgnoreCase("Check-In")){
+			this.reservation_status = 6;
+		}else if(reservation_status.equalsIgnoreCase("Check-Out")){
+			this.reservation_status = 7;
+		}else {
+			this.reservation_status = 9;
+		}				
+	}
+	
 	public int getReservation_agency_id() {
 		return reservation_agency_id;
 	}
@@ -177,12 +254,20 @@ public class Reservations extends DBObject
 	public Timestamp getReservation_check_in() {
 		return reservation_check_in;
 	}
+	
+	
+	public String getReservation_check_in_format() {
+		return DateParser.toString(this.reservation_check_in, "dd-MMM-YY (EEE)");
+	}
+	
+	public String getReservation_check_out_format() {
+		return DateParser.toString(this.reservation_check_out, "dd-MMM-YY (EEE)");
+	}
+	
 	public void setReservation_check_in(Timestamp reservation_check_in) {
 		this.reservation_check_in = reservation_check_in;
 	}
-	public Timestamp getReservation_check_out() {
-		return reservation_check_out;
-	}
+	
 	public void setReservation_check_out(Timestamp reservation_check_out) {
 		this.reservation_check_out = reservation_check_out;
 	}
@@ -231,6 +316,39 @@ public class Reservations extends DBObject
 	public int getReservation_payment_terms() {
 		return reservation_payment_terms;
 	}
+	
+	public String getReservation_payment_terms_name() {
+		if(this.reservation_payment_terms == 1)
+		{
+			return "On Check-In";
+		}
+		else if(this.reservation_payment_terms == 2)
+		{
+			return "On Check-Out";
+		}
+		else if(this.reservation_payment_terms == 3)
+		{
+			return "Days Advance: "+ this.reservation_payment_value;
+		}
+		else if(this.reservation_payment_terms == 4)
+		{
+			return "Days Credit: "+ this.reservation_payment_value;
+		}
+		else if(this.reservation_payment_terms == 5)
+		{
+			return "Instalments: "+ this.reservation_payment_value;
+		}
+		else if(this.reservation_payment_terms == 6)
+		{
+			return "CPL";
+		}
+		else
+		{
+			return "Other";
+		}
+		
+	}
+	
 	public void setReservation_payment_terms(int reservation_payment_terms) {
 		this.reservation_payment_terms = reservation_payment_terms;
 	}
@@ -580,5 +698,91 @@ public class Reservations extends DBObject
 		String Format =dateday+"/"+datemonth+"/ "+dateyear;
 		return Format;
 	}
+	public float getTotalGuest() {
+		float total = reservation_guest_amount+reservation_guest_tax-getGuestPaid();
 		
+		return total;
+	}
+	
+	public float getTotalAgency() {
+		float total = reservation_agency_amount+reservation_agency_tax-getAgencyPaid();
+		return total;
+	}
+	
+	public float getTotalCharges() {
+		float total = getTotalGuest()+getTotalAgency();
+		return total;
+	}
+	
+	public float getTotalPaid() {
+		return getGuestPaid()+getAgencyPaid();
+	}
+	
+	
+	public float getGuestPaid() {
+		float Result = 0;
+		DBConnection conn = null;
+		try 
+		{
+			conn = new DBConnection();
+			String sql = "SELECT SUM(amount) FROM payments where reservation_id= "+this.reservation_id+" and bill_to=1;";
+			if(conn.query(sql))
+			{
+				ResultSet rs = conn.getResultSet();
+				while (rs.next())
+				{
+					Result = rs.getFloat(1);
+				}
+			}
+			
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			return Result;
+		}
+		finally
+		{
+			if(conn != null)
+			{
+				conn.close();
+			}
+		}
+		return Result;
+	}
+	
+	public float getAgencyPaid() {
+		float Result = 0;
+		DBConnection conn = null;
+		try 
+		{
+			conn = new DBConnection();
+			String sql = "SELECT SUM(amount) FROM payments where reservation_id= "+this.reservation_id+" and bill_to=2;";
+			if(conn.query(sql))
+			{
+				ResultSet rs = conn.getResultSet();
+				while (rs.next())
+				{
+					Result = rs.getFloat(1);
+				}
+			}
+			
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			return Result;
+		}
+		finally
+		{
+			if(conn != null)
+			{
+				conn.close();
+			}
+		}
+		return Result;
+	}
+	
+	
+	
 }

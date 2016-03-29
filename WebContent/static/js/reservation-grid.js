@@ -47,12 +47,35 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 			    chargesStore.load({
             		params:{'reservation_id': panel.reservation_id},
 	    			callback: function () {
+	    				var taxSum = 0.00;
+		        		var servSum = 0.00;
 	    				chargesStore.each(function(record,id){
 	    					panel.total_charges += parseFloat(record.data.charge_total);
+	    					
+	    					if(record.data.charge_item_name == "Room" || record.data.charge_item_name == "Room NS"){
+	    						taxSum += (record.data.charge_qty*record.data.charge_rate);
+	    					}
+	    					if(record.data.charge_item_name == "Restaurant" || record.data.charge_item_name == "Rest/Bar"){
+	    						servSum += (record.data.charge_qty*record.data.charge_rate);
+	    					}
+			        			        		
+			        		
 	    				});
 	    				
+	    				if(taxSum > 1){
+		        			taxSum = (13*taxSum)/100;
+		        		}
+		        		if(servSum > 1){
+		        			servSum = (10*servSum)/100;
+		        		}	
+		        			
 	    				 Ext.getCmp("sub_total").setValue(panel.total_charges.toFixed(2));	    		 
+	    				//after set sub_total amount sum taxes
+	    				panel.total_charges +=  (taxSum+servSum);
+		        		
 	    	    		 Ext.getCmp("total_changes").setValue(panel.total_charges.toFixed(2));
+	    	    		Ext.getCmp("reservation_tax").setValue(Ext.util.Format.number(taxSum, '0.00'));
+		        		Ext.getCmp("services").setValue(Ext.util.Format.number(servSum, '0.00'));
 			    
 	    	    		 paymentStore.baseParams = {'reservation_id': panel.reservation_id};
 	    	    		 paymentStore.load({
@@ -876,17 +899,9 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																			  anchor: "99.2%",
 																			  listWidth : 300,
 																			  lazyRender: false,
-																			  store: new Ext.data.ArrayStore({
-																				  autoDestroy: true,
-																			      fields: ['id', 'description'],
-																			      data : [
-																			              [1, 'reservation_meal_plan 1'],
-																			              [2, 'reservation_meal_plan 2'],
-																			              [3, 'reservation_meal_plan 3'],
-																			      ]
-																			    }),
-																			    displayField: 'description',
-																			    valueField: 'id',
+																			  store: mealPlanStore,
+																			  displayField: 'meal_plan_description',
+																			  valueField: 'meal_plan_id',
 																				triggerAction: 'all',
 																				forceSelection: true,
 																				mode: 'local',
@@ -1079,7 +1094,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																    {
 																    	   xtype: 'numberfield',
 																    	   id: 'reservation_event_adult',
-																    	   name: 'reservation_event_adult',
+																    	   name: 'reservation_adults',
 																    	   width: 60,
 																    	   labelStyle: 'width:70px !important;',
 																    	   style: 'padding:0px;',
@@ -1138,17 +1153,9 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																		  width: 180,
 																		  listWidth : 300,
 																		  lazyRender: false,
-																		  store: new Ext.data.ArrayStore({
-																			  autoDestroy: true,
-																		      fields: ['id', 'description'],
-																		      data : [
-																		              ['FIT', 'FIT'],
-																		              ['GROUP', 'GROUP'],
-																		              ['EVENT', 'EVENT'],
-																		      ]
-																		    }),
-																		    displayField: 'description',
-																		    valueField: 'id',
+																		  store: mealPlanStore,
+																		  displayField: 'meal_plan_description',
+																		  valueField: 'meal_plan_id',
 																			triggerAction: 'all',
 																			forceSelection: true,
 																			mode: 'local',
@@ -1232,10 +1239,11 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																		},
 																		{
 																		    xtype: 'textfield',
-																		    id: 'tax',
-																		    name: 'tax',
+																		    id: 'reservation_tax',
+																		    name: 'reservation_tax',
 																		    labelStyle: 'width:80px',
 																		    anchor:"90%",
+																		    value:'0.00',
 																		    fieldLabel: 'Tax'													    
 																		},
 																		{
@@ -1244,6 +1252,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																		    name: 'services',
 																		    labelStyle: 'width:80px',
 																		    anchor:"90%",
+																		    value:'0.00',
 																		    fieldLabel: 'Services'													    
 																		}
 																	]
@@ -1655,17 +1664,9 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																	  width:100,
 																	  allowBlank: false,
 																	  lazyRender: false,
-																	  store: new Ext.data.ArrayStore({
-																		  autoDestroy: true,
-																	      fields: ['id', 'description'],
-																	      data : [
-																	              ['type1', 'Visa'],
-																	              ['m_card', 'M. Card'],
-																	              ['otra', 'otra'],
-																	      ]
-																	    }),
-																	    displayField: 'description',
-																	    valueField: 'id',
+																	  store:ccTypeStore,
+																	    displayField: 'cc_type_description',
+																	    valueField: 'cc_type_id',
 																		triggerAction: 'all',
 																		forceSelection: true,
 																		mode: 'local'
@@ -1723,13 +1724,18 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																	        	fieldLabel: 'Confirmmed',
 																	        	listeners:{
 																	        		check: function(self, newVal, oldVal) {
-																	        			if(!Ext.getCmp("check_in_radio").checked){
 																	        				if(newVal){
 																	        					document.getElementById("status").innerHTML = "Confirmmed";
+																	        				Ext.getCmp("canceled").enable();
+																	        				Ext.getCmp("check_in_radio").enable();
 																	        					Ext.getCmp("canceled").setValue(false);
+																	        				Ext.getCmp("no_show_radio").setValue(false);
+																	        			}else{
+																	        				Ext.getCmp("canceled").disable();
+																	        				Ext.getCmp("check_out_radio").disable();
 																	        				}
-																	        				
-																	        			}
+																	        			//if(!Ext.getCmp("check_in_radio").checked){	
+																	        			//}
 																	        			 
 																	        		}
 																	        	}
@@ -1740,10 +1746,19 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																	        	labelStyle: 'width:80px; ',
 																	        	name: 'canceled',
 																	        	fieldLabel: 'Canceled',
+																	        	disabled: true,
 																	        	listeners:{
 																	        		check: function(self, newVal, oldVal) {
 																	        			if(newVal){
 																	        				document.getElementById("status").innerHTML = "Canceled";
+																	        				Ext.getCmp("confirmmed").setValue(false);
+																	        				Ext.getCmp("check_out_radio").setValue(false);
+																	        				Ext.getCmp("check_in_radio").setValue(false);
+																	        				Ext.getCmp("no_show_radio").setValue(false);
+																	        				Ext.getCmp("confirmmed").enable();
+																	        				Ext.getCmp("check_out_radio").disable();
+																	        				Ext.getCmp("check_in_radio").disable();
+																	        				
 																	        			}																	        			 
 																	        		}
 																	        	}
@@ -1751,16 +1766,22 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																	        {
 																	        	xtype: 'checkbox',
 																	        	id: 'check_in_radio',
+																	        	disabled: true,
 																	        	name: 'check_in',
 																	        	fieldLabel: 'Check-In',
 																	        	listeners:{
 																	        		check: function(self, newVal, oldVal) {
-																	        			if(Ext.getCmp("check_out_radio").checked){																	        				
-																	        				document.getElementById("status").innerHTML = "Check-Out";
-																	        				Ext.getCmp("canceled").setValue(false);
-																	        			}else if(newVal){
+																	        			if(newVal){
 																	        				document.getElementById("status").innerHTML = "Check-In";
 																	        				Ext.getCmp("canceled").setValue(false);
+																	        				Ext.getCmp("check_out_radio").enable();
+																	        				Ext.getCmp("no_show_radio").setValue(false);
+																	        			}else {																	        																					        				
+																		        			document.getElementById("status").innerHTML = "Confirmmed";		
+																		        			Ext.getCmp("confirmmed").setValue(true);																		        			
+																		        			Ext.getCmp("check_in_radio").setValue(false);
+																		        			Ext.getCmp("check_out_radio").setValue(false);
+																		        			Ext.getCmp("check_out_radio").disable();
 																	        			}
 																	        			
 																	        		}
@@ -1780,12 +1801,18 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																	        	xtype: 'checkbox',
 																	        	id: 'check_out_radio',
 																	        	name: 'check_out',
+																	        	disabled: true,
 																	        	fieldLabel: 'Check-Out',
 																	        	listeners:{
 																	        		check: function(self, newVal, oldVal) {
 																	        			if(newVal){
 																	        				document.getElementById("status").innerHTML = "Check-Out";
 																	        				Ext.getCmp("canceled").setValue(false);
+																	        				Ext.getCmp("canceled").enable();
+																	        				Ext.getCmp("no_show_radio").setValue(false);
+																	        			}else {
+																	        				document.getElementById("status").innerHTML = "Check-In";		
+																		        			Ext.getCmp("check_in_radio").setValue(true);
 																	        			}																	        			
 																	        		}
 																	        	}
@@ -1794,7 +1821,21 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																	        	xtype: 'checkbox',
 																	        	id: 'no_show_radio',
 																	        	name: 'no_show',
-																	        	fieldLabel: 'No Show'
+																	        	fieldLabel: 'No Show',
+																        		listeners:{
+																	        		check: function(self, newVal, oldVal) {
+																	        			if(newVal){
+																	        				document.getElementById("status").innerHTML = "n/a";
+																	        				Ext.getCmp("canceled").enable();
+																	        				Ext.getCmp("confirmmed").enable();
+																	        				
+																	        				Ext.getCmp("confirmmed").setValue(false);
+																	        				Ext.getCmp("canceled").setValue(false);
+																	        				Ext.getCmp("check_in_radio").setValue(false);
+																	        				Ext.getCmp("check_out_radio").setValue(false);
+																	        			}														        			
+																	        		}
+																	        	}
 																	        }
 																	]
 																}
@@ -1956,6 +1997,34 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 			        handler: function(btn, event){
 			        	panel.submitReservaion('done');
 			        }
+			      },
+			      {
+				        id: 'print_button',
+				        text: 'Print',
+				        width: 90,
+				        name: 'print_button',
+				        hidden: (!panel.reservation_id),
+				        handler: function(btn, event){
+
+	                    	var form = Ext.getCmp('citation-update-panel');
+
+	            			var body = Ext.getBody();
+	            			var frame = Ext.get('hiddenform-iframe-print-citation');
+	            			if(frame != undefined)
+	            			{
+	            				frame.remove();
+	            			}
+	            			
+	            			frame = body.createChild({
+	            		        tag: 'iframe',
+	            		        cls: 'x-hidden',
+	            		        id: 'hiddenform-iframe-print-reservation',
+	            		        name: 'hiddenform-iframe-print-reservation',
+	            		        src: _contextPath + "/reservation/print?reservation_id="+ panel.reservation_id
+	            		      });    		
+	            		
+	                    
+				        }
 			      }
 		        ]
 			};
@@ -2047,7 +2116,38 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    				 if(prop == "reservation_number"){
 	    					 document.getElementById("res_number").innerHTML = panel.reservationInfo[prop];
 	    				 }else if(prop == "reservation_status"){
-	    					 document.getElementById("status").innerHTML = panel.reservationInfo[prop];
+								/*
+								 '4', 'Confirmed'
+								 '5', 'Canceled'
+								 '6', 'Check in'
+								 '7', 'Check out'
+								 '8', 'Open'
+								 '9', 'No Show'*/
+	    					 	if(panel.reservationInfo[prop] == 4){	
+	    							document.getElementById("status").innerHTML = "Confirmmed";	    							
+	    							Ext.getCmp("confirmmed").setValue(true);
+			        				Ext.getCmp("check_in_radio").enable();
+	    						}else if(panel.reservationInfo[prop] == 5){
+	    							document.getElementById("status").innerHTML = "Canceled";
+	    							Ext.getCmp("canceled").setValue(true);
+	    						}else if(panel.reservationInfo[prop] == 6){
+	    							document.getElementById("status").innerHTML = "Check-In";
+	    							Ext.getCmp("confirmmed").setValue(true);
+			        				Ext.getCmp("check_in_radio").setValue(true);
+			        				Ext.getCmp("check_in_radio").enable(true);
+			        				Ext.getCmp("check_out_radio").enable();
+	    						}else if(panel.reservationInfo[prop] == 7){
+	    							document.getElementById("status").innerHTML = "Check-Out";	    							
+	    							Ext.getCmp("confirmmed").setValue(true);
+	    							Ext.getCmp("check_in_radio").setValue(true);
+			        				Ext.getCmp("check_out_radio").setValue(true);
+			        				Ext.getCmp("check_out_radio").enable(true);
+			        				Ext.getCmp("check_in_radio").enable(true);			        				
+	    						}else {
+	    							document.getElementById("status").innerHTML = "n/a";
+	    							Ext.getCmp("no_show_radio").setValue(true);			
+	    						}
+	    					 
 	    				 }else if(prop == "reservation_rooms" ){
 	    					 panel.load_combo_rooms = panel.reservationInfo[prop];
 		    			 } else if(prop == "reservation_payment_terms"){
@@ -2096,6 +2196,23 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    			 Ext.getCmp("reservation_check_out").fireEvent("change");
 	    		 }
 	    		 
+	    		 if(panel.reservationInfo.reservation_type == 3){																	
+					Ext.getCmp("event-info").show();
+					Ext.getCmp("rooms-info").hide();
+					
+					if(panel.reservationInfo.reservation_event_date != null){
+						Ext.getCmp("reservation_event_date").setValue(Ext.util.Format.date(panel.reservationInfo.reservation_event_date, 'd/m/Y'));
+					}					 
+					Ext.getCmp("reservation_event_participants").setValue(panel.reservationInfo.reservation_event_participants);
+					Ext.getCmp("reservation_event_adult").setValue(panel.reservationInfo.reservation_adults);
+					Ext.getCmp("reservation_meal_plan_event").setValue(panel.reservationInfo.reservation_meal_plan);
+					
+					
+				} else {
+					Ext.getCmp("rooms-info").show();
+					Ext.getCmp("event-info").hide();
+				}
+	    	
 	    	}
 	    	
     		 
@@ -2121,7 +2238,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
    			 return false;
     		}
     		
-    		
+    		if(Ext.getCmp("reservation_type").getValue() != 3){
     		if(!Ext.getCmp("rooms-info").getForm().isValid()){
       			 Ext.Msg.show({
    					   title:'Error!',
@@ -2131,6 +2248,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
    				});
       			 return false;
        		}
+    		}    	
     		
     		if(!Ext.getCmp("radio-info").getForm().isValid()){
     			 Ext.Msg.show({
@@ -2167,8 +2285,15 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    },
 	    submitReservaion: function(type){
 	    	
+	    	
+	    	
 	    	var panel = this;
 	    	if(type == "done"){
+	    		if(Ext.getCmp("reservation_type").getValue() != 3){
+	    			if(!panel.isValid()){
+		    			return false;
+		    		}
+		    	} else {
 	    		if(!panel.isValid()){
 	    			return false;
 	    		}else {
@@ -2196,6 +2321,8 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    		}    		
 	    	}
 	    	
+	    	}
+	    	
 	    	var res_number = document.getElementById("res_number").innerHTML;
 	    	var status = document.getElementById("status").innerHTML;
 			
@@ -2211,11 +2338,18 @@ ReservationPanel = Ext.extend(Ext.Panel, {
     			values, Ext.getCmp("guests-info").getForm().getFieldValues()
     		);
     		
-    		
+    		if(Ext.getCmp("reservation_type").getValue() != 3){
     		Ext.apply
     		(
     			values, Ext.getCmp("rooms-info").getForm().getFieldValues()
     		);
+	    	}else {
+	    		Ext.apply
+	    		(
+	    			values,  Ext.getCmp("event-info").getForm().getFieldValues()
+	    		);
+	    	}
+    		
     		
     		Ext.apply
     		(
@@ -2259,16 +2393,17 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 			Ext.apply
     		(
     			values, 			        			
-    			{'reservation_type': Ext.getCmp("reservation_type").getValue()}
+    			{'reservation_type': Ext.getCmp("reservation_type").getValue()},
+    			{'reservation_tax': Ext.getCmp("reservation_tax").getValue()}
     		);
 			
 			Ext.apply
     		(
     			values, 
     			{'reservation_number': res_number},
-    			{'status': status}
-    		);
+    			{'reservation_status': status}  			
 			
+    		);
 			
 			
 			
@@ -2289,6 +2424,15 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 						panel.reservation_id = data.reservation_id;
 						panel.submitCharges(data.reservation_id);
 						Ext.growl.message('Success!', 'Reservation has been saved.');
+						
+						if(type == "done"){
+							var content = Ext.getCmp('content-panel');
+							content.removeAll(true);						
+							content.add(new ReservationListPanel());
+							content.doLayout();
+							return;
+						}
+					
 					}
 			        
 			    },
@@ -2355,8 +2499,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    	   
 	    	});
 	    	
-	    	   
-	    	 chargesStore.load({params:{'reservation_id': panel.reservation_id}});
+	    	//ChargeGrid.getStore().load({params:{'reservation_id': panel.reservation_id}});
 	    	
 	    	/*
 	    	Ext.getCmp("colum1charges").items.item(0).store.data.items
@@ -2461,20 +2604,9 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 											    labelStyle: 'width:120px',
 											    width: 135,	
 											    autoload: true,
-											    store: new Ext.data.ArrayStore({
-											        id: 0,
-											        fields: [
-											            'TittleValue',
-											            'TittleDisplay'
-											        ],
-											        data: [
-											               [1, 'payment_method 1'],
-											               [2, 'payment_method 2'],
-											               [3, 'payment_method 3'],
-											               ]
-											    }),
-											    valueField: 'TittleValue',
-											    displayField: 'TittleDisplay',
+											    store:paymentMethodStore,
+											    valueField: 'payment_method_id',
+											    displayField: 'payment_method_description',
 											    fieldLabel: 'Payment Method',
 											    width: 135,
 											    tabIndex: 1,
@@ -2708,7 +2840,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 			                   {header: 'ID', sortable: true, dataIndex: 'payment_id', autoSizeColumn : true},
 					           {header: 'Reservation ID', sortable: true, dataIndex: 'reservation_id', autoSizeColumn : true},	
 					           {header: 'Payment Date', sortable: true, dataIndex: 'payment_date', autoSizeColumn : true},
-					           {header: 'Payment Method', sortable: true, dataIndex: 'payment_method',  autoSizeColumn : true},
+					           {header: 'Payment Method', sortable: true, dataIndex: 'payment_method_description',  autoSizeColumn : true},
 					           {header: 'Receive Date', sortable: true, dataIndex: 'receive_date',  autoSizeColumn : true},
 					           {header: 'Transaction No', sortable: true, dataIndex: 'transaction_no',  autoSizeColumn : true},
 					           {header: 'Amount', sortable: true, dataIndex: 'amount',  autoSizeColumn : true},
@@ -2803,8 +2935,30 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	                dataIndex: 'charge_item_name',
 	                anchor: "16%",
 	                // use shorthand alias defined above
-	                editor: new fm.TextField({
-	                    allowBlank: false
+	                editor: new fm.ComboBox({
+						  lazyRender: false,
+						  store: new Ext.data.ArrayStore({
+							  autoDestroy: true,
+						      fields: ['id', 'description'],
+						      data : [
+						              ['Room', 'Room'],
+						              ['Restaurant', 'Restaurant'],
+						              ['Rest/Bar', 'Rest/Bar'],
+						              ['Activity', 'Activity'],
+						              ['Tour', 'Tour'],
+						              ['Transportation', 'Transportation'],
+						              ['Car Rent', 'Car Rent'],
+						              ['Hotel Facilities', 'Hotel Facilities'],
+						              ['Room NS', 'Room NS'],
+						              ['Other', 'Other'],
+						      ]
+						    }),
+						    displayField: 'description',
+						    valueField: 'id',
+							triggerAction: 'all',
+							forceSelection: true,
+							mode: 'local',
+							allowBlank: true
 	                })
 	            },{
 	                id: 'charge_item_desc',
@@ -2874,8 +3028,8 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 							  autoDestroy: true,
 						      fields: ['id', 'description'],
 						      data : [
-						              ['guest', 'Guest'],
-						              ['agency', 'Agency'],
+						              ['Guest', 'Guest'],
+						              ['Agency', 'Agency'],
 						      ]
 						    }),
 						    displayField: 'description',
@@ -2911,15 +3065,33 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 		        	click : function(){
 		        		// update row charge_total of grid 
 		        		var sum = 0.00;
+		        		var taxSum = 0.00;
+		        		var servSum = 0.00;
 		        		chargesStore.each(function(record,id){				    					
 	    					record.set('charge_total',(record.data.charge_qty*record.data.charge_rate));	
 	    					sum += (record.data.charge_qty*record.data.charge_rate);
+	    					if(record.data.charge_item_name == "Room" || record.data.charge_item_name == "Room NS"){
+	    						taxSum += (record.data.charge_qty*record.data.charge_rate);
+	    					}
+	    					if(record.data.charge_item_name == "Restaurant" || record.data.charge_item_name == "Rest/Bar"){
+	    						servSum += (record.data.charge_qty*record.data.charge_rate);
+	    					}
 	    				});
 		        		
-		        		Ext.getCmp("sub_total").setValue('$'+Ext.util.Format.number(sum, '0.00'));
-		        		Ext.getCmp("total_changes").setValue(Ext.util.Format.number(sum, '0.00'));
+		        		if(taxSum > 1){
+		        			taxSum = (13*taxSum)/100;
+		        		}
+		        		if(servSum > 1){
+		        			servSum = (10*servSum)/100;
+		        		}		        		
 		        		
-		        		var balance = Ext.util.Format.number((sum - parseFloat(Ext.getCmp("total_paid").getValue())), '0.00');
+		        		Ext.getCmp("reservation_tax").setValue(Ext.util.Format.number(taxSum, '0.00'));
+		        		Ext.getCmp("services").setValue(Ext.util.Format.number(servSum, '0.00'));
+		        		
+		        		Ext.getCmp("sub_total").setValue('$'+Ext.util.Format.number(sum, '0.00'));
+		        		Ext.getCmp("total_changes").setValue(Ext.util.Format.number((sum+taxSum+servSum), '0.00'));
+		        		
+		        		var balance = Ext.util.Format.number(((sum+taxSum+servSum) - parseFloat(Ext.getCmp("total_paid").getValue())), '0.00');
 		        		Ext.getCmp("balance").setValue(balance);
 		        		
 		        		//panel.calculateSubTotal(ChargeGrid);

@@ -103,7 +103,7 @@ var TimeScheduler = {
         Element: $jQuery('<div></div>'),
 
         /* The minimum height of each section */
-        MinRowHeight: 40,
+        MinRowHeight: 30,
         
         /* Whether to show the Current Time or not */
         ShowCurrentTime: true,
@@ -266,6 +266,10 @@ var TimeScheduler = {
         
         addContextMenu();
         $jQuery('#rmenu').hide();
+        if(document.getElementById("print_buton_calendar") === null){
+        	$jQuery( ".time-sch-period-container" ).append( '<a id="print_buton_calendar" onclick="printContent()" class="time-sch-period-button time-sch-button" href="#">Print</a>' ); //$( "h2" )
+        }
+        
     },
 
     GetSelectedPeriod: function () {

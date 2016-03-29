@@ -21,7 +21,7 @@ public class Charges extends DBObject
 	@Expose public float charge_rate = 0;
 	@Expose public float charge_total = 0;
 	@Expose public float charge_tax = 0;
-	@Expose public int charge_folio = 0;
+	@Expose public String charge_folio = null;
 	
 		
 	//private static final String UTF_8 = "UTF-8";
@@ -93,6 +93,11 @@ public class Charges extends DBObject
 	public float getCharge_total() {
 		return charge_total;
 	}
+	
+	public String getCharge_total_format() {		
+		return String.format("$%.02f", charge_total);
+	}
+	
 	public void setCharge_total(float charge_total) {
 		this.charge_total = charge_total;
 	}
@@ -102,10 +107,10 @@ public class Charges extends DBObject
 	public void setCharge_tax(float charge_tax) {
 		this.charge_tax = charge_tax;
 	}
-	public int getCharge_folio() {
+	public String getCharge_folio() {
 		return charge_folio;
 	}
-	public void setCharge_folio(int charge_folio) {
+	public void setCharge_folio(String charge_folio) {
 		this.charge_folio = charge_folio;
 	}
 	

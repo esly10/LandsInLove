@@ -347,7 +347,7 @@ Ext.onReady(function(){
 			    {
 					var config = {
 							id: 'Room-' + this.charge.room_id + ' (' + this.date.value+ ')',
-							title:'Room- '+ this.charge.room_id + ' (' + this.date.value+ ')',
+							title:'Room- '+ this.charge.room_no + ' (' + this.date.value+ ')',
 							tabPosition: 'bottom',
 							activeTab: 0,
 							closable: true,

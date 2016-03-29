@@ -2,15 +2,21 @@ package com.cambiolabs.citewrite.controller;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.TransformerException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.app.VelocityEngine;
+import org.springframework.ui.velocity.VelocityEngineUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -28,6 +34,12 @@ import com.google.gson.JsonObject;
 public class RoomsController extends MultiActionController
 {
 	protected final Log logger = LogFactory.getLog(getClass());
+	private static VelocityEngine velocityEngine;
+	public void setVelocityEngine(VelocityEngine vEngine) {
+		velocityEngine = vEngine;
+	}
+	
+	public static Properties properties;
 	
 	public void list(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
@@ -369,6 +381,95 @@ public class RoomsController extends MultiActionController
 		response.getWriter().print("{success: false, msg: 'Charges not found.'}");
 		return null;
 	}
+	
+	
+	public void exportPDF(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, TransformerException, UnknownObjectException, ParseException {
+		{
+			try
+			{
+				String htmlFile = "";
+				HashMap<String, Object> model = new HashMap<String, Object>();
+				int id = Integer.parseInt(request.getParameter("room_id"));
+				Rooms room = new Rooms(id);
+				long now = System.currentTimeMillis();
+				Timestamp dateSend = new Timestamp(now);
+				Timestamp dateNow = new Timestamp(now);
+				String date = request.getParameter("date");
+				//long test = Long.parseLong(date);
+				try
+				{
+					dateSend = Timestamp.valueOf(date);
+				}
+				catch(NumberFormatException nfe){
+				
+				}
+				User user = User.getCurrentUser();
+				int reservationId = ReservationRoom.ReservationsId(id, dateSend);		
+				ArrayList<ReservationRoom> reservationrooms = new ArrayList<ReservationRoom>();
+				reservationrooms = ReservationRoom.Reservations(reservationId,dateSend);
+				ArrayList<Rooms> roomsrelated = new ArrayList<Rooms>();
+				Rooms roomrelated = null;
+				for (int i =0; i<reservationrooms.size(); i++){
+					roomrelated = new Rooms(reservationrooms.get(i).rr_room_id);
+					roomsrelated.add(roomrelated);
+				}
+				ArrayList<Charges> guestCharges = null;
+				ArrayList<Charges> agencyCharges = null;			
+				Reservations reservation = null;
+				Guests guests = null;
+				Agencies agency = null;
+				if (reservationrooms.size()>0){
+					int reservationID = reservationrooms.get(0).rr_reservation_id;
+					reservation = new Reservations(reservationID);
+					agency = new Agencies(reservation.reservation_agency_id);
+					guests = new Guests(reservation.reservation_guest_id);
+					guestCharges = new ArrayList<Charges>();
+					guestCharges = Charges.GuestCharges(reservationID);	
+					agencyCharges = new ArrayList<Charges>();
+					agencyCharges = Charges.AgencyCharges(reservationID);	
+				}
+				String imgUrl = request.getScheme() + "://"
+						+ request.getServerName() + ":"
+						+ request.getServerPort() + request.getContextPath();
+				model.put("imgUrl", imgUrl);
+				DateFormater formaterNow = new DateFormater(dateNow);
+				if (reservationrooms.size() != 0) {
+					model.put("reservation", reservation);
+					model.put("guestCharges", guestCharges);
+					model.put("agencyCharges", agencyCharges);
+					model.put("now", formaterNow);
+					model.put("guest", guests);
+					model.put("roomsrelated", roomsrelated);
+					model.put("agency", agency);
+					model.put("reservationrooms", reservationrooms);
+					model.put("user", user);
+					model.put("room", room);
+					
+				}			
+				try {
+					htmlFile = VelocityEngineUtils.mergeTemplateIntoString(
+							velocityEngine, "config/template/charges.vm",
+							model);
+				} catch (Exception e) {
+
+				}
+				Gson gson = new GsonBuilder()
+						.excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject json = new JsonObject();
+				json.addProperty("success", true);
+				json.addProperty("html", htmlFile);
+
+				response.setContentType("text/html");
+				response.setCharacterEncoding("UTF-8");
+				response.getWriter().print(htmlFile);
+			}
+			catch(Exception e)
+			{
+				
+			}
+		}
+	}
+		
 	
 	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{

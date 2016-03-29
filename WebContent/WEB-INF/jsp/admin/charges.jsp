@@ -7,11 +7,13 @@
 <div style="width: 100%; float: left;">
 		<div style="width: 33%; float: left;">
 			<dl class="list"; style="font-size:14px;">
-				<dt style="background:#00BBFF; color:#FFFFFF; text-align:center; padding:5px; font-size:14px;">Reservation Info:</dt>	
-				<dd style="background:#00BBFF; color:#FFFFFF; text-align:center; padding:5px; font-size:14px;"></dd> 	
-				<dt></dt><dd></dd>	 
-			<dt>Reservation #:</dt>	<dd><c:out value="${reservation.reservation_number}" />	- <c:out value="${item.typeName}" /></dd>	
-			<dt>Room #:</dt><dd><c:out value="${room.ROOM_NO}" />-	<c:out value="${room.typeName}" />
+				<dt style="background:#FFFFFF; color:#003d99; text-align:center; padding:5px; font-size:24px;">Detail of Charges</dt>	
+				<dd style="background:#FFFFFF; color:#003d99; text-align:center; padding:5px; font-size:24px;"></dd> 	
+				<dt style="background:#FFFFFF; color:#00bbff; text-align:left; padding:5px; font-size:14px;"><c:out value="${reservation.reservation_number}" /></dt>	
+				<dd style="background:#FFFFFF; color:#00bbff; text-align:center; padding:5px; font-size:14px;"></dd> 	 	
+				<hr>	 
+			<dt>Reservation #:</dt>	<dd><c:out value="${reservation.reservation_number}" />	- <c:out value="${reservation.typeName}" /></dd>	
+			<dt>Room #:</dt><dd><c:out value="${room.ROOM_NO}" />
 				</dd>
 				<dt>Status:</dt><dd><c:out value="${reservation.statusName}" /></dd>
 			</dl>
@@ -19,22 +21,26 @@
 		
 		<div style="width: 34%; float: left;">
 			<dl class="list"; style="font-size:14px;">
-				<dt style="background:#00BBFF; color:#FFFFFF; text-align:center; padding:5px; font-size:14px;"></dt>	
-				<dd style="background:#00BBFF; color:#FFFFFF; text-align:center; padding:5px; font-size:14px;"></dd> 	
-				<dt></dt><dd></dd>	
-				<dt>Check in:</dt><dd><c:out value="${reservation.reservation_check_in}" /></dd>
-				<dt>Check out:</dt><dd><c:out value="${reservation.reservation_check_out}"/> (<c:out value="${reservation.reservation_nights}" /> Nights)</dd>
+				<dt style="background:#FFFFFF; color:#003d99; text-align:center; padding:5px; font-size:24px;"></dt>	
+				<dd style="background:#FFFFFF; color:#003d99; text-align:center; padding:5px; font-size:24px;"></dd> 	
+				<dt style="background:#FFFFFF; color:#00bbff; text-align:left; padding:5px; font-size:14px;"></dt>	
+				<dd style="background:#FFFFFF; color:#00bbff; text-align:center; padding:5px; font-size:14px;"></dd> 	 	
+				<hr>	
+				<dt>Check in:</dt><dd><c:out value="${reservation.reservation_check_in_format}" /></dd>
+				<dt>Check out:</dt><dd><c:out value="${reservation.reservation_check_out_format}"/> (<c:out value="${reservation.reservation_nights}" /> Nights)</dd>
 				<dt>Occupancy:</dt><dd><c:out value="${reservation.reservation_adults}" /> ( <c:out value="${reservation.reservation_adults}"/> Adults, 
 				<c:out value="${reservation.reservation_children}"/> Children, <c:out value="${reservation.reservation_guides}"/> Guides.)</dd>
-				<dt>Meal Plan:</dt><dd><c:out value="${item.mealPlanName}" /></dd>
-				<dt></dt><dd></dd>
+				<dt>Meal Plan:</dt><dd><c:out value="${reservation.mealPlanName}" /></dd>
+				
 			</dl>
 		</div>
 		<div style="width: 33%; float: right;">
 			<dl class="list"; style="font-size:14px;">
-				<dt style="background:#00BBFF; color:#FFFFFF; text-align:center; padding:5px; font-size:14px;"></dt>	
-				<dd style="background:#00BBFF; color:#FFFFFF; text-align:center; padding:5px; font-size:14px;"></dd> 	
-				<dt></dt><dd></dd>	
+				<dt style="background:#FFFFFF; color:#003d99; text-align:center; padding:5px; font-size:24px;"></dt>	
+				<dd style="background:#FFFFFF; color:#003d99; text-align:center; padding:5px; font-size:24px;"></dd> 	
+				<dt style="background:#FFFFFF; color:#00bbff; text-align:left; padding:5px; font-size:14px;"></dt>	
+				<dd style="background:#FFFFFF; color:#00bbff; text-align:center; padding:5px; font-size:14px;"></dd> 	 	
+				<hr>
 				<dt>Guest:</dt><dd><c:out value="${guest.name}"/></dd>
 				<dt>Contact:</dt><dd><c:out value="${guest.phone} || ${guest.email}"/></dd>		
 				<dt>Agency:</dt><dd><c:out value="${agency.agency_name}"/></dd>
@@ -46,10 +52,10 @@
 	<div style="width: 100%; float: left;">
 		<div style="width: 100%; font-size:14px;">
 			<dl class="list">
-			<dt style="background:#00BBFF; color:#FFFFFF; text-align:center; padding:5px; font-size:14px;">Rooms Related:</dt>
-			<dd  style="background:#00BBFF; color:#FFFFFF; text-align:center; padding:5px; font-size:18px;"></dd>
+				<dt style="background:#FFFFFF; color:#00bbff; text-align:left; padding:5px; font-size:14px;">Rooms Related</dt>	
+				<dd style="background:#FFFFFF; color:#00bbff; text-align:center; padding:5px; font-size:14px;"></dd> 	
 			</dl>
-				<dl><dt></dt><dd></dd></dl>	
+				<hr>
 			<ul>
 				
 				<dl><dt></dt><dd></dd></dl>	
@@ -57,6 +63,7 @@
 				  			<li>Room #: <c:out value="${rooms.ROOM_NO}" /></li>
 				  </c:forEach>
 			</ul>
+			<hr>
 		</div>
 	</div>
 	<div style="width: 100%; float: left;">
@@ -76,8 +83,9 @@
 			 </tr>		
 			</c:forEach>
 			<tr><td colspan=4>Tax:</td><td colspan=2>$ <c:out value="${reservation.reservation_guest_tax}" /></td></tr>
-			<tr><td colspan=4>Sub Total:</td><td colspan=2>$ <c:out value="${reservation.reservation_guest_amount}" /></td></tr>	
-			<tr><td colspan=4>Total:</td><td colspan=2>$ <c:out value="${reservation.reservation_guest_amount+reservation.reservation_guest_tax}" /></td></tr>
+			<tr><td colspan=4>Sub Total:</td><td colspan=2>$ <c:out value="${reservation.reservation_guest_amount}" /></td></tr>
+			<tr><td colspan=4>Paid:</td><td colspan=2;  style="color:red;">$ <c:out value="${reservation.guestPaid}" /></td></tr>		
+			<tr><td colspan=4>Total:</td><td colspan=2> <c:out value="${reservation.totalGuest}" /></td></tr>
 		
 		</table>
 		
@@ -97,8 +105,9 @@
 			 </tr>		
 			</c:forEach>
 			<tr><td colspan=4>Tax:</td><td colspan=2>$ <c:out value="${reservation.reservation_agency_tax}" /></td></tr>
-			<tr><td colspan=4>Sub Total:</td><td colspan=2>$ <c:out value="${reservation.reservation_agency_amount}" /></td></tr>	
-			<tr><td colspan=4>Total:</td><td colspan=2>$ <c:out value="${reservation.reservation_agency_amount+reservation.reservation_agency_tax}" /></td></tr>
+			<tr><td colspan=4>Sub Total:</td><td colspan=2>$ <c:out value="${reservation.reservation_agency_amount}" /></td></tr>
+			<tr><td colspan=4>Paid:</td><td colspan=2  style="color:red;">$ <c:out value="${reservation.agencyPaid}" /></td></tr>	
+			<tr><td colspan=4>Total:</td><td colspan=2> <c:out value="${reservation.totalAgency}" /></td></tr>
 		</table>
 		
 		<table class="tableCharge" style="width:100%;";>
@@ -109,18 +118,18 @@
 			
 			 <tr>
 					<td>Agency</td> 
-					<td>$ <c:out value="${reservation.reservation_agency_tax+reservation.reservation_agency_amount}" /></td>
+					<td> <c:out value="${reservation.totalAgency}" /></td>
 			 </tr>	
 			  <tr>
 					<td>Guest</td> 
-					<td>$ <c:out value="${reservation.reservation_guest_amount+reservation.reservation_guest_tax}" /></td>
+					<td> <c:out value="${reservation.totalGuest}" /></td>
 			 </tr>	
-			 <tr style="font-size:18px;">
-					<td>Total</td> 
-					<td>$ <c:out value="${reservation.reservation_guest_amount+reservation.reservation_guest_tax+reservation.reservation_agency_tax+reservation.reservation_agency_amount}" /></td>
+			 <tr >
+					<td style="font-size:18px;">Balance</td> 
+					<td style="font-size:18px;"> <c:out value="${reservation.totalCharges}" /></td>
 			 </tr>		
 		</table>
-	
+	<hr>
 </div>
 	
 	

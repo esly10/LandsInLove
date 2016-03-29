@@ -225,7 +225,7 @@ public class Payments extends DBObject
 				}
 			}
 			return payments;
-		}
+		}	
 	
 	public String getMonth() {
 		GregorianCalendar calendar = (GregorianCalendar) Calendar.getInstance();

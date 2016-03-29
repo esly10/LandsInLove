@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.sql.Timestamp;
+import java.text.ParseException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,11 +16,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cambiolabs.citewrite.data.Agencies;
+import com.cambiolabs.citewrite.data.CcType;
 import com.cambiolabs.citewrite.data.Charges;
 import com.cambiolabs.citewrite.data.DateFormater;
+import com.cambiolabs.citewrite.data.MealPlan;
+import com.cambiolabs.citewrite.data.PaymentMethod;
 import com.cambiolabs.citewrite.data.ReservationRoom;
 import com.cambiolabs.citewrite.data.Reservations;
 import com.cambiolabs.citewrite.data.User;
@@ -92,7 +97,10 @@ public class ReservationController extends MultiActionController
 					.field("reservations.card_name")
 					.field("reservations.card_no")
 					.field("reservations.card_exp")
-					.field("reservations.card_type");
+					.field("reservations.card_type")
+					.field("reservations.reservation_tax")					
+					.field("reservations.reservation_event_date")
+					.field("reservations.reservation_event_participants");
 
 			qb.join("agencies agencies",
 					"reservations.reservation_agency_id=agencies.agency_id")
@@ -268,6 +276,75 @@ public class ReservationController extends MultiActionController
 	}
 	
 	
+	public ModelAndView print(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
+		response.setContentType("text/json");
+		
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		JsonObject json = new JsonObject();
+		json.addProperty("success", false);
+			
+		User user = User.getCurrentUser();
+		if(user == null || (!user.hasPermission(User.PL_CHARGES_VIEW)))
+		{
+
+			response.getOutputStream().print("You don't have permission to perform this action.");
+			return null;
+		}
+		
+		try
+		{	
+			Reservations reservation = new Reservations(Integer.parseInt(request.getParameter("reservation_id")));
+			ModelAndView mv =  new ModelAndView("print_reservation");
+			if (reservation != null){
+				mv.addObject("reservation", reservation);
+				mv.addObject("guest", reservation.getGuest());
+				mv.addObject("lastPeyment", reservation.getLastPayment());
+				
+				float subTotal = 0;
+				float taxSum = 0;
+				float servSum = 0;
+				for(Charges charge : reservation.getCharges()){
+					subTotal += charge.charge_total;
+					if(charge.charge_item_name.equalsIgnoreCase("Room") || charge.charge_item_name.equalsIgnoreCase("Room NS")){
+						taxSum+=charge.charge_total;
+					}
+					
+					if(charge.charge_item_name.equalsIgnoreCase("Restaurant") || charge.charge_item_name.equalsIgnoreCase("Rest/Bar")){
+						servSum+=charge.charge_total;
+					}
+					
+				}
+				
+				if(taxSum > 1){
+        			taxSum = (13*taxSum)/100;
+        		}
+        		if(servSum > 1){
+        			servSum = (10*servSum)/100;
+        		}	
+        		
+				mv.addObject("subtotal",String.format("$%.02f", subTotal));
+				mv.addObject("tax", String.format("$%.02f", (taxSum+servSum)));
+				mv.addObject("total", String.format("$%.02f", (subTotal+taxSum+servSum)));
+				
+				mv.addObject("user", user);
+				mv.addObject("mealPlan", reservation.getMealPlan());
+				mv.addObject("user", user);
+				return mv;
+			}			
+			
+			response.getOutputStream().print("Reservation not found.");
+			return null;
+			
+		}
+		catch(Exception e)
+		{
+			
+		}
+		response.setContentType("text/json");
+		response.getOutputStream().print("{success: false, msg: 'Charges not found.'}");
+		return null;
+	}
 	
 	public void roomList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
@@ -365,6 +442,227 @@ public class ReservationController extends MultiActionController
 		}
 	}
 	
+	public void mealsPlanList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
+		
+		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		JsonObject json = new JsonObject();
+		json.addProperty("success", false);
+	
+		try
+		{
+			User user = User.getCurrentUser();
+			if(user == null || (!user.hasPermission(User.PL_RESERVATION_MANAGE)))
+			{
+				json.addProperty("msg", "You don't have permission to perform this action.");
+				response.getWriter().print(gson.toJson(json));
+				return;
+			}
+			
+			String sort = request.getParameter("sort");
+			String dir = request.getParameter("dir");
+			
+			if(sort == null){
+				sort = "meal_plan_id";
+			}
+			
+			if(dir == null){
+				dir = " ";
+			}
+			
+			DBFilterList filter = new DBFilterList();
+			
+			int start = 0;
+			int limit = 1000;
+			
+			if(request.getParameter("start") != null)
+			{
+				try
+				{
+					start = Integer.parseInt(request.getParameter("start"));
+				}
+				catch(NumberFormatException nfe){}
+			}
+			
+			if(request.getParameter("limit") != null)
+			{
+				try
+				{
+					limit = Integer.parseInt(request.getParameter("limit"));
+				}
+				catch(NumberFormatException nfe){}
+			}
+			
+			MealPlan mealPlan = new MealPlan();
+			ArrayList<MealPlan> list = (ArrayList<MealPlan>)mealPlan.get(start, limit, sort + " " + dir, filter);
+		
+			int count = list.size();
+			if(limit > 0)
+			{
+				count = mealPlan.count(filter);
+			}
+			
+			json.addProperty("count", count);
+			json.add("meals", gson.toJsonTree(list));
+			json.addProperty("success", true);
+			
+			response.getWriter().print(gson.toJson(json));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public void paymentMethodList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
+		
+		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		JsonObject json = new JsonObject();
+		json.addProperty("success", false);
+	
+		try
+		{
+			User user = User.getCurrentUser();
+			if(user == null || (!user.hasPermission(User.PL_RESERVATION_MANAGE)))
+			{
+				json.addProperty("msg", "You don't have permission to perform this action.");
+				response.getWriter().print(gson.toJson(json));
+				return;
+			}
+			
+			String sort = request.getParameter("sort");
+			String dir = request.getParameter("dir");
+			
+			if(sort == null){
+				sort = "payment_method_id";
+			}
+			
+			if(dir == null){
+				dir = " ";
+			}
+			
+			DBFilterList filter = new DBFilterList();
+			
+			int start = 0;
+			int limit = 1000;
+			
+			if(request.getParameter("start") != null)
+			{
+				try
+				{
+					start = Integer.parseInt(request.getParameter("start"));
+				}
+				catch(NumberFormatException nfe){}
+			}
+			
+			if(request.getParameter("limit") != null)
+			{
+				try
+				{
+					limit = Integer.parseInt(request.getParameter("limit"));
+				}
+				catch(NumberFormatException nfe){}
+			}
+			
+			PaymentMethod payment_method = new PaymentMethod();
+			ArrayList<PaymentMethod> list = (ArrayList<PaymentMethod>)payment_method.get(start, limit, sort + " " + dir, filter);
+		
+			int count = list.size();
+			if(limit > 0)
+			{
+				count = payment_method.count(filter);
+			}
+			
+			json.addProperty("count", count);
+			json.add("paymentMethod", gson.toJsonTree(list));
+			json.addProperty("success", true);
+			
+			response.getWriter().print(gson.toJson(json));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public void ccTypeList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
+		
+		response.setContentType("text/json");
+		response.setCharacterEncoding("UTF-8");
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		JsonObject json = new JsonObject();
+		json.addProperty("success", false);
+	
+		try
+		{
+			User user = User.getCurrentUser();
+			if(user == null || (!user.hasPermission(User.PL_RESERVATION_MANAGE)))
+			{
+				json.addProperty("msg", "You don't have permission to perform this action.");
+				response.getWriter().print(gson.toJson(json));
+				return;
+			}
+			
+			String sort = request.getParameter("sort");
+			String dir = request.getParameter("dir");
+			
+			if(sort == null){
+				sort = "cc_type_id";
+			}
+			
+			if(dir == null){
+				dir = " ";
+			}
+			
+			DBFilterList filter = new DBFilterList();
+			
+			int start = 0;
+			int limit = 1000;
+			
+			if(request.getParameter("start") != null)
+			{
+				try
+				{
+					start = Integer.parseInt(request.getParameter("start"));
+				}
+				catch(NumberFormatException nfe){}
+			}
+			
+			if(request.getParameter("limit") != null)
+			{
+				try
+				{
+					limit = Integer.parseInt(request.getParameter("limit"));
+				}
+				catch(NumberFormatException nfe){}
+			}
+			
+			CcType ccType = new CcType();
+			ArrayList<CcType> list = (ArrayList<CcType>)ccType.get(start, limit, sort + " " + dir, filter);
+		
+			int count = list.size();
+			if(limit > 0)
+			{
+				count = ccType.count(filter);
+			}
+			
+			json.addProperty("count", count);
+			json.add("cc_type", gson.toJsonTree(list));
+			json.addProperty("success", true);
+			
+			response.getWriter().print(gson.toJson(json));
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 	public void chargeList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		
@@ -508,14 +806,13 @@ public class ReservationController extends MultiActionController
 				
 				String charge_rate = request.getParameter("charge_rate");//
 				String charge_total = request.getParameter("charge_total");//
-				String charge_folio = "11" ; //request.getParameter("charge_folio");//
+				charges.setCharge_folio(request.getParameter("charge_folio"));//
 				String charge_qty = request.getParameter("charge_qty");//
 				String charge_nights = request.getParameter("charge_nights");//
 				String charge_date = request.getParameter("charge_date");//	
 				
 				try{if(charge_qty!= null && charge_qty!= "" && charge_qty.length()>0){charges.setCharge_qty(Integer.parseInt(charge_qty));}}catch(NumberFormatException nfe){}
 				try{if(charge_nights!= null && charge_nights!= "" && charge_nights.length()>0){charges.setcharge_nights(Integer.parseInt(charge_nights));}}catch(NumberFormatException nfe){}
-				try{if(charge_folio!= null && charge_folio!= "" && charge_folio.length()>0){charges.setCharge_folio(Integer.parseInt(charge_folio));}}catch(NumberFormatException nfe){}
 				try{if(charge_rate!= null && charge_rate!= "" && charge_rate.length()>0){charges.setCharge_rate(Float.parseFloat(charge_rate));}}catch(NumberFormatException nfe){}
 				try{if(charge_total!= null && charge_total!= "" && charge_total.length()>0){charges.setCharge_total(Float.parseFloat(charge_total));}}catch(NumberFormatException nfe){}
 							
@@ -544,7 +841,7 @@ public class ReservationController extends MultiActionController
 		response.getWriter().print("{success: true}");
 	}
 	
-	public void save(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	public void save(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException 
 	{
 		response.setContentType("text/json");
 		response.setCharacterEncoding("UTF-8");
@@ -577,9 +874,21 @@ public class ReservationController extends MultiActionController
 				String Guest = request.getParameter("reservation_guest_id");//
 				//String User =request.getParameter("reservation_user_id");		//
 				String Checkin = request.getParameter("reservation_check_in");//
-				Checkin = Checkin.replace("T", " ");
+				if(Checkin != null){
+					Checkin = Checkin.substring(0,10)+" 12:00:00";
+				}
+				
 				String Checkout = request.getParameter("reservation_check_out");//
-				Checkout = Checkout.replace("T", " ");
+				if(Checkout != null){
+					Checkout = Checkout.substring(0,10)+" 12:00:00";
+				}
+				
+				String eventDate = request.getParameter("reservation_event_date");//				
+				if(eventDate != null){
+					eventDate = eventDate.substring(0,10)+" 12:00:00";
+				}
+				
+				String reservation_event_participants = request.getParameter("reservation_event_participants");//				
 				String Rooms = request.getParameter("reservation_rooms");//
 				String Rooms_qty = request.getParameter("reservation_rooms_qty");//
 				String Rooms_occupancy = request.getParameter("reservation_rooms_occupancy");//
@@ -600,19 +909,24 @@ public class ReservationController extends MultiActionController
 				reservation.setReservation_internal_notes(request.getParameter("reservation_internal_notes"));
 				String Update = request.getParameter("reservation_update_date");		
 				String Creation = request.getParameter("reservation_creation_date");
+				String reservation_tax = request.getParameter("reservation_tax");
 	
 				reservation.setCard_name(request.getParameter("card_name"));
 				reservation.setCard_no(request.getParameter("card_no"));
 				reservation.setCard_exp(request.getParameter("card_exp"));
 				reservation.setCard_type(request.getParameter("card_type"));
+				reservation.setReservation_status_by_string(Status);
 	
+				try{if(reservation_event_participants!= null && reservation_event_participants!= "" && reservation_event_participants.length()>0){reservation.setReservation_event_participants(Integer.parseInt(reservation_event_participants));}}catch(NumberFormatException nfe){}		
 				try{if(Type!= null && Type!= "" && Type.length()>0){reservation.setReservation_type(Integer.parseInt(Type));}}catch(NumberFormatException nfe){}	
-				try{if(Status!= null && Status!= "" && Status.length()>0){reservation.setReservation_status(Integer.parseInt(Status));}}catch(NumberFormatException nfe){}	
 				try{if(Agency!= null && Agency!= "" && Agency.length()>0){reservation.setReservation_agency_id(Integer.parseInt(Agency));}}catch(NumberFormatException nfe){}	
 				try{if(Guest!= null && Guest!= "" && Guest.length()>0){reservation.setReservation_guest_id(Integer.parseInt(Guest));}}catch(NumberFormatException nfe){}
 				reservation.setReservation_user_id(user.user_id);	
 				try{if(Checkin!= null && Checkin!= "" && Checkin.length()>0){reservation.setReservation_check_in(DateParser.toTimestamp(Checkin,"yyyy-M-dd HH:mm:ss"));}}catch(NumberFormatException nfe){}
 				try{if(Checkout!= null && Checkout!= "" && Checkout.length()>0){reservation.setReservation_check_out(DateParser.toTimestamp(Checkout,"yyyy-M-dd HH:mm:ss"));}}catch(NumberFormatException nfe){}	
+				
+				try{if(eventDate!= null && eventDate!= "" && eventDate.length()>0){reservation.setReservation_event_date(DateParser.toTimestamp(eventDate,"yyyy-M-dd HH:mm:ss"));}}catch(NumberFormatException nfe){}
+				
 				try{if(Rooms!= null && Rooms!= "" && Rooms.length()>0){reservation.setReservation_rooms(Rooms);}}catch(NumberFormatException nfe){}
 				try{if(Nights!= null && Nights!= "" && Nights.length()>0){reservation.setReservation_nights(Integer.parseInt(Nights));}}catch(NumberFormatException nfe){}	
 				try{if(Adults!= null && Adults!= "" && Adults.length()>0){reservation.setReservation_adults(Integer.parseInt(Adults));}}catch(NumberFormatException nfe){}
@@ -630,6 +944,7 @@ public class ReservationController extends MultiActionController
 				try{if(AgencyAmount!= null && AgencyAmount!= "" && AgencyAmount.length()>0){reservation.setReservation_agency_amount(Float.parseFloat(AgencyAmount));}}catch(NumberFormatException nfe){}
 				try{if(GuestTax!= null && GuestTax!= "" && GuestTax.length()>0){reservation.setReservation_guest_tax(Float.parseFloat(GuestTax));}}catch(NumberFormatException nfe){}	
 				try{if(GuestAmount!= null && GuestAmount!= "" && GuestAmount.length()>0){reservation.setReservation_guest_amount(Float.parseFloat(GuestAmount));}}catch(NumberFormatException nfe){}
+				try{if(reservation_tax!= null && reservation_tax!= "" && reservation_tax.length()>0){reservation.setReservation_tax(Integer.parseInt(reservation_tax));}}catch(NumberFormatException nfe){}
 				
 				long update =  System.currentTimeMillis();
 				Timestamp now = new Timestamp(update);
@@ -648,7 +963,7 @@ public class ReservationController extends MultiActionController
 				json.addProperty("success", false);
 				return;
 			}else {
-				
+				if(Rooms != null){
 				if(Rooms.length() > 0){
 				String[] stringArray = Rooms.split(";");
 					reservation.deleteRooms();
@@ -663,6 +978,7 @@ public class ReservationController extends MultiActionController
 			         
 			    }
 				}				
+				}								
 				
 				json.addProperty("success", true);
 				json.addProperty("reservation_id", reservation.reservation_id);

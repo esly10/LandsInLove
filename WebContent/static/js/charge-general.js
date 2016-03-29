@@ -27,21 +27,7 @@ ChargeGeneralPanel = Ext.extend(Ext.Panel, {
 				
 				
 			
-			var config = 
-			{
-				xtype: 'panel',
-			    //title: 'Charges',
-			    id: 'chargetab-general-' + panel.charge.room_id,
-			    padding: 5,
-			    bodyCssClass: 'x-citewrite-panel-body',
-			    autoScroll: true,
-			    buttonAlign: 'left',
-			    autoLoad : { url : _contextPath + '/rooms/details', scripts : true, params: {room_id: panel.charge.room_id, date: panel.date.value } },
-			    buttons:  buttons
-			};
-			Ext.apply(this, Ext.apply(this.initialConfig, config));
-	        
-			ChargeGeneralPanel.superclass.initComponent.apply(this, arguments);
+			
 			
 			buttons.push({xtype:'button',
 				handler: function(){
@@ -76,9 +62,85 @@ ChargeGeneralPanel = Ext.extend(Ext.Panel, {
 						   params: { room_id: panel.charge.room_id, xaction: 'get' }
 						});
 				},
-				text: 'Edit'});
+				text: 'Pay'},
+				
+				{xtype:'button',
+					
+					handler: function(){
+						
+		            	var room_id = panel.charge.room_id;
+		            	var date = panel.date.value;
+		    			var body = Ext.getBody();
+		    			var frame = Ext.get('hiddenform-iframe');
+		    			if(frame != undefined)
+		    			{
+		    				frame.remove();
+		    			}
+		    			
+		    			frame = body.createChild({
+		    		        tag: 'iframe',
+		    		        cls: 'x-hidden',
+		    		        id: 'hiddenform-iframe',
+		    		        method: 'get',
+		    		        name: 'hidden-iframe',
+		    		       
+		    				scripts : true, 
+		    		        src: _contextPath + "/rooms/exportPDF?room_id="+ room_id + "&date=" + date
+		    		      });    		
+		    		
+		            },text: 'Export'});
+					
+				/*	handler: function(){
+						
+						Ext.Ajax.request({
+							   url: _contextPath + '/rooms/exportPdf',
+							   success: function(response, opts){
+								   var data = Ext.decode(response.responseText);
+								   if(data.success)
+								   {
+									   editcharge(data.charge, data.fields, data.types, panel, stateStore);
+								   }
+								   else
+								   {
+									   Ext.Msg.show({
+										   title:'Error!',
+										   msg: data.msg,
+										   buttons: Ext.Msg.OK,
+										   icon: Ext.MessageBox.ERROR
+										});
+								   }
+								   
+							   },
+							   failure: function(response, opts){
+								   Ext.Msg.show({
+									   title:'Error!',
+									   msg: 'Error loading charge information.',
+									   buttons: Ext.Msg.OK,
+									   icon: Ext.MessageBox.ERROR
+									});
+							   },
+							   params: { room_id: panel.charge.room_id, xaction: 'get'}
+							});
+					},*/
+					
 		}
 			
+			
+			var config = 
+			{
+				xtype: 'panel',
+			    //title: 'Charges',
+			    id: 'chargetab-general-' + panel.charge.room_id,
+			    padding: 5,
+			    bodyCssClass: 'x-citewrite-panel-body',
+			    autoScroll: true,
+			    buttonAlign: 'left',
+			    autoLoad : { url : _contextPath + '/rooms/details', scripts : true, params: {room_id: panel.charge.room_id, date: panel.date.value } },
+			    buttons:  buttons
+			};
+			Ext.apply(this, Ext.apply(this.initialConfig, config));
+	        
+			ChargeGeneralPanel.superclass.initComponent.apply(this, arguments);
 			
 	    }
 });

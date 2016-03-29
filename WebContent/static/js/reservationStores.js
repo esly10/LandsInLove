@@ -48,6 +48,7 @@ agencyStore= new Ext.data.JsonStore({
                  'amount',
                  'bill_to',
                  'payment_notes',
+                 'payment_method_description'
         ],
         sortInfo: {
 			field: 'payment_date',
@@ -108,6 +109,57 @@ agencyStore= new Ext.data.JsonStore({
 		baseParams: {IS_DELETE: 0 }
     });
     
+    
+    // create the Data Store
+    mealPlanStore = new Ext.data.JsonStore({
+		url: _contextPath + '/reservation/mealsPlanList',
+		root: 'meals',
+        totalProperty: 'count',
+        remoteSort: true,
+        autoLoad: true,
+        fields: [
+            'meal_plan_id',
+            'meal_plan_description'		            		            
+        ],
+		sortInfo: {
+			field: 'meal_plan_id',
+			direction: 'asc'
+		}
+    });
+    
+    // create the Data Store
+    paymentMethodStore = new Ext.data.JsonStore({
+		url: _contextPath + '/reservation/paymentMethodList',
+		root: 'paymentMethod',
+        totalProperty: 'count',
+        remoteSort: true,
+        autoLoad: true,
+        fields: [
+            'payment_method_id',
+            'payment_method_description'		            		            
+        ],
+		sortInfo: {
+			field: 'payment_method_id',
+			direction: 'asc'
+		}
+    });
+    
+ // create the Data Store
+    ccTypeStore = new Ext.data.JsonStore({
+		url: _contextPath + '/reservation/ccTypeList',
+		root: 'cc_type',
+        totalProperty: 'count',
+        remoteSort: true,
+        autoLoad: true,
+        fields: [
+            'cc_type_id',
+            'cc_type_description'		            		            
+        ],
+		sortInfo: {
+			field: 'cc_type_id',
+			direction: 'asc'
+		}
+    });
     
     arrayRoomsStore = new Array();
     /*roomsStore.load({

@@ -61,7 +61,10 @@ ReservationListPanel = Ext.extend(Ext.Panel, {
 	            'card_no', 
 	            'card_exp', 
 	            'card_type', 
-	            'name' /*,'checkin','checkout'*/		          
+	            'reservation_tax',
+	            'reservation_event_date',
+	            'reservation_event_participants',
+	            'name' ,'checkin','checkout'		          
 	        ],
 			sortInfo: {
 				field: 'reservation_check_in',

@@ -28,7 +28,6 @@
 		baseParams: {}
     });
     
-    
     calendarStore = new Ext.data.JsonStore({
 		url: _contextPath + '/calendar/listCalendar',
 		root: 'reservations',
@@ -44,7 +43,16 @@
             'reservation_agency_id',
             'reservation_guest_id',
             'guest_name',
-            'agency_name'
+            'agency_name',  
+            'reservation_number',
+            'reservation_status',
+			'reservation_type',
+			'reservation_nights',
+			'reservation_adults',
+			'reservation_children',
+			'reservation_guides',
+			'reservation_event_date',					
+			'reservation_event_participants'
         ],
 		sortInfo: {
 			field: 'room_no',
@@ -53,7 +61,6 @@
 		baseParams: {}
     });
     
-
 	var arrayRoomsCalendar = new Array();
 	var arrayCalendar = new Array();
     
@@ -73,15 +80,33 @@
 		params:{start:0, limit: 1000},
 		callback: function () {
 			calendarStore.each(function(record,id){    				
-				if( record.data.reservation_agency_id){
+				var type = "";
+				var title = "";
+				if(record.data.reservation_type == 1){
+					 type = "Fit";
+				}else if(record.data.reservation_type == 2){
+					 type = "Group";
+				} else if(record.data.reservation_type == 3){
+					 type = "Event";
+				}
+				//"Original Value: "+rec.value+"&#10;";
+				title +=  "Reservation Number: "+record.data.reservation_number+"&#10;";
+				title += "Guest Name: "+record.data.guest_name+"&#10;";
+				title += "Agency Name: "+record.data.agency_name+"&#10;";
+				title += "Room No: "+record.data.room_no+"&#10;";
+				title += "Status: "+getStatus(record.data.reservation_status)+"&#10;";
+				title += "Type: "+type;
+							
+				
+				if( record.data.reservation_type == 3){
 					arrayCalendar.push(
     						{
     	    				    id: 'res_'+id,
-    	    				    name: '<div>'+record.data.agency_name+'</div><div>'+"Info.."+'</div>',
+    	    				    name: '<div title="'+title+'"><div>'+record.data.guest_name+'</div><div>'+type+', '+record.data.reservation_number+'</div></div>',
     	    				    sectionID: record.data.rr_room_id,
-    	    				    start: moment(record.data.rr_reservation_in.slice(0,10)).add('hours', 24),
-    	    				    end: moment(record.data.rr_reservation_out.slice(0,10)).add('hours', 24),
-    	    				    classes: 'item-status-agency',
+    	    				    start: moment(record.data.reservation_event_date).add('hours', -12),
+    	    				    end: moment(record.data.reservation_event_date).add('hours', 12),
+    	    				    classes: 'item-status-'+record.data.reservation_status,
     				            data:record.data
     	    				         
     	    				}
@@ -90,11 +115,12 @@
 					arrayCalendar.push(
 							{
     	    				    id: 'res_'+id,
-    	    				    name: '<div>'+record.data.guest_name+'</div><div>'+"Info.."+'</div>',
+    	    				    name: '<div title="'+title+'"><div>'+record.data.guest_name+'</div><div>'+type+', '+record.data.reservation_number+'</div></div>',
     	    				    sectionID: record.data.rr_room_id,
-    	    				    start: moment(record.data.rr_reservation_in.slice(0,10)).add('hours', 24),
-    	    				    end: moment(record.data.rr_reservation_out.slice(0,10)).add('hours', 24),
-    	    				    classes: 'item-status-guest',
+    	    				    start: moment(record.data.rr_reservation_in).add('hours', -12),
+    	    				    end: moment(record.data.rr_reservation_out).add('hours', 12),
+    	    				    classes: 'item-status-'+record.data.reservation_status,
+    	    				    data:record.data
     	    				}
     				);
 				}
@@ -108,7 +134,6 @@
 
 	var Calendar = {
 	    Periods: [
-
 	        {
 	            Name: '1 week',
 	            Label: '1 week',
@@ -133,23 +158,8 @@
 	        }
 	    ],
 
-	    Items: arrayCalendar,/* [
-		{
-		    id: 20,
-		    name: '<div>Esly Mayrena</div><div>Sub Info</div>',
-		    sectionID: 24,
-		    start: moment(today).add('days', -1),
-		    end: moment(today).add('days', 3),
-		    classes: 'item-status'
-		},
-		{
-		    id: 21,
-		    name: '<div>Erick Quiros</div><div>Sub Info</div>',
-		    sectionID: 25,
-		    start: moment(today).add('days', -1),
-		    end: moment(today).add('days', 4),
-		    classes: 'item-status '
-		},
+	    Items: arrayCalendar,
+	    /* [
 		{
 		    id: 22,
 		    sectionID: 23,
@@ -177,7 +187,6 @@
 	        TimeScheduler.Options.Events.ItemDropped = Calendar.Item_Dragged;
 	        TimeScheduler.Options.Events.ItemResized = Calendar.Item_Resized;
 
-	        TimeScheduler.Options.ShowCurrentTime;
 	        //TimeScheduler.Options.Events.ItemMovement = Calendar.Item_Movement;
 	        //TimeScheduler.Options.Events.ItemMovementStart = Calendar.Item_MovementStart;
 	        //TimeScheduler.Options.Events.ItemMovementEnd = Calendar.Item_MovementEnd;
@@ -192,10 +201,29 @@
 	            return false;     // cancel default menu
 	        };
 	        addContextMenu();	    
+	        resizeTable();
 
 	        $jQuery('#create-res').click(function(ev){
 	        	addResWindows();
 	         });
+	        
+	        
+	        var w =$jQuery( ".time-sch-table.time-sch-table-header" ).width();		
+    		$jQuery( ".time-sch-table-header tbody" ).width(w-8);
+    		
+    		if(document.getElementById("print_buton_calendar") === null){
+            	$jQuery( ".time-sch-period-container" ).append( '<a id="print_buton_calendar" onclick="printContent()" class="time-sch-period-button time-sch-button" href="#">Print</a>' ); //$( "h2" )
+            }
+	        //var num = 28;
+	        //var width = 0;
+	        
+	        //var newHeader = $jQuery(".time-sch-table-header tbody").clone();
+	        // $jQuery( "body" ).append(newHeader);
+	        //for (i = 0; i < num; i++) { 
+	        	//width = $jQuery(".time-sch-date-content.time-sch-header-1-date-column-"+i).width();
+	        	//$jQuery(".time-sch-date-header.time-sch-header-1-date-column-"+i).width(width);
+	        //}
+	        
 	    },
 
 	    GetSections: function (callback) {
@@ -429,6 +457,32 @@
 		         });
 		 
 	}
+	function getStatus(id){
+	 /*  '4', 'Confirmed'
+		 '5', 'Canceled'
+		 '6', 'Check in'
+		 '7', 'Check out'
+		 '8', 'Open'
+		 '9', 'No Show'  */
+		if(id == 4){
+			return 'Confirmed';
+		}
+		else if(id == 5){
+			return 'Canceled';
+		}
+		else if(id == 6){
+			return 'Check in';
+		}
+		else if(id == 7){
+			return 'Check out';
+		}
+		else if(id == 9){
+			return 'No Show';
+		}
+		
+		return 'n/a';
+		
+	}
 	function mouseY(evt) {
 	    if (evt.pageY) {
 	        return evt.pageY;
@@ -441,4 +495,31 @@
 	    }
 	}
 		
+	function resizeTable(){
+		$jQuery( ".time-sch-table" ).resize(function() {		
+    		var w =$jQuery( ".time-sch-table.time-sch-table-header" ).width();		
+    		$jQuery( ".time-sch-table-header tbody" ).width(w-8);
+    		
+    	});	
+	} 
+	
+
+	function printContent(){
+
+		$jQuery('#calendar-div').parents().siblings().hide();
+		$jQuery('.time-sch-period-container').hide();
+		$jQuery('.time-sch-time-container').hide();
+		
+		window.print();
+		
+		$jQuery('#calendar-div').parents().siblings().show();		
+		$jQuery('#ext-gen32').hide();
+		$jQuery('.time-sch-period-container').show();
+		$jQuery('.time-sch-time-container').show();
+		return true;
+		
+	};
+
+
+	
 	

@@ -152,12 +152,22 @@ public class CalendarController extends MultiActionController
 					.field("reservations_rooms.rr_reservation_id")
 					.field("reservations_rooms.rr_reservation_in")
 					.field("reservations_rooms.rr_reservation_out")
-					
 					.field("rooms.room_no")
-					
 					.field("reservations.reservation_agency_id")
 					.field("reservations.reservation_guest_id")
+					.field("reservations.reservation_id")
+					.field("reservations.reservation_number")
 					
+					.field("reservations.reservation_status")
+					.field("reservations.reservation_type")
+					.field("reservations.reservation_nights")
+					.field("reservations.reservation_adults")
+					.field("reservations.reservation_children")
+					.field("reservations.reservation_guides")
+					.field("reservations.reservation_event_date")					
+					.field("reservations.reservation_event_participants")
+					.field("reservations.reservation_event_date")
+					.field("reservations.reservation_event_date")
 					.field("guests.name guest_name")
 					.field("agencies.agency_name");
 
