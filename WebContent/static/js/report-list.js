@@ -278,6 +278,7 @@ Ext.onReady(function(){
 									id: 'filter_password',
 									name: 'filter_password',								
 									fieldLabel: 'Password', 
+									hidden: true,
 									anchor:'90%',
 									inputType: 'password'
 								},{

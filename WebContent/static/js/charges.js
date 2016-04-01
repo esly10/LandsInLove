@@ -40,7 +40,8 @@ Ext.onReady(function(){
 		            'room_no',
 		            'room_id',
 		            'room_type',
-		            'rr_id'     		            
+		            'rr_id',
+		            'rr_reservation_id'
 		        ],
 				sortInfo: {
 					field: 'room_no',
@@ -161,84 +162,7 @@ Ext.onReady(function(){
 								}
 			    	        }
 			    	        ]
-			    }/*,
-			    bbar: new Ext.PagingToolbar({
-			            pageSize: pageLimit,
-			            store: chargeStore,
-			            displayInfo: true,
-			            displayMsg: '',
-			            emptyMsg: " ",
-			            items: ['-',
-			            		]
-			    	}),
-			    tbar: {
-			    	xtype: 'toolbar',
-			    	items: ['Filter: ',
-			    	        {
-			    				xtype: 'cleartrigger',
-					            value: '',
-					            enableKeyEvents: true,
-					            listeners: {
-					            	keyup: function(field, event)
-					            	{
-					            		if(event.keyCode == 13)
-					            		{
-						            		var filterValue = this.getValue();
-						            		
-						            		var grid = field.chargeCt.chargeCt;
-							            	var store = grid.store;
-							            	store.baseParams = {filter: filterValue};
-							            	store.load({params: {start: 0, limit: pageLimit}});
-					            		}
-					            	},
-					            },
-					            onTriggerClick: function() {
-					            	this.setValue('');
-					            	var grid = this.chargeCt.chargeCt;
-					            	var store = grid.store;
-					            	store.baseParams = {};
-					            	store.load({params: {start: 0, limit: pageLimit}});
-					            }
-					        },
-			    	        '->',
-			    	        {
-					        	xtype:'button',
-								handler: function(){
-									
-									Ext.Ajax.request({
-										   url: _contextPath + '/charge/details',
-										   success: function(response, opts){
-											   var data = Ext.decode(response.responseText);
-											   if(data.success)
-											   {
-												   editCharge(null, data.fields, data.types);
-											   }
-											   else
-											   {
-												   Ext.Msg.show({
-													   title:'Error!',
-													   msg: data.msg,
-													   buttons: Ext.Msg.OK,
-													   icon: Ext.MessageBox.ERROR
-													});
-											   }
-											   
-										   },
-										   failure: function(response, opts){
-											   Ext.Msg.show({
-												   title:'Error!',
-												   msg: 'Error loading charge information.',
-												   buttons: Ext.Msg.OK,
-												   icon: Ext.MessageBox.ERROR
-												});
-										   },
-										   params: { charge_id: 0, xaction: 'get' }
-										});
-								},
-								text: 'Add'}
-			    	        ]
-			    }//top tool bar
-			    	*/
+			    }
 			});
 			//myDateField.setValue(new Date());
 			var ChargeListMenu = function(grid, index, event)

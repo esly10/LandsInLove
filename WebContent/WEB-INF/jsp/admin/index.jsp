@@ -135,10 +135,6 @@
 		 			<script type="text/javascript" src="<c:url value="/static/js/rooms.js" />"></script>
 		 			<script type="text/javascript" src="<c:url value="/static/js/rooms-grid.js" />"></script>
 		 		</li>
-			<% } if(cwUser.hasPermission(User.PL_ADMIN)){ %>
-				<li id="nav-users">Users
-	   	 			<script type="text/javascript" src="<c:url value="/static/js/users.js" />"></script>
-	   	 		</li>
     		<% } if(cwUser.hasPermission(User.PL_REPORT_VIEW)){ %>
 				<li id="nav-reports">Reports
 		 			<script type="text/javascript" src="<c:url value="/static/js/report-list.js" />"></script>

@@ -241,48 +241,56 @@
 		</div>
 	</div>
 	<div style="width: 100%; float: left;">
-		<table  class="tableCharge"  style="width:100%; float: right;";>
-			 <tr><td colspan=6>Agency Charges: </td></tr>
-			  <tr>
-			    <th>Item</th><th>Description</th><th>Qty</th><th>Rate</th><th>Tax</th> <th>Total</th>
-			  </tr>
-			#foreach($item in ${agencyCharges})
-			 <tr>
-					<td>${item.charge_item_name}</td> 
-					<td>${item.charge_item_desc}</td>
-					<td>${item.charge_qty}</td>
-					<td>$ ${item.charge_rate}</td>
-					<td>$ ${item.charge_tax}</td>
-					<td>$ ${item.charge_total}</td>								
-			 </tr>		
-			#end
-			<tr><td colspan=4>Tax:</td><td colspan=2>$ ${reservation.reservation_guest_tax}</td></tr>
-			<tr><td colspan=4>Sub Total:</td><td colspan=2>$ ${reservation.reservation_guest_amount}</td></tr>
-			<tr><td colspan=4>Paid:</td><td colspan=2;  style="color:red;">$ ${reservation.guestPaid}</td></tr>		
-			<tr><td colspan=4>Total:</td><td colspan=2> ${reservation.totalGuest}</td></tr>
-		
-		</table>
+		#if ($agencySize > 0)
+			<table  class="tableCharge"  style="width:100%; float: right;";>
+				 <tr><td colspan=6>Agency Charges: </td></tr>
+				  <tr>
+				    <th>Item</th><th>Description</th><th>Qty</th><th>Rate</th> <th>Total</th>
+				  </tr>
+				#foreach($item in ${agencyCharges})
+				 <tr>
+						<td>${item.charge_item_name}</td> 
+						<td>${item.charge_item_desc}</td>
+						<td>${item.charge_qty}</td>
+						<td>$ ${item.charge_rate}</td>
+						
+						<td>$ ${item.charge_total}</td>								
+				 </tr>		
+				#end
+				
+				<tr><td colspan=4 style="border-top: 1px solid #000;">Sub Total:</td><td colspan=2 style="border-top: 1px solid #000;">$ ${reservation.agencyCharges}</td></tr>
+				<tr><td colspan=4>Tax:</td><td colspan=2>$ ${reservation.agencyTax}</td></tr>
+				<tr><td colspan=4>Service:</td><td colspan=2>$ ${reservation.agencyService}</td></tr>
+				<tr><td colspan=4>Paid:</td><td colspan=2;  style="color:red;">$ ${reservation.agencyPaid}</td></tr>		
+				<tr><td colspan=4>Total:</td><td colspan=2> ${reservation.totalAgency}</td></tr>
+			
+			</table>
+		#end
 		<hr>
-		<table class="tableCharge" style="width:100%;  float: left;";>
-		<tr><td colspan=6>Guest Charges: </td></tr>
-			  <tr>
-			    <th>Item</th><th>Description</th><th>Qty</th><th>Rate</th><th>Tax</th> <th>Total</th>
-			  </tr>
-			#foreach($item in ${guestCharges})
-			 <tr>
-					<td>${item.charge_item_name}</td> 
-					<td>${item.charge_item_desc}</td>
-					<td>${item.charge_qty}</td>
-					<td>$ ${item.charge_rate}</td>
-					<td>$ ${item.charge_tax}</td>
-					<td>$ ${item.charge_total}</td>							
-			 </tr>		
-			#end
-			<tr><td colspan=4>Tax:</td><td colspan=2>$ ${reservation.reservation_agency_tax}</td></tr>
-			<tr><td colspan=4>Sub Total:</td><td colspan=2>$ ${reservation.reservation_agency_amount}</td></tr>
-			<tr><td colspan=4>Paid:</td><td colspan=2  style="color:red;">$ ${reservation.agencyPaid}</td></tr>	
-			<tr><td colspan=4>Total:</td><td colspan=2> ${reservation.totalAgency}</td></tr>
-		</table>
+		#if ($guestSize > 0)
+			<table class="tableCharge" style="width:100%;  float: right;";>
+			<tr><td colspan=6>Guest Charges: </td></tr>
+				  <tr>
+				    <th>Item</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th>
+				  </tr>
+				#foreach($item in ${guestCharges})
+				 <tr>
+						<td>${item.charge_item_name}</td> 
+						<td>${item.charge_item_desc}</td>
+						<td>${item.charge_qty}</td>
+						<td>$ ${item.charge_rate}</td>
+						
+						<td>$ ${item.charge_total}</td>							
+				 </tr>		
+				#end
+				
+				<tr><td colspan=4  style="border-top: 1px solid #000;">Sub Total:</td><td colspan=2  style="border-top: 1px solid #000;">$ ${reservation.guestCharges}</td></tr>
+				<tr><td colspan=4>Tax:</td><td colspan=2>$ ${reservation.guestTax}</td></tr>
+				<tr><td colspan=4>Service:</td><td colspan=2>$ ${reservation.guestService}</td></tr>
+				<tr><td colspan=4>Paid:</td><td colspan=2  style="color:red;">$ ${reservation.guestPaid}</td></tr>	
+				<tr><td colspan=4>Total:</td><td colspan=2> ${reservation.totalGuest}</td></tr>
+			</table>
+		#end
 		<hr>
 		<table class="tableCharge" style="width:100%;";>
 		<tr><td colspan=6>Totals: </td></tr>

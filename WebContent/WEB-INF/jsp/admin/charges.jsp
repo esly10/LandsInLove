@@ -67,49 +67,55 @@
 		</div>
 	</div>
 	<div style="width: 100%; float: left;">
-		<table  class="tableCharge"  style="width:49%; float: right;";>
-			 <tr><td colspan=6>Agency Charges: </td></tr>
-			  <tr>
-			    <th>Item</th><th>Description</th><th>Qty</th><th>Rate</th><th>Tax</th> <th>Total</th>
-			  </tr>
-			<c:forEach items="${agencyCharges}" var="item">	
-			 <tr>
-					<td><c:out value="${item.charge_item_name}" /></td> 
-					<td><c:out value="${item.charge_item_desc}" /></td>
-					<td><c:out value="${item.charge_qty}" /></td>
-					<td>$ <c:out value="${item.charge_rate}" /></td>
-					<td>$ <c:out value="${item.charge_tax}" /></td>
-					<td>$ <c:out  value="${item.charge_total}" /></td>								
-			 </tr>		
-			</c:forEach>
-			<tr><td colspan=4>Tax:</td><td colspan=2>$ <c:out value="${reservation.reservation_guest_tax}" /></td></tr>
-			<tr><td colspan=4>Sub Total:</td><td colspan=2>$ <c:out value="${reservation.reservation_guest_amount}" /></td></tr>
-			<tr><td colspan=4>Paid:</td><td colspan=2;  style="color:red;">$ <c:out value="${reservation.guestPaid}" /></td></tr>		
-			<tr><td colspan=4>Total:</td><td colspan=2> <c:out value="${reservation.totalGuest}" /></td></tr>
-		
-		</table>
-		
-		<table class="tableCharge" style="width:49%;  float: left;";>
-		<tr><td colspan=6>Guest Charges: </td></tr>
-			  <tr>
-			    <th>Item</th><th>Description</th><th>Qty</th><th>Rate</th><th>Tax</th> <th>Total</th>
-			  </tr>
-			<c:forEach items="${guestCharges}" var="item">	
-			 <tr>
-					<td><c:out value="${item.charge_item_name}" /></td> 
-					<td><c:out value="${item.charge_item_desc}" /></td>
-					<td><c:out value="${item.charge_qty}" /></td>
-					<td>$ <c:out value="${item.charge_rate}" /></td>
-					<td>$ <c:out value="${item.charge_tax}" /></td>
-					<td>$ <c:out  value="${item.charge_total}" /></td>							
-			 </tr>		
-			</c:forEach>
-			<tr><td colspan=4>Tax:</td><td colspan=2>$ <c:out value="${reservation.reservation_agency_tax}" /></td></tr>
-			<tr><td colspan=4>Sub Total:</td><td colspan=2>$ <c:out value="${reservation.reservation_agency_amount}" /></td></tr>
-			<tr><td colspan=4>Paid:</td><td colspan=2  style="color:red;">$ <c:out value="${reservation.agencyPaid}" /></td></tr>	
-			<tr><td colspan=4>Total:</td><td colspan=2> <c:out value="${reservation.totalAgency}" /></td></tr>
-		</table>
-		
+		<c:if test = "${agencySize > 0}">	
+			<table  class="tableCharge"  style="width:100%; float: right;";>
+				 <tr><td colspan=6>Agency Charges: </td></tr>
+				  <tr>
+				    <th>Item</th><th>Description</th><th>Qty</th><th>Rate</th> <th>Total</th>
+				  </tr>
+				<c:forEach items="${agencyCharges}" var="item">	
+				 <tr>
+						<td><c:out value="${item.charge_item_name}" /></td> 
+						<td><c:out value="${item.charge_item_desc}" /></td>
+						<td><c:out value="${item.charge_qty}" /></td>
+						<td>$ <c:out value="${item.charge_rate}" /></td>
+						
+						<td>$ <c:out  value="${item.charge_total}" /></td>								
+				 </tr>		
+				</c:forEach>
+				
+				<tr><td colspan=4 style="border-top: 1px solid #000;">Sub Total:</td><td colspan=2 style="border-top: 1px solid #000;">$ <c:out value="${reservation.agencyCharges}" /></td></tr>
+				<tr><td colspan=4>Tax:</td><td colspan=2>$ <c:out value="${reservation.agencyTax}" /></td></tr>
+				<tr><td colspan=4>Service:</td><td colspan=2>$ <c:out value="${reservation.agencyService}" /></td></tr>
+				<tr><td colspan=4>Paid:</td><td colspan=2;  style="color:red;">$ <c:out value="${reservation.agencyPaid}" /></td></tr>		
+				<tr><td colspan=4>Total:</td><td colspan=2> <c:out value="${reservation.totalAgency}" /></td></tr>
+			
+			</table>
+		</c:if>
+		<c:if test = "${guestSize > 0}">	
+			<table class="tableCharge" style="width:100%;  float: left;";>
+			<tr><td colspan=6>Guest Charges: </td></tr>
+				  <tr>
+				    <th>Item</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th>
+				  </tr>
+				<c:forEach items="${guestCharges}" var="item">	
+				 <tr>
+						<td><c:out value="${item.charge_item_name}" /></td> 
+						<td><c:out value="${item.charge_item_desc}" /></td>
+						<td><c:out value="${item.charge_qty}" /></td>
+						<td>$ <c:out value="${item.charge_rate}" /></td>
+						
+						<td>$ <c:out  value="${item.charge_total}" /></td>							
+				 </tr>		
+				</c:forEach>
+				
+				<tr><td colspan=4  style="border-top: 1px solid #000;">Sub Total:</td><td colspan=2  style="border-top: 1px solid #000;">$ <c:out value="${reservation.guestCharges}" /></td></tr>
+				<tr><td colspan=4>Tax:</td><td colspan=2>$ <c:out value="${reservation.guestTax}" /></td></tr>
+				<tr><td colspan=4>Service:</td><td colspan=2>$ <c:out value="${reservation.guestService}" /></td></tr>
+				<tr><td colspan=4>Paid:</td><td colspan=2  style="color:red;">$ <c:out value="${reservation.guestPaid}" /></td></tr>	
+				<tr><td colspan=4>Total:</td><td colspan=2> <c:out value="${reservation.totalGuest}" /></td></tr>
+			</table>
+		</c:if>
 		<table class="tableCharge" style="width:100%;";>
 		<tr><td colspan=6>Totals: </td></tr>
 			  <tr>
@@ -117,11 +123,11 @@
 			  </tr>
 			
 			 <tr>
-					<td>Agency</td> 
+					<td>Agency Balance</td> 
 					<td> <c:out value="${reservation.totalAgency}" /></td>
 			 </tr>	
 			  <tr>
-					<td>Guest</td> 
+					<td>Guest Balance</td> 
 					<td> <c:out value="${reservation.totalGuest}" /></td>
 			 </tr>	
 			 <tr >

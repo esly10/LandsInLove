@@ -24,9 +24,7 @@
 				  </tr>
 			  </thead>
 			  <tr style="background:#E1E1E1;"><td colspan=8; style="color:#19BF89; text-align:left; font-size:18px; font-style:bold;">Confirmed </td> </tr>
-			<c:forEach items="${reservations}" var="item">	
-			 <c:choose>
-				<c:when test="${item.reservation_status == '1'}">
+			<c:forEach items="${reservationsConfirmed}" var="item">	 
 				 	<tr>
 						<td><c:out value="${item.reservation_number}" /></td>
 						<td><c:out value="${item.typeName}" /></td>
@@ -36,17 +34,12 @@
 						<td><c:out value="${item.agencyName}" /></td>
 						<td><c:out value="${item.reservation_rooms}" /></td>
 						<td><c:out value="${item.reservation_creation_date}" /></td> 
-				 	</tr>	
-			 	</c:when>
-			</c:choose>
-			 	
+				 	</tr>			 	
 			</c:forEach>
 			<tr></tr>
 			<tr style="background:#E1E1E1;"><td colspan=8; style="color:#19BF89; text-align:left; font-size:18px;">Open </td> </tr>
-			<c:forEach items="${reservations}" var="item">	
-				 <c:choose>
-					<c:when test="${item.reservation_status == '0'}">
-					 	<tr>
+			<c:forEach items="${reservationsOpen}" var="item">	
+				 <tr>
 							<td><c:out value="${item.reservation_number}" /></td>
 							<td><c:out value="${item.typeName}" /></td>
 							<td><c:out value="${item.checkInFormated}" /></td> 
@@ -56,9 +49,7 @@
 							<td><c:out value="${item.reservation_rooms_qty}" /></td>
 							<td><c:out value="${item.reservation_creation_date}" /></td> 
 					 	</tr>
-					 	
-				 	</c:when>	
-				</c:choose>
+					 
 			</c:forEach>
 			<tr></tr>
 			<tbody></tbody>

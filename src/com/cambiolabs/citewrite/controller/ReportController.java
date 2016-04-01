@@ -310,6 +310,9 @@ public class ReportController extends MultiActionController
 						calendar.add(formaterWhile);
 						dateAdd =formaterWhile.getAddMonths(formaterWhile.datecomplete);
 						formaterWhile = new DateFormater(dateAdd);
+						if(formaterStart.datecomplete.equals(dateEnd)){
+							break;
+						}
 					}
 					ArrayList<Payments> payments = null;
 					if (method == 0 || method==7){
@@ -345,20 +348,23 @@ public class ReportController extends MultiActionController
 					Timestamp dateStart = new Timestamp(now);
 					
 					DateFormater mydate = new DateFormater(dateStart);
-					ArrayList<Reservations> reservations = null;
-					reservations = Reservations.StatusesUnhandled(dateStart);
+					ArrayList<Reservations> reservationsConfirmed = null;
+					reservationsConfirmed = Reservations.StatusesUnhandledConfirmed(dateStart);
+					ArrayList<Reservations> reservationsOpen = null;
+					reservationsOpen = Reservations.StatusesUnhandledOpen(dateStart);
 					String test = mydate.getFormatdate();
 					
-					if (reservations.size()==0){
+					if (reservationsConfirmed.size()==0 && reservationsOpen.size()==0) {
 							ModelAndView msg =  new ModelAndView("no_result_report","message",
 									"No reservations related on the date indicated: "+ dateStart.toString());
 							return msg;
 						}else{
 							mv =  new ModelAndView("statuses_report");
-							if (reservations != null){
-								mv.addObject("reservations", reservations);
+							
+								mv.addObject("reservationsOpen", reservationsOpen);
+								mv.addObject("reservationsConfirmed", reservationsConfirmed);
 								mv.addObject("date", mydate);
-							}
+							
 							mv.addObject("user", user);
 						}
 				}		
@@ -448,20 +454,13 @@ public class ReportController extends MultiActionController
 					Timestamp dateNow = new Timestamp(now);
 					
 					String start = request.getParameter("start");
-					start = start.replace("T", " ");
+					long test = Long.parseLong(start);
+					dateStart = new Timestamp(test);
 					
 					String end = request.getParameter("end");
-					end = end.replace("T", " ");
-					start ="2016-03-20 00:00:00";
-					end ="2016-04-01 00:00:00";
-					try
-						{
-							dateStart = Timestamp.valueOf(start);
-							dateEnd = Timestamp.valueOf(end);
-						}
-						catch(NumberFormatException nfe){
-							
-						}
+					long test2 = Long.parseLong(end);
+					dateEnd = new Timestamp(test2);
+					
 					DateFormater formaterStart = new DateFormater(dateStart);
 					DateFormater formaterEnd = new DateFormater(dateEnd);
 					Timestamp dateAdd = null;
@@ -507,20 +506,13 @@ public class ReportController extends MultiActionController
 					Timestamp dateNow = new Timestamp(now);
 					
 					String start = request.getParameter("start");
-					start = start.replace("T", " ");
+					long test = Long.parseLong(start);
+					dateStart = new Timestamp(test);
 					
 					String end = request.getParameter("end");
-					end = end.replace("T", " ");
-					start ="2016-03-20 00:00:00";
-					end ="2016-04-01 00:00:00";
-					try
-						{
-							dateStart = Timestamp.valueOf(start);
-							dateEnd = Timestamp.valueOf(end);
-						}
-						catch(NumberFormatException nfe){
-						
-						}
+					long test2 = Long.parseLong(end);
+					dateEnd = new Timestamp(test2);
+				
 					DateFormater formaterStart = new DateFormater(dateStart);
 					DateFormater formaterEnd = new DateFormater(dateEnd);
 					DateFormater formaterNow = new DateFormater(dateNow);
@@ -559,16 +551,10 @@ public class ReportController extends MultiActionController
 					long now = System.currentTimeMillis();
 					Timestamp dateStart = new Timestamp(now);
 					
+
 					String date = request.getParameter("start");
-					date = date.replace("T", " ");
-					date ="2016-03-23 00:00:00";
-					try
-						{
-							dateStart = Timestamp.valueOf(date);
-						}
-						catch(NumberFormatException nfe){
-							
-						}
+					long tests = Long.parseLong(date);
+					dateStart = new Timestamp(tests);
 					DateFormater mydate = new DateFormater(dateStart);
 					ArrayList<Reservations> reservations = null;
 					reservations = Reservations.EventsReport(dateStart);
@@ -610,17 +596,17 @@ public class ReportController extends MultiActionController
 					
 					String date = request.getParameter("start");
 					long test = Long.parseLong(date);
-					Timestamp test2 = new Timestamp(test);
-					date ="2016-03-31 00:00:00";
+					dateStart = new Timestamp(test);
+					//date ="2016-03-31 00:00:00";
 					//DateFormat formatter = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss z");
 					
-					try
+					/*try
 					{
 						dateStart = Timestamp.valueOf(date);
 					}
 					catch(NumberFormatException nfe){
 						
-					}
+					}*/
 					DateFormater mydate = new DateFormater(dateStart);
 					ArrayList<Reservations> reservations = null;
 					reservations = Reservations.MealPlan(dateStart);
@@ -660,12 +646,13 @@ public class ReportController extends MultiActionController
 					Timestamp dateNow = new Timestamp(now);
 					int method = 0;
 					String start = request.getParameter("start");
-					start = start.replace("T", " ");
+					long test = Long.parseLong(start);
+					dateStart = new Timestamp(test);
 					
 					String end = request.getParameter("end");
-					end = end.replace("T", " ");
-					start ="2015-03-31 00:00:00";
-					end ="2017-03-31 00:00:00";
+					long test2 = Long.parseLong(end);
+					dateEnd = new Timestamp(test2);
+					
 					String pay = request.getParameter("type");
 					String password = null;
 					password=request.getParameter("password");
@@ -675,8 +662,8 @@ public class ReportController extends MultiActionController
 					}
 					try
 						{
-							dateStart = Timestamp.valueOf(start);
-							dateEnd = Timestamp.valueOf(end);
+							//dateStart = Timestamp.valueOf(start);
+							//dateEnd = Timestamp.valueOf(end);
 							method = Integer.parseInt(pay);
 						}
 						catch(NumberFormatException nfe){
@@ -741,15 +728,18 @@ public class ReportController extends MultiActionController
 					Timestamp dateStart = new Timestamp(now);
 					
 					DateFormater mydate = new DateFormater(dateStart);
-					ArrayList<Reservations> reservations = null;
-					reservations = Reservations.StatusesUnhandled(dateStart);
+					ArrayList<Reservations> reservationsConfirmed = null;
+					reservationsConfirmed = Reservations.StatusesUnhandledConfirmed(dateStart);
+					ArrayList<Reservations> reservationsOpen = null;
+					reservationsOpen = Reservations.StatusesUnhandledOpen(dateStart);
 					String test = mydate.getFormatdate();
+					
 					String imgUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 					model.put("imgUrl", imgUrl);
-					if (reservations.size()!=0){
-						model.put("reservations", reservations);
-						model.put("date", mydate);
-					}
+					model.put("reservationsConfirmed", reservationsConfirmed);
+					model.put("reservationsOpen", reservationsOpen);
+					model.put("date", mydate);
+					
 					
 					try 
 					{

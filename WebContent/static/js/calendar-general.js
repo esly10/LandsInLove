@@ -6,7 +6,7 @@ CalendarPanel = Ext.extend(Ext.Panel, {
 			var config = 
 			{
 				xtype: 'panel',
-			    title: 'Calendar',
+			    //title: 'Calendar',
 			    id: 'calendar-main',
 			    padding: 5,
 			    bodyCssClass: 'x-citewrite-panel-body',

@@ -100,7 +100,9 @@ public class ReservationController extends MultiActionController
 					.field("reservations.card_type")
 					.field("reservations.reservation_tax")					
 					.field("reservations.reservation_event_date")
-					.field("reservations.reservation_event_participants");
+					.field("reservations.reservation_event_participants")					
+					.field("reservations.reservation_ignore_service")
+					.field("reservations.reservation_ignore_tax");
 
 			qb.join("agencies agencies",
 					"reservations.reservation_agency_id=agencies.agency_id")
@@ -911,6 +913,21 @@ public class ReservationController extends MultiActionController
 				String Creation = request.getParameter("reservation_creation_date");
 				String reservation_tax = request.getParameter("reservation_tax");
 	
+				String reservation_ignore_service = request.getParameter("reservation_ignore_service");
+				if(reservation_ignore_service.equals("true")){
+					reservation.setReservation_ignore_service(1);
+				}else {
+					reservation.setReservation_ignore_service(0);
+				}
+				
+				String reservation_ignore_tax = request.getParameter("reservation_ignore_tax");
+				if(reservation_ignore_tax.equals("true")){
+					reservation.setReservation_ignore_tax(1);
+				}else {
+					reservation.setReservation_ignore_tax(0);
+				}
+				
+					
 				reservation.setCard_name(request.getParameter("card_name"));
 				reservation.setCard_no(request.getParameter("card_no"));
 				reservation.setCard_exp(request.getParameter("card_exp"));

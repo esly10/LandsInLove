@@ -178,7 +178,8 @@ public class RoomsController extends MultiActionController
 				qb.field("DISTINCT rooms.Room_no")
 						.field("rooms.Room_id")
 						.field("rooms.Room_type")
-						.field("reservations_rooms.rr_id");
+						.field("reservations_rooms.rr_id")
+						.field("reservations_rooms.rr_reservation_id");
 				qb.join("reservations_rooms reservations_rooms"
 						,"reservations_rooms.rr_room_id=rooms.ROOM_ID and ('"+dateSend + "' BETWEEN rr_reservation_in and  rr_reservation_out)");
 				
@@ -317,7 +318,9 @@ public class RoomsController extends MultiActionController
 				roomsrelated.add(roomrelated);
 			}
 			ArrayList<Charges> guestCharges = null;
-			ArrayList<Charges> agencyCharges = null;			
+			ArrayList<Charges> agencyCharges = null;
+			int guestSize = 0;
+			int agencySize = 0;
 			Reservations reservation = null;
 			Guests guests = null;
 			Agencies agency = null;
@@ -331,6 +334,8 @@ public class RoomsController extends MultiActionController
 				guestCharges = Charges.GuestCharges(reservationID);	
 				agencyCharges = new ArrayList<Charges>();
 				agencyCharges = Charges.AgencyCharges(reservationID);	
+				guestSize = guestCharges.size();
+				agencySize = agencyCharges.size();
 			}
 			if(request.getParameter("xaction") != null)
 			{
@@ -355,6 +360,9 @@ public class RoomsController extends MultiActionController
 						mv.addObject("reservation", reservation);
 						mv.addObject("guestCharges", guestCharges);
 						mv.addObject("agencyCharges", agencyCharges);
+						mv.addObject("guestSize", guestSize);
+						mv.addObject("agencySize", agencySize);
+						
 					}
 					if (guests != null){
 						mv.addObject("guest", guests);
@@ -414,19 +422,24 @@ public class RoomsController extends MultiActionController
 					roomsrelated.add(roomrelated);
 				}
 				ArrayList<Charges> guestCharges = null;
-				ArrayList<Charges> agencyCharges = null;			
+				ArrayList<Charges> agencyCharges = null;
+				int guestSize = 0;
+				int agencySize = 0;
 				Reservations reservation = null;
 				Guests guests = null;
 				Agencies agency = null;
 				if (reservationrooms.size()>0){
 					int reservationID = reservationrooms.get(0).rr_reservation_id;
 					reservation = new Reservations(reservationID);
+					//reservation.reservationnumber = "F000001";
 					agency = new Agencies(reservation.reservation_agency_id);
 					guests = new Guests(reservation.reservation_guest_id);
 					guestCharges = new ArrayList<Charges>();
 					guestCharges = Charges.GuestCharges(reservationID);	
 					agencyCharges = new ArrayList<Charges>();
 					agencyCharges = Charges.AgencyCharges(reservationID);	
+					guestSize = guestCharges.size();
+					agencySize = agencyCharges.size();
 				}
 				String imgUrl = request.getScheme() + "://"
 						+ request.getServerName() + ":"
@@ -444,7 +457,8 @@ public class RoomsController extends MultiActionController
 					model.put("reservationrooms", reservationrooms);
 					model.put("user", user);
 					model.put("room", room);
-					
+					model.put("guestSize", guestSize);
+					model.put("agencySize", agencySize);
 				}			
 				try {
 					htmlFile = VelocityEngineUtils.mergeTemplateIntoString(

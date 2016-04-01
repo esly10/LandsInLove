@@ -26,41 +26,11 @@ ChargeGeneralPanel = Ext.extend(Ext.Panel, {
 			    });*/
 				
 				
-			
-			
-			
 			buttons.push({xtype:'button',
 				handler: function(){
+					rr = new ReservationPanel({'reservation_id': panel.charge.rr_reservation_id});
+					rr.showPaymentWindow();
 					
-					Ext.Ajax.request({
-						   url: _contextPath + '/rooms/details',
-						   success: function(response, opts){
-							   var data = Ext.decode(response.responseText);
-							   if(data.success)
-							   {
-								   editcharge(data.charge, data.fields, data.types, panel, stateStore);
-							   }
-							   else
-							   {
-								   Ext.Msg.show({
-									   title:'Error!',
-									   msg: data.msg,
-									   buttons: Ext.Msg.OK,
-									   icon: Ext.MessageBox.ERROR
-									});
-							   }
-							   
-						   },
-						   failure: function(response, opts){
-							   Ext.Msg.show({
-								   title:'Error!',
-								   msg: 'Error loading charge information.',
-								   buttons: Ext.Msg.OK,
-								   icon: Ext.MessageBox.ERROR
-								});
-						   },
-						   params: { room_id: panel.charge.room_id, xaction: 'get' }
-						});
 				},
 				text: 'Pay'},
 				

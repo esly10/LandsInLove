@@ -103,7 +103,7 @@ var TimeScheduler = {
         Element: $jQuery('<div></div>'),
 
         /* The minimum height of each section */
-        MinRowHeight: 30,
+        MinRowHeight: 33,
         
         /* Whether to show the Current Time or not */
         ShowCurrentTime: true,

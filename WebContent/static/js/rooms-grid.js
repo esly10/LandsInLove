@@ -143,7 +143,7 @@
 							panel.roomsWindow(data);
 						}
 			
-					},
+					}/*,
 					{
 						text: 'Delete',
 						handler: function() 
@@ -172,7 +172,7 @@
 							});
 						}
 			
-					}
+					}*/
 					);
 			
 			

@@ -160,35 +160,28 @@
 			  </thead>
 			  <tr style="background:#E1E1E1;"><td colspan=7; style="color:#19BF89; text-align:left; font-size:18px; font-style:bold;">Confirmed </td> </tr>
 			
-			 #foreach($item in ${reservations})
-			 	#if ( $item.reservation_status == "1" )<tr><td>${item.reservation_number}</td>
+			 #foreach($item in ${reservationsConfirmed})
+			 	<tr><td>${item.reservation_number}</td>
 			 		<td>${item.typeName}</td> 
 				 	<td>${item.checkInFormated}</td> 
 					<td>${item.checkOutFormated}</td>
 					<td>${item.guestName}</td>
 					<td>${item.agencyName}</td>
 					<td>${item.reservation_rooms}</td>
-					
 				</tr>
-				#end
 			#end	
 			
 			<tr></tr>
 			<tr style="background:#E1E1E1;"><td colspan=7; style="color:#19BF89; text-align:left; font-size:18px;">Open </td> </tr>
-			 #foreach($item in ${reservations})
-			 	#if ( $item.reservation_status == "0" )<tr><td>${item.reservation_number}</td>
-			 		#if ( $item.reservation_type == "1" )<td>Fit</td>
-			 		#elseif ( $item.reservation_type == "2" )<td>Group</td>
-			 		#else<td>Event</td>
-			 		#end
+			 #foreach($item in ${reservationsOpen})
+			 	<tr><td>${item.reservation_number}</td>
+			 		<td>${item.typeName}</td> 
 				 	<td>${item.checkInFormated}</td> 
 					<td>${item.checkOutFormated}</td>
 					<td>${item.guestName}</td>
 					<td>${item.agencyName}</td>
 					<td>${item.reservation_rooms}</td>
-					
 				</tr>
-				#end
 			#end	
 			<tr></tr>
 			<tbody></tbody>

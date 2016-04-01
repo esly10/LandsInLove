@@ -23,7 +23,7 @@
         ],
 		sortInfo: {
 			field: 'ROOM_NO',
-			direction: 'DESC'
+			direction: 'ASC'
 		},
 		baseParams: {}
     });
@@ -80,6 +80,8 @@
 		params:{start:0, limit: 1000},
 		callback: function () {
 			calendarStore.each(function(record,id){    				
+				
+				if(record.data.reservation_type != 3){ // no show events
 				var type = "";
 				var title = "";
 				if(record.data.reservation_type == 1){
@@ -95,11 +97,13 @@
 				title += "Agency Name: "+record.data.agency_name+"&#10;";
 				title += "Room No: "+record.data.room_no+"&#10;";
 				title += "Status: "+getStatus(record.data.reservation_status)+"&#10;";
-				title += "Type: "+type;
+					title += "Type: "+type+"&#10;";
+					title += "Check In: "+ moment(record.data.rr_reservation_in).add('hours', -12).toLocaleString()+"&#10;";
+					title += "Check Out: "+ moment(record.data.rr_reservation_out).add('hours', -12).toLocaleString()+"&#10;";
 							
 				
 				if( record.data.reservation_type == 3){
-					arrayCalendar.push(
+						/*arrayCalendar.push(
     						{
     	    				    id: 'res_'+id,
     	    				    name: '<div title="'+title+'"><div>'+record.data.guest_name+'</div><div>'+type+', '+record.data.reservation_number+'</div></div>',
@@ -110,7 +114,7 @@
     				            data:record.data
     	    				         
     	    				}
-    				);
+	    				);*/
 				} else {
 					arrayCalendar.push(
 							{
@@ -124,6 +128,7 @@
     	    				}
     				);
 				}
+				}				
 					    				
 			});
 			
@@ -458,25 +463,25 @@
 		 
 	}
 	function getStatus(id){
-	 /*  '4', 'Confirmed'
-		 '5', 'Canceled'
-		 '6', 'Check in'
-		 '7', 'Check out'
-		 '8', 'Open'
-		 '9', 'No Show'  */
-		if(id == 4){
+	 /*  '1', 'Confirmed'
+		 '2', 'Canceled'
+		 '3', 'Check in'
+		 '4', 'Check out'
+		 '5', 'Open'
+		 '6', 'No Show'  */
+		if(id == 1){
 			return 'Confirmed';
 		}
-		else if(id == 5){
+		else if(id == 2){
 			return 'Canceled';
 		}
-		else if(id == 6){
+		else if(id == 3){
 			return 'Check in';
 		}
-		else if(id == 7){
+		else if(id == 4){
 			return 'Check out';
 		}
-		else if(id == 9){
+		else if(id == 6){
 			return 'No Show';
 		}
 		

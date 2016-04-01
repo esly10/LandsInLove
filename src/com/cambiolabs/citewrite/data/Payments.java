@@ -255,7 +255,7 @@ public class Payments extends DBObject
 		
 		int month = calendar.get(Calendar.MONTH);
 		
-		return month-1;
+		return month;
 	}
 	public int getYear() {
 		GregorianCalendar calendar = (GregorianCalendar) Calendar.getInstance();
@@ -270,7 +270,7 @@ public class Payments extends DBObject
 		cal.setTime(Date); 
 		int dateyear = cal.get(Calendar.YEAR);
 		int dateday = cal.get(Calendar.DAY_OF_MONTH) ; // Note: zero based!
-		int datemonth = cal.get(Calendar.MONTH);
+		int datemonth = cal.get(Calendar.MONTH)+1;
 		String Format =dateday+"/"+datemonth+"/ "+dateyear;
 		return Format;
 	}

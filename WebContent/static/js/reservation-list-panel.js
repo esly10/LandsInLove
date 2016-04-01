@@ -64,6 +64,8 @@ ReservationListPanel = Ext.extend(Ext.Panel, {
 	            'reservation_tax',
 	            'reservation_event_date',
 	            'reservation_event_participants',
+	            'reservation_ignore_service',
+	            'reservation_ignore_tax',
 	            'name' ,'checkin','checkout'		          
 	        ],
 			sortInfo: {
@@ -362,7 +364,7 @@ ReservationListPanel = Ext.extend(Ext.Panel, {
 										            'StatusValue',
 										            'StatusDisplay'
 										        ],
-										        data: [[1, 'Confirmed'],[2, 'Canceled'],[3, 'Check In'],[4, 'Check Out'],[5, 'No Show']]  
+										        data: [[1, 'Confirmed'],[2, 'Canceled'],[3, 'Check In'],[4, 'Check Out'],[6, 'No Show']]  
 										    }),
 										    valueField: 'StatusValue',
 											displayField: 'StatusDisplay',

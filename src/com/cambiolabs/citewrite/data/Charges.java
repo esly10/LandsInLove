@@ -121,7 +121,7 @@ public class Charges extends DBObject
 		try 
 		{
 			conn = new DBConnection();
-			String sql = "SELECT * FROM charges where charge_reservation_id = "+reservation_id+" and charge_folio = 1 ;";
+			String sql = "SELECT * FROM charges where charge_reservation_id = "+reservation_id+" and charge_folio = 'Guest';";
 			if(conn.query(sql))
 			{
 				Charges charge = new Charges();
@@ -153,7 +153,7 @@ public class Charges extends DBObject
 		try 
 		{
 			conn = new DBConnection();
-			String sql = "SELECT * FROM charges where charge_reservation_id = "+reservation_id+" and charge_folio = 0 ;";
+			String sql = "SELECT * FROM charges where charge_reservation_id = "+reservation_id+" and charge_folio = 'Agency';";
 			if(conn.query(sql))
 			{
 				Charges charge = new Charges();
