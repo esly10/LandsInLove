@@ -112,6 +112,14 @@ public class GuestsController extends MultiActionController
 			}
 			
 			Guests guests = new Guests();
+			if(sort == null){
+				sort= "name";
+			}
+			
+			if(dir == null){
+				dir= "ASC";
+			}
+			
 			ArrayList<Guests> list = (ArrayList<Guests>)guests.get(start, limit, sort + " " + dir, filter);
 		
 			int count = list.size();

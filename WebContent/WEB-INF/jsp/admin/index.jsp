@@ -152,6 +152,12 @@
     Ext.onReady(function(){
     	var nav = Ext.getCmp('navigation-panel');
     	nav.doLayout();    	
+    	
+    	var content = Ext.getCmp('content-panel');
+		content.removeAll(true);			
+		content.add(new CalendarPanel());
+		content.doLayout();
+		return;
     });
     </script>
 </body>

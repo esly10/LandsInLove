@@ -159,6 +159,7 @@ public class AgencyController extends MultiActionController
 		json.addProperty("success", false);
 		
 		int agencyID = 0;
+		Agencies agency = null;
 		try
 		{
 			
@@ -171,7 +172,7 @@ public class AgencyController extends MultiActionController
 			}
 			
 				agencyID = Integer.parseInt(request.getParameter("agency_id"));
-				Agencies agency = new Agencies(agencyID);
+				agency = new Agencies(agencyID);
 				agency.setAgency_name(request.getParameter("agency_name"));		
 				agency.setDni(request.getParameter("agency_identification"));
 				String Type = request.getParameter("agency_type");		
@@ -208,7 +209,7 @@ public class AgencyController extends MultiActionController
 			return;
 		}
 		
-		response.getOutputStream().print("{success: true}");
+		response.getOutputStream().print("{success: true, agency_id : "+agency.agency_id+"}");
 	}
 	
 	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 

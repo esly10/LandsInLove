@@ -119,7 +119,8 @@
 					arrayCalendar.push(
 							{
     	    				    id: 'res_'+id,
-    	    				    name: '<div title="'+title+'"><div>'+record.data.guest_name+'</div><div>'+type+', '+record.data.reservation_number+'</div></div>',
+	    	    				    //name: '<div title="'+title+'"><div>'+record.data.guest_name+'</div><div>'+type+', '+record.data.reservation_number+'</div></div>',
+	    	    				    name: '<div title="'+title+'"><div style="height:20px;line-height: 12px;">'+record.data.guest_name+'</div></div>',
     	    				    sectionID: record.data.rr_room_id,
     	    				    start: moment(record.data.rr_reservation_in).add('hours', -12),
     	    				    end: moment(record.data.rr_reservation_out).add('hours', 12),
@@ -518,7 +519,7 @@
 		window.print();
 		
 		$jQuery('#calendar-div').parents().siblings().show();		
-		$jQuery('#ext-gen32').hide();
+		$jQuery('.ext-el-mask').hide();
 		$jQuery('.time-sch-period-container').show();
 		$jQuery('.time-sch-time-container').show();
 		return true;

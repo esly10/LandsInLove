@@ -228,7 +228,29 @@ public class ReportController extends MultiActionController
 				}		
 				break;
 				case 4:{
+					long now = System.currentTimeMillis();
+					Timestamp dateStart = new Timestamp(now);
 					
+					DateFormater mydate = new DateFormater(dateStart);
+					ArrayList<Reservations> reservationsCheckin = null;
+					reservationsCheckin = Reservations.ReservationCheckin(dateStart);
+					ArrayList<Reservations> reservationsCheckout = null;
+					reservationsCheckout = Reservations.ReservationCheckout(dateStart);
+					String test = mydate.getFormatdate();
+					
+					if (reservationsCheckin.size()==0 && reservationsCheckout.size()==0) {
+							ModelAndView msg =  new ModelAndView("no_result_report","message",
+									"No reservations related on the date indicated: "+ dateStart.toString());
+							return msg;
+						}else{
+							mv =  new ModelAndView("collection_report");
+							
+								mv.addObject("reservationsCheckin", reservationsCheckin);
+								mv.addObject("reservationsCheckout", reservationsCheckout);
+								mv.addObject("date", mydate);
+							
+							mv.addObject("user", user);
+						}
 				}		
 				break;
 				case 5:{
@@ -584,7 +606,41 @@ public class ReportController extends MultiActionController
 				}		
 				break;
 				case 4:{
+					String htmlFile = "";
+					HashMap<String, Object> model = new HashMap<String, Object>();
+					long now = System.currentTimeMillis();
+					Timestamp dateStart = new Timestamp(now);
 					
+					DateFormater mydate = new DateFormater(dateStart);
+					ArrayList<Reservations> reservationsCheckin = null;
+					reservationsCheckin = Reservations.ReservationCheckin(dateStart);
+					ArrayList<Reservations> reservationsCheckout = null;
+					reservationsCheckout = Reservations.ReservationCheckout(dateStart);
+					String test = mydate.getFormatdate();
+					String imgUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+					model.put("imgUrl", imgUrl);
+					
+					if (reservationsCheckout.size()!=0 && reservationsCheckin.size()!=0){
+						model.put("reservationsCheckin", reservationsCheckin);
+						model.put("reservationsCheckout", reservationsCheckout);
+						model.put("date", mydate);
+					}
+					
+					try 
+					{
+						htmlFile =  VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "config/template/collection.vm", model);
+					} 
+					catch (Exception e) 
+					{
+						
+					}
+					Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+					JsonObject json = new JsonObject();
+					json.addProperty("success", true);
+					json.addProperty("html", htmlFile);
+						
+					response.setContentType("text/html");			
+					response.getOutputStream().print(htmlFile);	
 				}		
 				break;
 				case 5:{

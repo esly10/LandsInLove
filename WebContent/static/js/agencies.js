@@ -1,7 +1,7 @@
 Ext.onReady(function(){
 
 	var pageLimit = 50;
-	var adminAgencies = Ext.get('nav-agencies'); 
+	adminAgencies = Ext.get('nav-agencies'); 
 	if(adminAgencies != null)
 	{
 		adminAgencies.on('click',function(){

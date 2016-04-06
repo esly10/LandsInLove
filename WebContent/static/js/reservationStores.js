@@ -29,7 +29,19 @@ agencyStore= new Ext.data.JsonStore({
 		}
     });
 	
+	var countryStoreForRes = new Ext.data.JsonStore({
+		root: 'country',
+		url: _contextPath + '/guests/countryList',
+		totalProperty: 'count',
+		fields: [ 'country_id','country_code', 'country_name'],
+		remoteSort: true,
+		autoLoad: true,
+		sortInfo: {
+				field: 'country_id',
+				direction: 'ASC'
+			}
 	
+	});
 
 
 	paymentStore = new Ext.data.JsonStore({

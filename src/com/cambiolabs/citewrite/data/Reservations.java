@@ -19,7 +19,25 @@ import java.sql.ResultSet;
 
 public class Reservations extends DBObject
 {	
-
+	public static final int STATUS_CONFIRMED 	= 1;
+	public static final int STATUS_CANCELED 	= 2;
+	public static final int STATUS_CHECKIN 	= 3;
+	public static final int STATUS_CHECKOUT 	= 4;
+	public static final int STATUS_OPEN	= 5;
+	public static final int STATUS_NOSHOW 	= 6;
+	public static final int TYPE_FIT 		= 1;
+	public static final int TYPE_GROUP 		= 2;
+	public static final int TYPE_EVENT 		= 3;
+	public static final String FOLIO_GUEST 		= "Guest";
+	public static final String FOLIO_AGENCY 		= "Agency";
+	public static final int TERMS_ONCHECKIN 	= 1;
+	public static final int TERMS_ONCHECKOUT 	= 2;
+	public static final int TERMS_DAYSADVANCE 	= 3;
+	public static final int TERMS_DAYSCREDIT 	= 4;
+	public static final int TERMS_INSTALAMENTS	= 5;
+	public static final int TERMS_CPL 	= 6;
+	public static final int TERMS_OTHER 	= 7;
+	
 	@Expose public int reservation_id = 0;
 	@Expose public String reservation_number = null;
 	@Expose public int reservation_type = 0;
@@ -529,7 +547,7 @@ public class Reservations extends DBObject
 			try 
 			{
 				conn = new DBConnection();
-				String sql = "SELECT * FROM reservations where ('"+ date +"' <= reservation_check_in and reservation_type = 3) ";
+				String sql = "SELECT * FROM reservations where ('"+ date +"' <= reservation_check_in and reservation_type = "+ TYPE_EVENT +") ";
 				if(conn.query(sql))
 				{
 					Reservations resrervation = new Reservations();
@@ -591,7 +609,7 @@ public class Reservations extends DBObject
 			try 
 			{
 				conn = new DBConnection();
-				String sql = "SELECT * FROM reservations where reservation_status= 1 and reservation_check_in < '"+date+"'";
+				String sql = "SELECT * FROM reservations where reservation_status= "+ STATUS_CONFIRMED +" and reservation_check_in < '"+date+"'";
 				if(conn.query(sql))
 				{
 					Reservations resrervation = new Reservations();
@@ -616,13 +634,91 @@ public class Reservations extends DBObject
 			return reservations;
 	}
 	
+	public static ArrayList<Reservations> ReservationCheckin(Timestamp date){
+		ArrayList<Reservations> reservations = new ArrayList<Reservations>();
+		DBConnection conn = null;
+		double charge = 0;
+		double paid = 0;
+		double balance = 0;
+			try 
+			{
+				conn = new DBConnection();
+				String sql = "SELECT * FROM reservations where reservation_status= "+ STATUS_CHECKIN +";";
+				if(conn.query(sql))
+				{
+					Reservations resrervation = new Reservations();
+					while(conn.fetch(resrervation))
+					{
+						paid=resrervation.getTotalPaid();
+						charge= resrervation.getTotalWOPaid();
+						balance = charge- paid;
+						if(balance>0){
+							reservations.add(resrervation);
+							resrervation = new Reservations();
+						}					
+					}
+				}
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				if(conn != null)
+				{
+					conn.close();
+				}
+			}
+			return reservations;
+	}
+	
+	public static ArrayList<Reservations> ReservationCheckout(Timestamp date){
+		ArrayList<Reservations> reservations = new ArrayList<Reservations>();
+		DBConnection conn = null;
+		double charge = 0;
+		double paid = 0;
+		double balance = 0;
+			try 
+			{
+				conn = new DBConnection();
+				String sql = "SELECT * FROM reservations where reservation_status= "+ STATUS_CHECKOUT +";";
+				if(conn.query(sql))
+				{
+					Reservations resrervation = new Reservations();
+					while(conn.fetch(resrervation))
+					{
+						paid=resrervation.getTotalPaid();
+						charge= resrervation.getTotalWOPaid();
+						balance = charge- paid;
+						if(balance>0){
+							reservations.add(resrervation);
+							resrervation = new Reservations();
+						}					
+					}
+				}
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				if(conn != null)
+				{
+					conn.close();
+				}
+			}
+			return reservations;
+	}
+	
 	public static ArrayList<Reservations> StatusesUnhandledOpen(Timestamp date){
 		ArrayList<Reservations> reservations = new ArrayList<Reservations>();
 		DBConnection conn = null;
 			try 
 			{
 				conn = new DBConnection();
-				String sql = "SELECT * FROM reservations where reservation_status= 1 and reservation_check_in > '"+date+"'";
+				String sql = "SELECT * FROM reservations where reservation_status="+ STATUS_CONFIRMED +" and reservation_check_in > '"+date+"'";
 				if(conn.query(sql))
 				{
 					Reservations resrervation = new Reservations();
@@ -768,6 +864,16 @@ public class Reservations extends DBObject
 		return total;
 	}
 	
+	public double getTotalWOPaid() {
+		double total = getAgencyCharges()+getAgencyTax()+getAgencyService()+getGuestCharges()+getGuestTax()+getGuestService();
+		return total;
+	}
+	
+	public double getTotalBalance() {
+		double total = getTotalWOPaid()-getTotalPaid();
+		return total;
+	}
+	
 	public double getTotalPaid() {
 		return getGuestPaid()+getAgencyPaid();
 	}
@@ -779,7 +885,7 @@ public class Reservations extends DBObject
 		try 
 		{
 			conn = new DBConnection();
-			String sql = "SELECT SUM(amount) FROM payments where reservation_id= "+this.reservation_id+" and bill_to='Guest';";
+			String sql = "SELECT SUM(amount) FROM payments where reservation_id= "+this.reservation_id+" and bill_to='"+ FOLIO_GUEST +"';";
 			if(conn.query(sql))
 			{
 				ResultSet rs = conn.getResultSet();
@@ -812,7 +918,7 @@ public class Reservations extends DBObject
 		try 
 		{
 			conn = new DBConnection();
-			String sql = "SELECT SUM(amount) FROM payments where reservation_id= "+this.reservation_id+" and bill_to='Agency';";
+			String sql = "SELECT SUM(amount) FROM payments where reservation_id= "+this.reservation_id+" and bill_to='"+ FOLIO_AGENCY +"';";
 			if(conn.query(sql))
 			{
 				ResultSet rs = conn.getResultSet();
@@ -844,7 +950,7 @@ public class Reservations extends DBObject
 		try 
 		{
 			conn = new DBConnection();
-			String sql = "SELECT SUM(charge_total) FROM charges where charge_reservation_id= "+this.reservation_id+" and charge_folio='Guest';";
+			String sql = "SELECT SUM(charge_total) FROM charges where charge_reservation_id= "+this.reservation_id+" and charge_folio='"+ FOLIO_GUEST +"';";
 			if(conn.query(sql))
 			{
 				ResultSet rs = conn.getResultSet();
@@ -877,7 +983,7 @@ public class Reservations extends DBObject
 		try 
 		{
 			conn = new DBConnection();
-			String sql = "SELECT SUM(charge_total) FROM charges where charge_reservation_id= "+this.reservation_id+" and charge_folio='Agency';";
+			String sql = "SELECT SUM(charge_total) FROM charges where charge_reservation_id= "+this.reservation_id+" and charge_folio='"+ FOLIO_AGENCY +"';";
 			if(conn.query(sql))
 			{
 				ResultSet rs = conn.getResultSet();
@@ -940,7 +1046,7 @@ public class Reservations extends DBObject
 		 ArrayList<Charges> charges = new  ArrayList<Charges>();
 		 charges = getChargesItems();
 		 for (int i =0; i<charges.size(); i++){
-			 if (charges.get(i).charge_folio.equals("Agency") ){
+			 if (charges.get(i).charge_folio.equals(FOLIO_AGENCY) ){
 				if (charges.get(i).charge_item_name.equals("Room") || charges.get(i).charge_item_name.equals("Room NS") ){
 					tax =charges.get(i).charge_total*0.13;
 					total += tax;
@@ -956,7 +1062,7 @@ public class Reservations extends DBObject
 		 ArrayList<Charges> charges = new  ArrayList<Charges>();
 		 charges = getChargesItems();
 		 for (int i =0; i<charges.size(); i++){
-			 if (charges.get(i).charge_folio.equals("Agency") ){
+			 if (charges.get(i).charge_folio.equals(FOLIO_AGENCY) ){
 				if (charges.get(i).charge_item_name.equals("Restaurant") || charges.get(i).charge_item_name.equals("Rest/Bar") ){
 					tax =charges.get(i).charge_total*0.1;
 					total += tax;
@@ -972,7 +1078,7 @@ public class Reservations extends DBObject
 		 ArrayList<Charges> charges = new  ArrayList<Charges>();
 		 charges = getChargesItems();
 		 for (int i =0; i<charges.size(); i++){
-			 if (charges.get(i).charge_folio.equals("Guest") ){
+			 if (charges.get(i).charge_folio.equals(FOLIO_GUEST) ){
 				if (charges.get(i).charge_item_name.equals("Room") || charges.get(i).charge_item_name.equals("Room NS") ){
 					tax =charges.get(i).charge_total*0.13;
 					total += tax;
@@ -988,7 +1094,7 @@ public class Reservations extends DBObject
 		 ArrayList<Charges> charges = new  ArrayList<Charges>();
 		 charges = getChargesItems();
 		 for (int i =0; i<charges.size(); i++){
-			 if (charges.get(i).charge_folio.equals("Guest") ){
+			 if (charges.get(i).charge_folio.equals(FOLIO_GUEST) ){
 				if (charges.get(i).charge_item_name.equals("Restaurant") || charges.get(i).charge_item_name.equals("Rest/Bar") ){
 					tax =charges.get(i).charge_total*0.1;
 					total += tax;
@@ -996,6 +1102,19 @@ public class Reservations extends DBObject
 			 }
 		 }
 		return total;
+	}
+	
+	public String getPaymentTerms() {
+		switch (this.reservation_payment_terms){
+		case TERMS_ONCHECKIN: return "Checkin";
+		case TERMS_ONCHECKOUT: return "Checkout "+this.reservation_payment_value;
+		case TERMS_DAYSADVANCE: return "Advance "+this.reservation_payment_value;
+		case TERMS_DAYSCREDIT: return "Credit";
+		case TERMS_INSTALAMENTS: return "Instalaments";
+		case TERMS_CPL: return "CPL";
+		case TERMS_OTHER: return "Other";
+	}
+	return null;
 	}
 	
 	

@@ -103,7 +103,8 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 		
 			    //paymentStore.baseParams = {'reservation_id': this.reservation_id};
 			    
-			
+			panel.loadAgencyPanel();
+			panel.loadGuestPanel();
 			var config = 
 			{
 				xtype: 'container',
@@ -170,83 +171,73 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 												    buttonAlign: 'left',
 												    items:[
 												           	{
-												           	   xtype: 'combo',
-													    	   emptyText:'Type Agency Name',
-													    	   fieldLabel: 'Agency',
-													    	   name: 'agency_id_search',
-													    	   id: 'agency_id_search',
-													    	   hiddenName:'agency_id_search',
-														       store: agencyStore,
-														       valueField: 'agency_id',
-															   displayField: 'agency_name',
-													           mode: 'remote',
-													           labelStyle: 'width: 75px;',
-													           autoSelect: false,
-													           selectOnFocus:true,
-													           hideTrigger:true,
-													           multiSelect:true,
-													           typeAhead:true,
-													           minChars:1,
-													           anchor: '45%',
-													           listeners:{
-													        	   change: function(self,newValue,oldValue){													        		   
-													        		  /* if(typeof newValue.data == "undefined"){
-														        			 Ext.getCmp('add-agency').show();
-														        			 Ext.getCmp('agency_name').setValue(Ext.getCmp("agency_id_search").getRawValue());
-														        			 Ext.getCmp('reservation_agency_id').setValue(0);
-														        	   }else {
-														        		   Ext.getCmp('reservation_agency_id').setValue(newValue.data.agency_id);
-														        		   Ext.getCmp('agency_name').setValue(newValue.data.agency_name);
-														        		   Ext.getCmp('agency_address').setValue(newValue.data.agency_address);
-														        		   Ext.getCmp('agency_phone').setValue(newValue.data.agency_phone);
-														        		   Ext.getCmp('agency_email').setValue(newValue.data.agency_email);	
-														        		   Ext.getCmp('add-agency').hide();
-														        	   }
-													        		   
-													        		   Ext.getCmp('agency-info').show();*/
-													        		   
+																xtype: 'label',
+																text:"Select Agency:",
 													               },
-													               select: function(self,newValue,oldValue){
-													            	   
-													            	   if(typeof newValue.data == "undefined"){
-														        			 Ext.getCmp('add-agency').show();
-														        			 Ext.getCmp('agency_name').setValue(Ext.getCmp("agency_id_search").getRawValue());
-														        			 Ext.getCmp('reservation_agency_id').setValue(0);
-														        	   }else {
-														        		   Ext.getCmp('reservation_agency_id').setValue(newValue.data.agency_id);
-														        		   Ext.getCmp('agency_name').setValue(newValue.data.agency_name);
-														        		   Ext.getCmp('agency_address').setValue(newValue.data.agency_address);
-														        		   Ext.getCmp('agency_phone').setValue(newValue.data.agency_phone);
-														        		   Ext.getCmp('agency_email').setValue(newValue.data.agency_email);														        		   
-														        		   Ext.getCmp('add-agency').hide();
-														        	   }
-													        		   
-													        		   Ext.getCmp('agency-info').show();
+															{
+																xtype: 'box',
+																height: 3
 													               },
-													               keyup: function(self,newValue,oldValue)
 													               {
+																   layout: 'column',
+																   layoutConfig: {columns: 2},
+																   width: 100,
+																   height: 30,
+																   defaultType: 'button',
+																   items: [{
 													            	   
-													            	   if(event.keyCode == 13)
+																	   	columnWidth: 0.48,
+																      	xtype:'button',
+																        width: 50,
+																		text: 'Lookup',
+																		docked: 'left',
+																		handler: function(){																			
+																			Ext.Ajax.request({
+																				   url: _contextPath + '/agency/list',
+																				   success: function(response, opts){
+																					   var data = Ext.decode(response.responseText);
+																					   if(data.success)
 													            	   {
-													            		   if(typeof newValue.data == "undefined"){
-															        			 Ext.getCmp('add-agency').show();
-															        			 Ext.getCmp('agency_name').setValue(Ext.getCmp("agency_id_search").getRawValue());
-															        			 Ext.getCmp('reservation_agency_id').setValue(0);
-															        	   }else {
-															        		   Ext.getCmp('reservation_agency_id').setValue(newValue.data.agency_id);
-															        		   Ext.getCmp('agency_name').setValue(newValue.data.agency_name);
-															        		   Ext.getCmp('agency_address').setValue(newValue.data.agency_address);
-															        		   Ext.getCmp('agency_phone').setValue(newValue.data.agency_phone);
-															        		   Ext.getCmp('agency_email').setValue(newValue.data.agency_email);
-															        		   Ext.getCmp('add-agency').hide();
-															        	   }
+																						   panel.selectAgency(data.agencies);
 														            	   
-														            	   Ext.getCmp('agency-info').show();
 													            	   }
-													            	   
+																					   else
+																					   {
+																						   Ext.Msg.show({
+																							   title:'Error!',
+																							   msg: data.msg,
+																							   buttons: Ext.Msg.OK,
+																							   icon: Ext.MessageBox.ERROR
+																							});
 													               }
+																					   
+																				   },
+																				   failure: function(response, opts){
+																					   Ext.Msg.show({
+																						   title:'Error!',
+																						   msg: 'Error loading Agency information.',
+																						   buttons: Ext.Msg.OK,
+																						   icon: Ext.MessageBox.ERROR
+																						});
+																				   },
+																				   params: {}
+																				});
 													          }
+																      
+																   },
+																   {
+																	   	
+																	   	columnWidth: 0.52,
+																		text: 'Add',
+																		docked: 'right',
+																		style:'padding-left:5px;',
+																		handler: function(){
+																			
+															        		panel.addAgency();
 													    	},
+																		}]
+															},
+													
 													    	{
 																xtype: 'box',
 																height: 5
@@ -305,60 +296,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																		    fieldLabel: 'Agency Email'													    
 																		}
 															          ],
-															          buttons:  
-																		    [{
-																	        	xtype: 'button',
-																	        	id: 'add-agency',
-																	        	text: 'Add',
-																	        	width: 90,
-																	        	name: 'add-agency'	,
-																	        	handler: function()
-															                    {
-																	        		//validate form
-															                    	Ext.getCmp("agency-info").getForm().submit({
-															                    	    url: _contextPath + '/agency/save',
-															                    	    params: {
-															                    	        xaction: 'save'
-															                    	    },
-															                    	    success: function(form, action) {
-															                    	    	 var response = Ext.decode(action.response.responseText);
-																                    	     if(response.success){
-																                    	    	 Ext.getCmp('add-agency').hide();
-																	                    	     Ext.getCmp('reservation_agency_id').setValue(response.agency_id);
-																	                    	     Ext.growl.message('Success', 'Agency has been saved.');
-																                    	     }															                    	       
-															                    	    },
-															                    	    failure: function(form, action) {
-															                    	        switch (action.failureType) {
-															                    	            case Ext.form.Action.CLIENT_INVALID:
-																									Ext.Msg.show({
-																									   title:'Failure',
-																									   msg:  'Form fields may not be submitted with invalid values',
-																									   buttons: Ext.Msg.OK,
-																									   icon: Ext.MessageBox.ERROR
-																									});
-															                    	                break;
-															                    	            case Ext.form.Action.CONNECT_FAILURE:
-															                    	            	Ext.Msg.show({
-																									   title:'Failure',
-																									   msg:   'Ajax communication failed',
-																									   buttons: Ext.Msg.OK,
-																									   icon: Ext.MessageBox.ERROR
-																									});
-															                    	                break;
-															                    	            case Ext.form.Action.SERVER_INVALID:
-																									Ext.Msg.show({
-																									   title:'Failure',
-																									   msg: action.result.msg,
-																									   buttons: Ext.Msg.OK,
-																									   icon: Ext.MessageBox.ERROR
-																									});
-															                    	       }
-															                    	    }
-															                    	});
-															                    }
-																	        }
-																	   ]
+															          buttons:[]
 													    	}
 												    ],
 												    buttons:  
@@ -387,95 +325,87 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 												    buttonAlign: 'left',
 												    items:[
 												           	{
-												           	   xtype: 'combo',
-													    	   emptyText:'Type Guest Name',
-													    	   fieldLabel: 'Guest',
-													    	   name: 'guests_id_search',
-													    	   id: 'guests_id_search',
-													    	   hiddenName:'guests_id_search',
-														       store: guestsStore,
-														       valueField: 'guests_id',
-															   displayField: 'name',
-													           mode: 'remote',
-													           labelStyle: 'width: 75px;',
-													           autoSelect: false,
-													           selectOnFocus:true,
-													           hideTrigger:true,
-													           multiSelect:true,
-													           typeAhead:true,
-													           minChars:1,
-													           anchor: '45%',
-													           listeners:{
-													        	   change: function(self,newValue,oldValue){
+																xtype: 'label',
+																text:"Select Guest:",
+															},
+															{
+																xtype: 'box',
+																height: 3
+															},
+													        {
+																   layout: 'column',
+																   layoutConfig: {columns: 2},
+																   width: 110,
+																   height: 30,
+																   defaultType: 'button',
+																   items: [{
 													        		   													        		   
-													        		   /*if(typeof newValue.data == "undefined"){
-													        			   Ext.getCmp('guests-info').show();
-													        			   Ext.getCmp('reservation_guest_id').setValue(0);
-													        			   Ext.getCmp('guest_type').show();
-															        	   Ext.getCmp('guest_title').show();
-														        	   }else {
+																	   	columnWidth: 0.48,
+																      	xtype:'button',
+																        width: 50,
+																		text: 'Lookup',
+																		docked: 'left',																		
+																		handler: function(){
+																			
+																			/*
 														        		   Ext.getCmp('reservation_guest_id').setValue(newValue.data.guest_id);
 															        	   Ext.getCmp('guest_phone').setValue(newValue.data.phone);
 															        	   Ext.getCmp('guest_email').setValue(newValue.data.email);
 															        	   Ext.getCmp('guest_name').setValue(newValue.data.name);
 															        	   Ext.getCmp('guest_address').setValue(newValue.data.address);
+															        	   Ext.getCmp('guest_type').setValue(newValue.data.type);															        	   
+															        	   
 															        	   
 															        	   Ext.getCmp('guest_type').hide();
-															        	   Ext.getCmp('guest_title').hide();															        	   
-														        		   Ext.getCmp('add-guest').hide();
-														        	   }
+															        	   //Ext.getCmp('guest_title').hide();															        	   
+														        		   Ext.getCmp('add-guest').hide();*/
 													        		   
-													        		   Ext.getCmp('guests-info').show();		*/											        		   
 													        		 													        		   
-													               },
-													               select: function(self,newValue,oldValue){
-													            	   if(typeof newValue.data == "undefined"){
-													        			   Ext.getCmp('guests-info').show();
-													        			   Ext.getCmp('reservation_guest_id').setValue(0);													        			   
-													        			   Ext.getCmp('guest_type').show();
-															        	   Ext.getCmp('guest_title').show();
-														        	   }else {
-														        		   Ext.getCmp('reservation_guest_id').setValue(newValue.data.guest_id);
-															        	   Ext.getCmp('guest_phone').setValue(newValue.data.phone);
-															        	   Ext.getCmp('guest_email').setValue(newValue.data.email);
-															        	   Ext.getCmp('guest_name').setValue(newValue.data.name);
-															        	   Ext.getCmp('guest_address').setValue(newValue.data.address);
+																			Ext.Ajax.request({
+																					url: _contextPath + '/guests/list',
+																				   success: function(response, opts){
+																					   var data = Ext.decode(response.responseText);
+																					   if(data.success)
+																					   {
+																						   panel.selectGuest(data.guests);
 															        	   
-															        	   Ext.getCmp('guest_type').hide();
-															        	   Ext.getCmp('guest_title').hide();															        	   
-														        		   Ext.getCmp('add-guest').hide();
+																					   }
+																					   else
+																					   {
+																						   Ext.Msg.show({
+																							   title:'Error!',
+																							   msg: data.msg,
+																							   buttons: Ext.Msg.OK,
+																							   icon: Ext.MessageBox.ERROR
+																							});
 														        	   }
 													        		   
-													        		   Ext.getCmp('guests-info').show();	
 													               },
-													               keyup: function(self,newValue,oldValue)
-													               {
-													            		if(event.keyCode == 13)
-													            		{
-													            			 if(typeof newValue.data == "undefined"){
-															        			   Ext.getCmp('guests-info').show();
-															        			   Ext.getCmp('reservation_guest_id').setValue(0);
-															        			   Ext.getCmp('guest_name').setValue(self.getRawValue());
-															        			   Ext.getCmp('guest_type').show();
-																	        	   Ext.getCmp('guest_title').show();
+																				   failure: function(response, opts){
+																					   Ext.Msg.show({
+																						   title:'Error!',
+																						   msg: 'Error loading Agency information.',
+																						   buttons: Ext.Msg.OK,
+																						   icon: Ext.MessageBox.ERROR
+																						});
+																				   },
+																				   params: { }
+																				});
+																			}
 																	        	   
-																        		   Ext.getCmp('add-guest').show();
-																        	   }else {
-																        		   Ext.getCmp('reservation_guest_id').setValue(newValue.data.guest_id);
-																	        	   Ext.getCmp('guest_phone').setValue(newValue.data.phone);
-																	        	   Ext.getCmp('guest_email').setValue(newValue.data.email);
-																	        	   Ext.getCmp('guest_name').setValue(newValue.data.name);
-																	        	   Ext.getCmp('guest_address').setValue(newValue.data.address);
+																   },
 																	        	   
-																	        	   Ext.getCmp('guest_type').hide();
-																	        	   Ext.getCmp('guest_title').hide();																	        	   
-																        		   Ext.getCmp('add-guest').hide();
-																        	   }
+																   {
+																	   	columnWidth: 0.52,
+																		text: 'Add',
+																		docked: 'right',
+																		style:'padding-left:5px;',
+																		width: 50,
+																		handler: function(){
 															        		   
-															        		   Ext.getCmp('guests-info').show();	
-													            		}
-													               }
-													          }
+																			panel.addGuest();
+																		},
+																	}]
 													    	},
 													    	{
 																xtype: 'box',
@@ -501,7 +431,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																		    fieldLabel: 'guests_id',		
 																		    allowBlank: false,
 																		},
-																		{
+																		/*{
 																			xtype: 'combo',
 																			typeAhead: true,
 																		    triggerAction: 'all',
@@ -526,7 +456,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 															                tabIndex: 1,
 															                allowBlank: true,
 															                forceSelection: true
-																		},
+																		},*/
 																		{
 																		    xtype: 'textfield',
 																		    id: 'guest_name',
@@ -566,6 +496,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																		    lazyRender:true,
 																		    mode: 'local',
 																		    id: 'guest_type',
+																		    name: 'guest_type',
 																		    hiddenName: 'guest_type',
 																		    labelStyle: 'width:125px',
 																		    autoload: true,
@@ -588,60 +519,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																		
 															          ],
 															          buttons:  
-																		    [{
-																	        	xtype: 'button',
-																	        	id: 'add-guest',
-																	        	text: 'Add',
-																	        	width: 90,
-																	        	name: 'add-guest',
-																	        	handler: function()
-															                    {
-																	        		//validate form
-															                    	Ext.getCmp("guests-info").getForm().submit({
-															                    	    url: _contextPath + '/guests/save',
-															                    	    params: {
-															                    	        xaction: 'save'
-															                    	    },
-															                    	    success: function(form, action) {
-															                    	       var response = Ext.decode(action.response.responseText);
-															                    	       if(response.success){
-															                    	    	   Ext.growl.message('Success', 'Guest has been saved.');
-																                    	       Ext.getCmp('reservation_guest_id').setValue(response.guest_id);
-																                    	       Ext.getCmp('add-guest').hide();
-																	            	    	}
-															                    	       															                    	       
-															                    	    },
-															                    	    failure: function(form, action) {
-															                    	        switch (action.failureType) {
-															                    	            case Ext.form.Action.CLIENT_INVALID:
-																									Ext.Msg.show({
-																									   title:'Failure',
-																									   msg:  'Form fields may not be submitted with invalid values',
-																									   buttons: Ext.Msg.OK,
-																									   icon: Ext.MessageBox.ERROR
-																									});
-															                    	                break;
-															                    	            case Ext.form.Action.CONNECT_FAILURE:
-															                    	            	Ext.Msg.show({
-																									   title:'Failure',
-																									   msg:   'Ajax communication failed',
-																									   buttons: Ext.Msg.OK,
-																									   icon: Ext.MessageBox.ERROR
-																									});
-															                    	                break;
-															                    	            case Ext.form.Action.SERVER_INVALID:
-																									Ext.Msg.show({
-																									   title:'Failure',
-																									   msg: action.result.msg,
-																									   buttons: Ext.Msg.OK,
-																									   icon: Ext.MessageBox.ERROR
-																									});
-															                    	       }
-															                    	    }
-															                    	});
-															                    }
-																	        }
-																	   ]
+																		    []
 													    	}
 												    ],
 												    buttons:  
@@ -1549,6 +1427,9 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 					    	  { // column #2
 					    			columnWidth: .29, 
 					    			layout: 'form',
+					    			height: '100%',
+					    			//autoHeight:true,
+					    			maxSize: 1200,
 					    			id: 'colum2Content',
 					    			defaults: {
 					    				 'font-size': '12px'
@@ -1556,7 +1437,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 					    			style : {
 					    				'font-size': '12px'
 				                    },
-					    			bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #fff;',
+					    			bodyStyle: 'padding-left: 0px; padding-bottom: 0px; border-left: 1px; background-color: #F1F1F1; height: 100%;',
 					    			items: 
 					    			[
 					    				{
@@ -1566,8 +1447,8 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 											width:'100%',
 											anchor:'100%',
 											autoHeight:true,
-											bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #fff;',
-											bodyStyle:'padding:5px; background-color: #fff;',
+											bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #F1F1F1;',
+											bodyStyle:'padding:5px; background-color: #F1F1F1;',
 											html : htmlContent,
 											style:'padding:5px; border-left: 0px;border-right: 0px;',
 											id:'fileset-first-info',
@@ -1637,7 +1518,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 											title: '',
 											id: 'notes-form',
 											//style:'padding-left:5px; padding-right:5px; border-left: 0px;border-right: 0px;',
-											bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #fff;',
+											bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #F1F1F1;',
 											autoScroll: true,
 											buttonAlign:'left',
 											border: false,
@@ -1648,9 +1529,9 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 													width:'100%',
 													anchor:'100%',
 													autoHeight:true,
-													style:'padding-left:5px; border-left: 0px;border-right: 0px; background-color: #fff;',
+													style:'padding-left:5px; border-left: 0px;border-right: 0px; background-color: #F1F1F1;',
 													id:'fileset-notes-info',
-													bodyStyle: 'padding-bottom: 0px; background-color: #fff;',
+													bodyStyle: 'padding-bottom: 0px; background-color: #F1F1F1;',
 													title: 'Notes',
 												    labelAlign : 'left',
 													items:[
@@ -1663,12 +1544,19 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 															    fieldLabel: 'Service Notes'													    
 															},
 															{
+															    xtype: 'box',
+															    height: 15										    
+															},
+															{
 															    xtype: 'textfield',
 															    id: 'reservation_transport_notes',
 															    name: 'reservation_transport_notes',
 															    labelStyle: 'width:115px',
 															    anchor: "90%",
 															    fieldLabel: 'Transport Notes'													    
+															},{
+															    xtype: 'box',
+															    height: 15										    
 															},
 															{
 															    xtype: 'textfield',
@@ -1677,6 +1565,9 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 															    labelStyle: 'width:115px',
 															    anchor: "90%",
 															    fieldLabel: 'Internal Notes'													    
+															},{
+															    xtype: 'box',
+															    height: 15										    
 															}
 													      ]
 												}
@@ -1690,7 +1581,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 										    style:'padding:5px; border-left: 0px;border-right: 0px;',
 										    bodyCssClass: 'x-citewrite-panel-body',
 										    autoScroll: true,
-										    bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #fff;',
+										    bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #F1F1F1;',
 										    buttonAlign: 'left',
 										    items:[
 											    	{
@@ -1699,7 +1590,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 													    id: 'card-info',
 													    //padding: 5,
 													    border:false,							
-													    bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #fff;',
+													    bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #F1F1F1;',
 													    bodyCssClass: 'x-citewrite-panel-body',
 													    autoScroll: true,
 													    buttonAlign: 'left',
@@ -1712,6 +1603,9 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																    labelStyle: 'width:115px',
 																    allowBlank: false,
 																    fieldLabel: 'Name'													    
+																},{
+																    xtype: 'box',
+																    height: 15										    
 																},
 																{
 																    xtype: 'textfield',
@@ -1721,6 +1615,9 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																    anchor: "90%",
 																    allowBlank: false,
 																    fieldLabel: 'No'													    
+																},{
+																    xtype: 'box',
+																    height: 15										    
 																},
 																{
 																    xtype: 'textfield',
@@ -1730,6 +1627,9 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																    width:100,
 																    allowBlank: false,
 																    fieldLabel: 'Exp'													    
+																},{
+																    xtype: 'box',
+																    height: 15										    
 																},
 																{
 																	  xtype: 'combo',
@@ -1748,6 +1648,9 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																		triggerAction: 'all',
 																		forceSelection: true,
 																		mode: 'local'
+																},{
+																    xtype: 'box',
+																    height: 15										    
 																}
 													          ]
 											    	}
@@ -1760,7 +1663,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 										    padding: 5,
 										    style:'padding:5px; border-left: 0px;border-right: 0px;',
 										    bodyCssClass: 'x-citewrite-panel-body',
-										    bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #fff;',
+										    bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #F1F1F1;',
 										    autoScroll: true,
 										    buttonAlign: 'left',
 										    items: 
@@ -1773,7 +1676,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 												    //hidden:true,
 												    border:false,
 												    bodyCssClass: 'x-citewrite-panel-body',
-												    bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #fff;',
+												    bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #F1F1F1;',
 												    autoScroll: true,
 												    buttonAlign: 'left',
 												    items:[
@@ -1784,14 +1687,14 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 														    	border:'0px'
 														    },
 														    border: false,
-														    bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #fff;',
+														    bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #F1F1F1;',
 															items:[
 																{
 																	columnWidth: .45, 
 														    		layout: 'form',
 														    		border: false,
 														    		id: 'colum1radio',
-														    		bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #fff;',
+														    		bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #F1F1F1;',
 																	items: [
 																	        {
 																	        	xtype: 'checkbox',
@@ -1872,7 +1775,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 														    		layout: 'form',
 														    		border: false,
 														    		id: 'colum2radio',
-														    		bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #fff;',
+														    		bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #F1F1F1;',
 																	items: [
 																	        
 																	        {
@@ -1930,7 +1833,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 										    padding: 5,
 										    style:'padding:5px; border-left: 0px;border-right: 0px;',
 										    bodyCssClass: 'x-citewrite-panel-body',
-										    bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #fff;',
+										    bodyStyle: 'padding-left: 0px; padding-bottom: 0px; background-color: #F1F1F1;',
 										    autoScroll: true,
 										    border:false,
 										    listeners: {
@@ -2110,6 +2013,402 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 			Ext.apply(this, Ext.apply(this.initialConfig, config));	        
 			ReservationPanel.superclass.initComponent.apply(this, arguments);
 	    },
+	    
+	    loadGuestGrid: function(){
+
+	    	   panel = this;
+	    	
+	    	   var columnGuestModel = new Ext.grid.ColumnModel({
+			        defaults: { sortable: true },
+			        columns:[
+			                 		{header: 'Name', sortable: true, dataIndex: 'name'},
+			       		            {header: 'Address', sortable: true, dataIndex: 'address'},
+			       		            {header: 'Phone', sortable: true, dataIndex: 'phone'}	       		         
+
+			       		   ]
+			        });
+			    
+	    	    //grid = this;	
+			    var gridGuestPanel = {
+			    	xtype: 'grid',
+			    	id:"gridGuest",			    		    	
+			        store: guestsStore,
+			        trackMouseOver:false,
+			        disableSelection:false,
+			        height:300,
+			        frame: false,
+			        border: false,	
+			        bodyStyle: {
+			            padding: '0px'
+			        },
+			        // grid columns
+			        colModel: columnGuestModel,			
+			        // customize view config
+			        viewConfig: { forceFit:true },			
+			        // paging bar on the bottom
+			        tbar: {
+				    	xtype: 'toolbar',
+				    	items: ['Filter: ',
+				    	    	{
+					           	   xtype: 'combo',
+						    	   emptyText:'Type Guest Name',
+						    	   fieldLabel: 'Guest',
+						    	   name: 'guest_id_search',
+						    	   id: 'guest_id_search2',
+						    	   hiddenName:'guest_id_search',
+							       store: guestsStore,
+							       valueField: 'agency_id',
+								   displayField: 'agency_name',
+						           mode: 'remote',
+						           labelStyle: 'width: 75px;',
+						           autoSelect: true,
+						           selectOnFocus:true,
+						           hideTrigger:true,
+						           multiSelect:true,
+						           typeAhead:true,
+						           minChars:1,
+						           anchor: '40%',						         
+						    	},
+						        {
+						            iconCls: 'x-tbar-loading'  
+						            ,scope: this
+						            ,handler: function(){
+						            	agencyStore.baseParams = {'query': ""};
+						            	agencyStore.reload(); 
+						            	Ext.getCmp("guest_id_search2").setValue("");
+						            }
+						        } 
+				    	        ]
+				    },//top tool bar,
+				    listeners: {
+				    	rowdblclick: function(gridPanel, index, event )
+				    	{
+				    		var newValue = gridPanel.getStore().getAt(index);
+				    		 if(typeof newValue.data == "undefined"){
+			        			   Ext.getCmp('guests-info').show();
+			        			   Ext.getCmp('reservation_guest_id').setValue(0);													        			   
+			        			   Ext.getCmp('guest_type').show();
+					        	   //Ext.getCmp('guest_title').show();
+				        	   }else {
+				        		   Ext.getCmp('reservation_guest_id').setValue(newValue.data.guest_id);
+					        	   Ext.getCmp('guest_phone').setValue(newValue.data.phone);
+					        	   Ext.getCmp('guest_email').setValue(newValue.data.email);
+					        	   Ext.getCmp('guest_name').setValue(newValue.data.name);
+					        	   Ext.getCmp('guest_address').setValue(newValue.data.address);
+					        	   Ext.getCmp('guest_type').setValue(newValue.data.type);															        	   
+					        	   
+					        	   
+					        	   Ext.getCmp('guest_type').hide();
+					        	   //Ext.getCmp('guest_title').hide();															        	   
+				        		 
+				        	   }
+			        		   
+			        		   Ext.getCmp('guests-info').show();	
+			        		   
+			        		   this.findParentByType('window').close();
+				    	},
+				    	rowcontextmenu: function(gridPanel, index, event ){
+				    		GuestListMenu(gridPanel,index,event);
+				    	}
+				    },
+			        loadMask: true
+			    };
+			    
+				var GuestListMenu = function(gridPanel, index, event)
+				{
+					event.stopEvent();
+					var items = new Array({
+							text: 'Select',
+							handler: function() 
+							{
+								var newValue = gridPanel.getStore().getAt(index);
+								if(typeof newValue.data == "undefined"){
+				        			   Ext.getCmp('guests-info').show();
+				        			   Ext.getCmp('reservation_guest_id').setValue(0);													        			   
+				        			   Ext.getCmp('guest_type').show();
+						        	   //Ext.getCmp('guest_title').show();
+					        	   }else {
+					        		   Ext.getCmp('reservation_guest_id').setValue(newValue.data.guest_id);
+						        	   Ext.getCmp('guest_phone').setValue(newValue.data.phone);
+						        	   Ext.getCmp('guest_email').setValue(newValue.data.email);
+						        	   Ext.getCmp('guest_name').setValue(newValue.data.name);
+						        	   Ext.getCmp('guest_address').setValue(newValue.data.address);
+						        	   Ext.getCmp('guest_type').setValue(newValue.data.type);															        	   
+						        	   
+						        	   
+						        	   Ext.getCmp('guest_type').hide();
+						        	   //Ext.getCmp('guest_title').hide();															        	   
+					        		   
+					        	   }
+				        		   
+				        		   Ext.getCmp('guests-info').show();
+			        		   
+				        		   Ext.getCmp("listWindowSelectGuest").close();
+							}
+						});
+					
+					
+					var menu = new Ext.menu.Menu(
+					{
+						items: items
+					}).showAt(event.xy);
+				};
+			    return gridGuestPanel;
+	    
+	    },
+	    loadAgencyGrid: function(){
+	    	   panel = this;
+	    	
+	    	   var columnAgencyModel = new Ext.grid.ColumnModel({
+			        defaults: { sortable: true },
+			        columns:[
+			                 		{header: 'Name', sortable: true, dataIndex: 'agency_name'},
+			       		            {header: 'Address', sortable: true, dataIndex: 'agency_address'},
+			       		            {header: 'Phone', sortable: true, dataIndex: 'agency_phone'}	       		         
+
+			       		   ]
+			        });
+			    
+	    	    //grid = this;	
+			    var gridAgencyPanel = {
+			    	xtype: 'grid',
+			    	id:"gridAgencies",			    		    	
+			        store: agencyStore,
+			        trackMouseOver:false,
+			        disableSelection:false,
+			        height:300,
+			        frame: false,
+			        border: false,	
+			        bodyStyle: {
+			            padding: '0px'
+			        },
+			        // grid columns
+			        colModel: columnAgencyModel,			
+			        // customize view config
+			        viewConfig: { forceFit:true },			
+			        // paging bar on the bottom
+			        tbar: {
+				    	xtype: 'toolbar',
+				    	items: ['Filter: ',
+				    	    	{
+					           	   xtype: 'combo',
+						    	   emptyText:'Type Agency Name',
+						    	   fieldLabel: 'Agency',
+						    	   name: 'agency_id_search',
+						    	   id: 'agency_id_search2',
+						    	   hiddenName:'agency_id_search',
+							       store: agencyStore,
+							       valueField: 'agency_id',
+								   displayField: 'agency_name',
+						           mode: 'remote',
+						           labelStyle: 'width: 75px;',
+						           autoSelect: true,
+						           selectOnFocus:true,
+						           hideTrigger:true,
+						           multiSelect:true,
+						           typeAhead:true,
+						           minChars:1,
+						           anchor: '40%',						         
+						    	},
+						        {
+						            iconCls: 'x-tbar-loading'  
+						            ,scope: this
+						            ,handler: function(){
+						            	agencyStore.baseParams = {'query': ""};
+						            	agencyStore.reload(); 
+						            	Ext.getCmp("agency_id_search2").setValue("");
+						            }
+						        } 
+				    	        ]
+				    },//top tool bar,
+				    listeners: {
+				    	rowdblclick: function(gridPanel, index, event )
+				    	{
+				    		var newValue = gridPanel.getStore().getAt(index);
+				    		 if(typeof newValue.data == "undefined"){
+			        			
+			        			 Ext.getCmp('agency_name').setValue(Ext.getCmp("agency_id_search").getRawValue());
+			        			 Ext.getCmp('reservation_agency_id').setValue(0);
+			        	   }else {
+			        		   Ext.getCmp('reservation_agency_id').setValue(newValue.data.agency_id);
+			        		   Ext.getCmp('agency_name').setValue(newValue.data.agency_name);
+			        		   Ext.getCmp('agency_address').setValue(newValue.data.agency_address);
+			        		   Ext.getCmp('agency_phone').setValue(newValue.data.agency_phone);
+			        		   Ext.getCmp('agency_email').setValue(newValue.data.agency_email);														        		   
+			        		  
+			        	   }
+		        		   
+		        		   Ext.getCmp('agency-info').show();
+		        		   this.findParentByType('window').close();
+				    	},
+				    	rowcontextmenu: function(gridPanel, index, event ){
+				    		AgencyListMenu(gridPanel,index,event);
+				    	}
+				    },
+			        loadMask: true
+			    };
+			    
+				var AgencyListMenu = function(gridPanel, index, event)
+				{
+					event.stopEvent();
+					var items = new Array({
+							text: 'Select',
+							handler: function() 
+							{
+								var newValue = gridPanel.getStore().getAt(index);
+					    		 if(typeof newValue.data == "undefined"){
+				        			 
+				        			 Ext.getCmp('agency_name').setValue(Ext.getCmp("agency_id_search").getRawValue());
+				        			 Ext.getCmp('reservation_agency_id').setValue(0);
+				        	   }else {
+				        		   Ext.getCmp('reservation_agency_id').setValue(newValue.data.agency_id);
+				        		   Ext.getCmp('agency_name').setValue(newValue.data.agency_name);
+				        		   Ext.getCmp('agency_address').setValue(newValue.data.agency_address);
+				        		   Ext.getCmp('agency_phone').setValue(newValue.data.agency_phone);
+				        		   Ext.getCmp('agency_email').setValue(newValue.data.agency_email);														        		   
+				        		   
+				        	   }
+			        		   
+			        		   Ext.getCmp('agency-info').show();
+			        		   
+			        		   Ext.getCmp("listWindowSelectAgency").close();
+							}
+						});
+					
+					
+					var menu = new Ext.menu.Menu(
+					{
+						items: items
+					}).showAt(event.xy);
+				};
+			    return gridAgencyPanel;
+	    },	    
+	    selectGuest: function (gest){
+
+    		panel = this;
+	    	var guestList = {
+	    			xtype: 'panel',		    			
+	    			//layout: 'form',
+	    			title: false,
+	    			bodyBorder: false,
+	    			border: false,
+	    			bodyStyle: {
+				            padding: '0px',
+				            border: 'none'
+				        },
+	    			frame: false,
+	    			defaultType:'textfield',
+	    			bodyStyle: 'padding: 0px, 0px; ',
+	    			defaults: { width: '100%' },
+	    			items: [panel.loadGuestGrid()]
+	    		};
+	    	
+	    	  			
+	    	var guestListPanel = new Ext.form.FormPanel({
+	    		xtype: 'form',
+	    		id: 'guestListPanel',
+	    		border: false,
+	    		frame: false,
+	    		bodyBorder: false,
+	    		autoHeight: true,
+	    		items: [{
+	    				xtype: 'panel',
+	    				autoWidth: true,
+	    				 bodyStyle: {
+	 			            padding: '0px'
+	 			        },
+	    				border: false,
+	    				frame: false,
+	    				deferredRender: false,
+	    				defaults: {autoHeight: true, autoScroll: true},
+	    				items: [guestList]
+	    			}]
+	    		});
+	    	
+	    	var listWindowGuest = new Ext.Window({		         
+	            title: "Guest Lookup",
+	            id: 'listWindowSelectGuest',
+	            width:460,
+	            height: 310,
+	            plain: true,
+	            resizable: false,
+	            autoScroll: true,
+	            modal: true,
+	            items: guestListPanel,		            
+	            buttons: [{
+	                text: 'Close',
+	                handler: function(){
+	                	this.findParentByType('window').close();
+	                }
+	            }]
+	        });
+	    	listWindowGuest.show();		    	
+	    	
+	
+	    },	    
+	    selectAgency:function (agency)
+		{
+	    		panel = this;
+		    	var agencyList = {
+		    			xtype: 'panel',		    			
+		    			//layout: 'form',
+		    			title: false,
+		    			bodyBorder: false,
+		    			border: false,
+		    			bodyStyle: {
+					            padding: '0px',
+					            border: 'none'
+					        },
+		    			frame: false,
+		    			defaultType:'textfield',
+		    			bodyStyle: 'padding: 0px, 0px; ',
+		    			defaults: { width: '100%' },
+		    			items: [panel.loadAgencyGrid()]
+		    		};
+		    	
+		    	  			
+		    	var agencyListPanel = new Ext.form.FormPanel({
+		    		xtype: 'form',
+		    		id: 'agencyListPanel',
+		    		border: false,
+		    		frame: false,
+		    		bodyBorder: false,
+		    		autoHeight: true,
+		    		items: [{
+		    				xtype: 'panel',
+		    				autoWidth: true,
+		    				 bodyStyle: {
+		 			            padding: '0px'
+		 			        },
+		    				border: false,
+		    				frame: false,
+		    				deferredRender: false,
+		    				defaults: {autoHeight: true, autoScroll: true},
+		    				items: [agencyList]
+		    			}]
+		    		});
+		    	
+		    	var listWindow = new Ext.Window({		         
+		            title: "Agency Lookup",
+		            id: 'listWindowSelectAgency',
+		            width:460,
+		            height: 310,
+		            plain: true,
+		            resizable: false,
+		            autoScroll: true,
+		            modal: true,
+		            items: agencyListPanel,		            
+		            buttons: [{
+		                text: 'Close',
+		                handler: function(){
+		                	this.findParentByType('window').close();
+		                }
+		            }]
+		        });
+		    	listWindow.show();
+		    	listWindowGeneral = listWindow;		    	
+		    	
+		},
 	    loadDataReservation : function(){
 	    	panel = this;
 	    	//Ext.getCmp('event-info').hide();
@@ -2128,13 +2427,13 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    					agencyStore.load({
 	 	    					params:{'reservation_agency_id': panel.reservationInfo[prop]},
 	 	    					callback: function () {	 	 
-	 	    						Ext.getCmp('agency_id_search').setValue(agencyStore.getAt(0).data.agency_id);
+	 	    						
 	 	    						Ext.getCmp('reservation_agency_id').setValue(agencyStore.getAt(0).data.agency_id);
 	 		    	        		Ext.getCmp('agency_name').setValue(agencyStore.getAt(0).data.agency_name);
 	 		    	        		Ext.getCmp('agency_address').setValue(agencyStore.getAt(0).data.agency_address);
 	 		    	        		Ext.getCmp('agency_phone').setValue(agencyStore.getAt(0).data.agency_phone);
 	 		    	        		Ext.getCmp('agency_email').setValue(agencyStore.getAt(0).data.agency_email);
-	 		    	        		Ext.getCmp('add-agency').hide();	    	        		   
+	 		    	        		   	        		   
 	 		    	        		Ext.getCmp('agency-info').show();
 	 	    			        }
 	 	    			     });	    					
@@ -2143,13 +2442,14 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    					 guestsStore.load({
 		 	    					params:{'reservation_guest_id': panel.reservationInfo[prop]},
 		 	    					callback: function () {	 			 	    			
-		 	    					   Ext.getCmp('guests_id_search').setValue(guestsStore.getAt(0).data.agency_id);
+		 	    					  
 		 	    					   Ext.getCmp('reservation_guest_id').setValue(guestsStore.getAt(0).data.guest_id);
 									   Ext.getCmp('guest_phone').setValue(guestsStore.getAt(0).data.phone);
 									   Ext.getCmp('guest_email').setValue(guestsStore.getAt(0).data.email);
 									   Ext.getCmp('guest_name').setValue(guestsStore.getAt(0).data.name);
 									   Ext.getCmp('guest_address').setValue(guestsStore.getAt(0).data.address);														        	   
-									   Ext.getCmp('add-guest').hide();      	   									   
+									   Ext.getCmp('guest_type').setValue(guestsStore.getAt(0).data.type);
+									   	   									   
 									   Ext.getCmp('guests-info').show();
 		 	    			        }
 		 	    			     });	 
@@ -3366,6 +3666,627 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    	occupancyWindow.show();
 	    	occupancyWindow.center();
 	    },
+	    addGuest: function(){
+	    	  guestDialog.setTitle('New Guest');
+			  guestFormPanel.getForm().reset();
+			  guestTittleCombo.setValue(1);
+			  guestMarketCombo.setValue(1);
+			  guestCountryCombo.setValue(1);
+			  guestTypeCombo.setValue(1);
+			  guestDialog.show();
+	    },
+	    loadGuestPanel: function ()
+		{
+	    	
+	    	if(typeof guestFormPanel != "undefined"){
+	    		return false;
+	    	}
+	    	
+	    	guestTittleCombo = new Ext.form.ComboBox({
+			    typeAhead: true,
+			    triggerAction: 'all',
+			    lazyRender:true,
+			    mode: 'local',
+			    id: 'guest_title',
+			    hiddenName: 'guest_title',
+			    autoload: true,
+			    store: new Ext.data.ArrayStore({
+			        id: 0,
+			        fields: [
+			            'TittleValue',
+			            'TittleDisplay'
+			        ],
+			        data: [[1, 'Mr'],[2, 'Mrs'],[3, 'Miss'],[4, 'Ms'],[5, 'Master'],[6, 'Family'],[7, 'Other']]
+			    }),
+			    valueField: 'TittleValue',
+			    displayField: 'TittleDisplay',
+			    fieldLabel: 'Tittle',
+		    	anchor:'95%',
+                tabIndex: 1,
+                allowBlank: false,
+                forceSelection: true
+			});
+			
+			guestTypeCombo = new Ext.form.ComboBox({
+			    typeAhead: true,
+			    triggerAction: 'all',
+			    lazyRender:true,
+			    mode: 'local',
+			    id: 'guest_type_add',
+			    hiddenName: 'guest_type',
+			    autoload: true,
+			    store: new Ext.data.ArrayStore({
+			        id: 0,
+			        fields: [
+			            'TypeValue',
+			            'TypeDisplay'
+			        ],
+			        data: [[1, 'Guest'],[2, 'Group'],[3, 'Other']]
+			    }),
+			    valueField: 'TypeValue',
+			    displayField: 'TypeDisplay',
+			    fieldLabel: 'Type',
+		    	anchor:'95%',
+                tabIndex: 1,
+                allowBlank: false,
+                forceSelection: true
+			});
+			
+			guestCountryCombo = new Ext.form.ComboBox({
+				id: 'guest_country',
+		    	hiddenName: 'guest_country',
+		    	fieldLabel: 'Country',
+		    	anchor:'95%',
+                tabIndex: 4, 
+		    	submitValue: true,
+	            lazyRender: false,
+	            store: countryStoreForRes,
+				displayField:'country_name',
+				valueField: 'country_id',
+				triggerAction: 'all',
+				allowBlank: false,
+	            forceSelection: true
+			});
+								
+			guestMarketCombo = new Ext.form.ComboBox({
+			    typeAhead: true,
+			    triggerAction: 'all',
+			    lazyRender:true,
+			    mode: 'local',
+			    id: 'guest_market',
+			    autoload: true,
+			    hiddenName: 'guest_market',
+			    store: new Ext.data.ArrayStore({
+			        id: 0,
+			        fields: [
+			            'MarketValue',
+			            'MArketDisplay'
+			        ],
+			        data: [[1, 'Local'],[2, 'Israeli'],[3, 'International']]
+			    }),
+			    valueField: 'MarketValue',
+			    displayField: 'MArketDisplay',
+			    fieldLabel: 'Market',
+		    	anchor:'95%',
+                tabIndex: 12,
+                allowBlank: false,
+                forceSelection: true
+			});
+	    	//guest form
+			guestFormPanel = new Ext.FormPanel({
+				bodyBorder: false,
+				border: false,
+				frame: false,
+				labelAlign: 'top',
+				buttonAlign:'center',
+				bodyStyle: 'padding: 10px; ',
+				autoWidth: true,
+				defaults: { width: '95%' },
+				bodyCssClass: 'x-citewrite-panel-body',
+				id: 'guestFormPanel',
+				items:[
+				       {
+				            layout:'column',
+				            border: false,
+				            bodyCssClass: 'x-citewrite-panel-body',
+				            items:[
+				            {
+				                columnWidth:.5,
+				                defaultType:'textfield',
+				                layout: 'form',
+				                border: false,
+				                bodyBorder: false,
+				                bodyCssClass: 'x-citewrite-panel-body',
+				                items: [guestTittleCombo,{
+							    	   	id: 'guest_name_add',
+							    	   	name: 'guest_name',
+							    	   	fieldLabel: 'Name',
+					                    anchor:'95%',
+					                    allowBlank: false,
+						                tabIndex: 2 
+							       },
+							       {
+							    	   id: 'guest_dni_add',
+							    	   name: 'guest_dni',
+							    	   fieldLabel: 'DNI',
+							    	   anchor:'95%',
+					                   tabIndex: 3 
+
+							       }, 	
+							    	   guestCountryCombo
+							       , {
+							    	   id: 'guest_address_add',
+							    	   name: 'guest_address',
+							    	   fieldLabel: 'Address',
+							    	   anchor:'95%',
+					                   tabIndex: 5 
+
+							       }
+							       ]
+				            },{
+				                columnWidth:.5,
+				                layout: 'form',
+				                defaultType:'textfield',
+				                border: false,
+				                bodyBorder: false,
+				                bodyCssClass: 'x-citewrite-panel-body',
+				                items: [
+							       {
+							    	   id: 'guest_phone_add',
+							    	   fieldLabel: 'Phone',
+							    	   name: 'guest_phone',
+							    	   maskRe: /^[0-9]*$/,
+							    	   anchor:'95%',
+					                   tabIndex: 7 
+							       },
+							       { 
+							    	   id: 'guest_email_add',
+							    	   fieldLabel: 'Email',
+							    	   name: 'guest_email',
+							    	   regex: /^([\w\-\'\-]+)(\.[\w-\'\-]+)*@([\w\-]+\.){1,5}([A-Za-z]){2,4}$/,
+							    	   regexText:'This field should be an e-mail address in the format "user@example.com"',
+							    	   anchor:'95%',
+							    	   allowBlank: false,
+					                   tabIndex: 9 
+							       }, 
+							       guestMarketCombo,
+							       guestTypeCombo
+							        	]
+				            }]
+				        },{
+				        		id: 'guest_notes_add',
+				        		name: 'guest_notes',
+				        		fieldLabel: 'Notes',
+			                    anchor:'97%',
+				                tabIndex: 13,
+				                xtype: 'textarea',		
+								name: 'guest_notes'
+						},
+				       {
+							   id: 'guest_id_add',
+							   name: 'guest_id',
+							   xtype: 'hidden',
+							   value: '0'
+						}]
+			});
+			
+	    	guestDialog = new Ext.Window({
+                renderTo: document.body,
+                layout:'fit',
+                width:540,
+                height:530,
+                closeAction:'hide',
+                plain: true,
+                resizable: false,
+                modal: true,
+                id: 'guestWindow',
+                items: guestFormPanel,
+
+                buttons: [{
+                    text:'Save',
+                    handler: function()
+                    {
+                    
+                    	var guest_name = Ext.getCmp('guest_name_add').getValue();
+                    	var guest_address = Ext.getCmp('guest_address_add').getValue();
+                    
+                    	var guest_phone = Ext.getCmp('guest_phone_add').getValue();
+                    	var guest_email = Ext.getCmp('guest_email_add').getValue();
+                    
+                    	var guest_market = guestMarketCombo.getValue();
+                    	var guest_type = guestTypeCombo.getValue();
+                     	
+                    	if(guest_name.length == 0 || guest_market.length == 0 || guest_email.length == 0)
+                		{
+                    		Ext.Msg.show({
+	            				   title:'Missing Field',
+	            				   msg: 'Name, Market and Email are required.',
+	            				   buttons: Ext.Msg.OK,
+	            				   icon: Ext.MessageBox.ERROR
+	            				});
+                    		
+                    		return false;
+                		}
+                    	
+                    	if(guest_phone.length == 0 && guest_mobile.length == 0)
+                		{
+                    		Ext.Msg.show({
+	            				   title:'Missing Field',
+	            				   msg: 'You need to provide at least one phone number.',
+	            				   buttons: Ext.Msg.OK,
+	            				   icon: Ext.MessageBox.ERROR
+	            				});
+                    		
+                    		return false;
+                		}
+                    	
+                    	if(guest_type.length == 0)
+                		{
+                    		Ext.Msg.show({
+	            				   title:'Missing Field',
+	            				   msg: 'Type are required',
+	            				   buttons: Ext.Msg.OK,
+	            				   icon: Ext.MessageBox.ERROR
+	            				});
+                    		
+                    		return false;
+                		}
+                    	
+                    	
+                    	//validate form
+                    	guestFormPanel.getForm().submit({
+                    	    url: _contextPath + '/guests/save',
+                    	    params: {
+                    	        xaction: 'save'
+                    	    },
+                    	    success: function(form, action) {
+                    	    	var response = Ext.decode(action.response.responseText);
+                    	    	if(response.success){
+                    	    		  if(typeof response.guest_id == "undefined"){
+         			        			   
+         			        			   Ext.getCmp('reservation_guest_id').setValue(0);													        			   
+         			        			   
+         				        	   }else {
+         				        		  if(response.guest_id > 0){
+	         				        		   Ext.getCmp('reservation_guest_id').setValue(response.guest_id);
+	         					        	   Ext.getCmp('guest_phone').setValue(guest_phone);
+	         					        	   Ext.getCmp('guest_email').setValue(guest_email);
+	         					        	   Ext.getCmp('guest_name').setValue(guest_name);
+	         					        	   Ext.getCmp('guest_address').setValue(guest_address);
+	         					        	   Ext.getCmp('guest_type').hide();
+	         				        	  }else {
+	    				        			   alert("Error during loading Guest information.");
+	    				        		  }
+         				        	   }
+         			        		   
+         			        		   Ext.getCmp('guests-info').show();
+         			        		   guestDialog.hide();
+         			        		   guestsStore.reload();
+                           	           Ext.growl.message('Success', 'Guest has been saved.');
+         			        		   
+		            	    	}else {
+		            	    		Ext.growl.message('Error', 'An error occurred while saving the Guest. Try again');
+		            	    	}
+                    	      
+                    	    },
+                    	    failure: function(form, action) {
+                    	        switch (action.failureType) {
+                    	            case Ext.form.Action.CLIENT_INVALID:
+										Ext.Msg.show({
+										   title:'Failure',
+										   msg:  'Form fields may not be submitted with invalid values',
+										   buttons: Ext.Msg.OK,
+										   icon: Ext.MessageBox.ERROR
+										});
+                    	                break;
+                    	            case Ext.form.Action.CONNECT_FAILURE:
+                    	            	Ext.Msg.show({
+										   title:'Failure',
+										   msg:   'Ajax communication failed',
+										   buttons: Ext.Msg.OK,
+										   icon: Ext.MessageBox.ERROR
+										});
+                    	                break;
+                    	            case Ext.form.Action.SERVER_INVALID:
+										Ext.Msg.show({
+										   title:'Failure',
+										   msg: action.result.msg,
+										   buttons: Ext.Msg.OK,
+										   icon: Ext.MessageBox.ERROR
+										});
+                    	       }
+                    	    }
+                    	});
+                    }
+                },{
+                    text: 'Close',
+                    handler: function(){
+                    	guestDialog.hide();
+                    }
+                }]
+            });
+		},
+	    addAgency: function(){
+	    	agencyFormPanel.getForm().reset();
+			agencyCountryCombo.setValue(1);
+			agencyTypeCombo.setValue(1);
+			agencyDialog.show();
+	    },
+	    loadAgencyPanel: function ()
+		{
+	    	if(typeof agencyFormPanel != "undefined"){
+	    		return false;
+	    	}
+	    	
+		    	agencyCountryCombo = new Ext.form.ComboBox({
+					id: 'agency_country',
+			    	hiddenName: 'agency_country',
+			    	fieldLabel: 'Country',
+			    	anchor:'95%',
+	                tabIndex: 3, 
+			    	submitValue: true,
+		            lazyRender: false,
+		            store: countryStoreForRes,
+					displayField:'country_name',
+					valueField: 'country_id',
+					triggerAction: 'all',
+					allowBlank: false,
+		            forceSelection: true
+				});
+		    	
+		    	agencyTypeCombo = new Ext.form.ComboBox({
+				    typeAhead: true,
+				    triggerAction: 'all',
+				    lazyRender:true,
+				    mode: 'local',
+				    id: 'agency_type',
+				    hiddenName: 'agency_type',
+				    autoload: true,
+				    store: new Ext.data.ArrayStore({
+				        id: 0,
+				        fields: [
+				            'TypeValue',
+				            'TypeDisplay'
+				        ],
+				        data: [[1, 'Agency Tour'],[2, 'Corporation'],[3, 'Independient']]
+				    }),
+				    valueField: 'TypeValue',
+				    displayField: 'TypeDisplay',
+				    fieldLabel: 'Type',
+			    	anchor:'95%',
+	                tabIndex: 10,
+	                allowBlank: false,
+	                forceSelection: true
+				});
+	    	
+		    	//agency form
+				agencyFormPanel = new Ext.FormPanel({
+					bodyBorder: false,
+					border: false,
+					frame: false,
+					labelAlign: 'top',
+					buttonAlign:'center',
+					bodyStyle: 'padding: 10px; ',
+					autoWidth: true,
+					defaults: { width: '95%' },
+					bodyCssClass: 'x-citewrite-panel-body',
+					id: 'agencyFormPanel',
+					items:[
+					       {
+					            layout:'column',
+					            border: false,
+					            bodyCssClass: 'x-citewrite-panel-body',
+					            items:[
+					            {
+					                columnWidth:.5,
+					                defaultType:'textfield',
+					                layout: 'form',
+					                border: false,
+					                bodyBorder: false,
+					                bodyCssClass: 'x-citewrite-panel-body',
+					                items: [{
+								    	   	id: 'agency_name_add',
+								    	   	fieldLabel: 'Name',
+								    	   	name:"agency_name",
+						                    anchor:'95%',
+						                    allowBlank: false,
+							                tabIndex: 1 
+								       },
+								       {
+								    	   id: 'agency_identification_add',
+								    	   fieldLabel: 'Corporation ID',
+								    	   name:"agency_identification",
+								    	   anchor:'95%',
+						                   tabIndex: 2 
+	
+								       }, 	
+								    	   agencyCountryCombo
+								       , {
+								    	   id: 'agency_address_add',
+								    	   fieldLabel: 'Address',
+								    	   name:"agency_address",
+								    	   anchor:'95%',
+						                   tabIndex: 4 
+	
+								       }
+								       ]
+					            },{
+					                columnWidth:.5,
+					                layout: 'form',
+					                defaultType:'textfield',
+					                border: false,
+					                bodyBorder: false,
+					                bodyCssClass: 'x-citewrite-panel-body',
+					                items: [
+								       {
+								    	   id: 'agency_phone_add',
+								    	   name:"agency_phone",
+								    	   fieldLabel: 'Phone',
+								    	   anchor:'95%',
+						                   tabIndex: 6 
+								       },
+								       {
+								    	   id: 'agency_web_site_add',
+								    	   fieldLabel: 'Web Site',
+								    	   name:"agency_web_site",
+								    	   anchor:'95%',
+						                   tabIndex: 7 
+								       },{ 
+								    	   id: 'agency_email_add',
+								    	   fieldLabel: 'Email',
+								    	   name:"agency_email",
+								    	   regex: /^([\w\-\'\-]+)(\.[\w-\'\-]+)*@([\w\-]+\.){1,5}([A-Za-z]){2,4}$/,
+								    	   regexText:'This field should be an e-mail address in the format "user@example.com"',
+								    	   anchor:'95%',
+								    	   allowBlank: false,
+						                   tabIndex: 8 
+								       },
+								       agencyTypeCombo
+								        	]
+					            }]
+					        },{
+					        		id: 'agency_notes_add',
+					        		name:"agency_notes",
+					        		fieldLabel: 'Notes',
+				                    anchor:'97%',
+					                tabIndex: 13,
+					                xtype: 'textarea',		
+									name: 'agency_notes'
+							},
+					       {
+								   id: 'agency_id_add',
+								   xtype: 'hidden',
+								   name:"agency_id",
+								   value: '0'
+							}]
+				});
+				
+		    	agencyDialog = new Ext.Window({
+	                renderTo: document.body,
+	                layout:'fit',
+	                width:540,
+	                height:490,
+	                closeAction:'hide',
+	                plain: true,
+	                resizable: false,
+	                modal: true,
+	                id: 'agencyWindow',
+	                items: agencyFormPanel,
+	                title:"Add Agency",
+	                buttons: [{
+	                    text:'Save',
+	                    handler: function()
+	                    {
+	                    	var agency_phone = Ext.getCmp('agency_phone_add').getValue();
+	                    	var agency_address = Ext.getCmp('agency_address_add').getValue();
+	                    	var agency_email = Ext.getCmp('agency_email_add').getValue();
+	                    	var agency_name = Ext.getCmp('agency_name_add').getValue();
+	                    	var agency_type = agencyTypeCombo.getValue();
+	                     	
+	                    	if(agency_name.length == 0 || agency_phone.length == 0 || agency_email.length == 0)
+	                		{
+	                    		Ext.Msg.show({
+		            				   title:'Missing Field',
+		            				   msg: 'Name, Phone and Email are required.',
+		            				   buttons: Ext.Msg.OK,
+		            				   icon: Ext.MessageBox.ERROR
+		            				});
+	                    		
+	                    		return false;
+	                		}
+	                    	
+	                    	if(agency_type.length == 0)
+	                		{
+	                    		Ext.Msg.show({
+		            				   title:'Missing Field',
+		            				   msg: 'Type are required',
+		            				   buttons: Ext.Msg.OK,
+		            				   icon: Ext.MessageBox.ERROR
+		            				});
+	                    		
+	                    		return false;
+	                		}
+	                    	
+	                    	
+	                    	//validate form
+	                    	agencyFormPanel.getForm().submit({
+	                    	    url: _contextPath + '/agency/save',
+	                    	    params: {
+	                    	        xaction: 'save'
+	                    	    },
+	                    	    success: function(form, action) {
+	                    	    	var response = Ext.decode(action.response.responseText);
+	                    	    	if(response.success){
+	                    	    		  if(typeof response.agency_id == "undefined"){
+	         			        			   
+	         			        			   Ext.getCmp('reservation_agency_id').setValue(0);													        			   
+	         			        			   
+	         				        	   }else {
+	         				        		   if(response.agency_id > 0){
+	         				        			   Ext.getCmp('reservation_agency_id').setValue(response.agency_id);
+								        		   Ext.getCmp('agency_name').setValue(agency_name);
+								        		   Ext.getCmp('agency_address').setValue(agency_address);
+								        		   Ext.getCmp('agency_phone').setValue(agency_phone);
+								        		   Ext.getCmp('agency_email').setValue(agency_email);
+								        		   Ext.getCmp('agency-info').show();
+	         				        		   }else {
+	         				        			   alert("Error during loading Agency information.");
+	         				        		   }
+	         				        		   													        		   
+	         				        	   }
+	         			        		   
+	                    	    		  agencyDialog.hide();
+	  	                    	    	  Ext.growl.message('Success', 'Agency has been saved.');
+	  	                    	    	  agencyStore.reload();
+	         			        		   
+			            	    	}else {
+			            	    		Ext.growl.message('Error', 'An error occurred while saving the Agency. Try again');
+			            	    	}
+	                    	    },
+	                    	    failure: function(form, action) {
+	                    	        switch (action.failureType) {
+	                    	            case Ext.form.Action.CLIENT_INVALID:
+											Ext.Msg.show({
+											   title:'Failure',
+											   msg:  'Form fields may not be submitted with invalid values',
+											   buttons: Ext.Msg.OK,
+											   icon: Ext.MessageBox.ERROR
+											});
+	                    	                break;
+	                    	            case Ext.form.Action.CONNECT_FAILURE:
+	                    	            	Ext.Msg.show({
+											   title:'Failure',
+											   msg:   'Ajax communication failed',
+											   buttons: Ext.Msg.OK,
+											   icon: Ext.MessageBox.ERROR
+											});
+	                    	                break;
+	                    	            case Ext.form.Action.SERVER_INVALID:
+											Ext.Msg.show({
+											   title:'Failure',
+											   msg: action.result.msg,
+											   buttons: Ext.Msg.OK,
+											   icon: Ext.MessageBox.ERROR
+											});
+	                    	       }
+	                    	    }
+	                    	});
+	                    }
+	                },{
+	                    text: 'Close',
+	                    handler: function(){
+	                    	agencyDialog.hide();
+	                    }
+	                }]
+	            });
+	    	
+			  agencyFormPanel.getForm().reset();
+			  agencyCountryCombo.setValue(1);
+			  agencyTypeCombo.setValue(1);
+			
+	    },
+	    
+	    
 	    bindActions: function()
 	    {
 	    	var panel = this;

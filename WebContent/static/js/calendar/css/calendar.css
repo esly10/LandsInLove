@@ -2,6 +2,16 @@ body {
   font-family: 'Segoe UI', 'Droid Sans', Arial, sans-serif;
   font-size: 11px; }
 
+
+.time-sch-item.item-status-1,
+.time-sch-item.item-status-2,
+.time-sch-item.item-status-3,
+.time-sch-item.item-status-4,
+.time-sch-item.item-status-5,
+.time-sch-item.item-status-6
+{
+	    height: 20px;
+}
 /*/'1', 'Confirmed'*/
 
 .time-sch-item.item-status-1 {

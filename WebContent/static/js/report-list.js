@@ -63,24 +63,24 @@ Ext.onReady(function(){
 			            {header: '', sortable: true, dataIndex: 'id', width: 48, 
 			            	renderer : function(value, meta, dataStore) {
 			            	    if(dataStore.data.id == 1) {
-			            	        meta.style = "background-color:#f0359d; background-image: url(/bck/static/images/ocupancy-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
+			            	        meta.style = "background-color:#f0359d; background-image: url("+_rootContextPath+"/static/images/ocupancy-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
 			            	    } else if(dataStore.data.id == 2) {
-			            	    	meta.style = "background-color:#35a0f0; background-image: url(/bck/static/images/marketing-report.png);  background-repeat: no-repeat; background-position: center;  height:50px;"; 
+			            	    	meta.style = "background-color:#35a0f0; background-image: url("+_rootContextPath+"/static/images/marketing-report.png);  background-repeat: no-repeat; background-position: center;  height:50px;"; 
 			            	    	
 			            	    }else if(dataStore.data.id == 3) {  
-			            	    	meta.style = "background-color:#49e34c; background-image: url(/bck/static/images/group-report.png);  background-repeat: no-repeat; background-position: center;  height:50px;"; 
+			            	    	meta.style = "background-color:#49e34c; background-image: url("+_rootContextPath+"/static/images/group-report.png);  background-repeat: no-repeat; background-position: center;  height:50px;"; 
 			            	    }else if(dataStore.data.id == 4) {
-			            	    	meta.style = 	"background-color:#f4dc49; background-image: url(/bck/static/images/payment-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
+			            	    	meta.style = 	"background-color:#f4dc49; background-image: url("+_rootContextPath+"/static/images/payment-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
 			            	    }else if(dataStore.data.id == 5) {
-			            	    	meta.style = "background-color:#9838fd; background-image: url(/bck/static/images/meal-report.png);  background-repeat: no-repeat; background-position: center;  height:50px;";
+			            	    	meta.style = "background-color:#9838fd; background-image: url("+_rootContextPath+"/static/images/meal-report.png);  background-repeat: no-repeat; background-position: center;  height:50px;";
 			            	    }else if(dataStore.data.id == 6) {
-			            	    	meta.style = "background-color:#f03535; background-image: url(/bck/static/images/security-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
+			            	    	meta.style = "background-color:#f03535; background-image: url("+_rootContextPath+"/static/images/security-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
 			            	    }else if(dataStore.data.id == 7) {
-			            	    	meta.style = "background-color:#16df9d; background-image: url(/bck/static/images/status-report.png);  background-repeat: no-repeat; background-position: center;  height:50px;";
+			            	    	meta.style = "background-color:#16df9d; background-image: url("+_rootContextPath+"/static/images/status-report.png);  background-repeat: no-repeat; background-position: center;  height:50px;";
 			            	    }else if(dataStore.data.id == 8) {
-			            	    	meta.style = "background-color:#fd8838; background-image: url(/bck/static/images/monthly-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
+			            	    	meta.style = "background-color:#fd8838; background-image: url("+_rootContextPath+"/static/images/monthly-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
 			            	    }else{
-			            	    	meta.style = "background-color:gray; background-image: url(/bck/static/images/monthly-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
+			            	    	meta.style = "background-color:gray; background-image: url(/"+_rootContextPath+"/static/images/monthly-report.png); background-repeat: no-repeat; background-position: center;  height:50px;";
 			            	    }
 			            	}		           
 			            },{header: 'Name', sortable: true, dataIndex: 'Name',

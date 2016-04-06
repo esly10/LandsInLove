@@ -12,6 +12,13 @@ import com.google.gson.annotations.Expose;
 
 public class Payments extends DBObject
 {	
+	public static final int PAYMENT_CASH 	= 1;
+	public static final int PAYMENT_WIRETRANSFER 	= 2;
+	public static final int PAYMENT_CHECK 	= 3;
+	public static final int PAYMENT_CREDITCARD 	= 4;
+	public static final int PAYMENT_REFOUND	= 5;//deprecation
+	public static final int PAYMENT_OTHER 	= 6;
+	public static final int PAYMENT_ALL 		= 7;
 
 	@Expose public int payment_id = 0;
 	@Expose public int reservation_id = 0;	
