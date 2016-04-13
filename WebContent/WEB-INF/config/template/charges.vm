@@ -259,8 +259,8 @@
 				#end
 				
 				<tr><td colspan=4 style="border-top: 1px solid #000;">Sub Total:</td><td colspan=2 style="border-top: 1px solid #000;">$ ${reservation.agencyCharges}</td></tr>
-				<tr><td colspan=4>Tax:</td><td colspan=2>$ ${reservation.agencyTax}</td></tr>
-				<tr><td colspan=4>Service:</td><td colspan=2>$ ${reservation.agencyService}</td></tr>
+				<tr><td colspan=4>Tax:</td><td colspan=2>$ ${reservation.agencyFormatTax}</td></tr>
+				
 				<tr><td colspan=4>Paid:</td><td colspan=2;  style="color:red;">$ ${reservation.agencyPaid}</td></tr>		
 				<tr><td colspan=4>Total:</td><td colspan=2> ${reservation.totalAgency}</td></tr>
 			
@@ -285,8 +285,8 @@
 				#end
 				
 				<tr><td colspan=4  style="border-top: 1px solid #000;">Sub Total:</td><td colspan=2  style="border-top: 1px solid #000;">$ ${reservation.guestCharges}</td></tr>
-				<tr><td colspan=4>Tax:</td><td colspan=2>$ ${reservation.guestTax}</td></tr>
-				<tr><td colspan=4>Service:</td><td colspan=2>$ ${reservation.guestService}</td></tr>
+				<tr><td colspan=4>Tax:</td><td colspan=2>$ ${reservation.guestFormatTax}</td></tr>
+				
 				<tr><td colspan=4>Paid:</td><td colspan=2  style="color:red;">$ ${reservation.guestPaid}</td></tr>	
 				<tr><td colspan=4>Total:</td><td colspan=2> ${reservation.totalGuest}</td></tr>
 			</table>

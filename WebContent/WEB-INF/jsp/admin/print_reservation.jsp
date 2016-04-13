@@ -58,6 +58,7 @@
 	</style>
 	
 	<body onload="myFunction();">
+		<br><br>
 		<div id="content">
 			<div id="title" style="width:900px; text-align:center">
 				<span style="font-size:20px">Lands in love - Tierras Enamoradas </span><br>
@@ -66,6 +67,33 @@
 			</div>
 			<br><br>
 			<div style="width:900px; text-align:left;">
+				<c:if test="${reservation.reservation_type == 2}">
+	    			<span><b>To: </b></span><c:out value="${agency.agency_name}" /> <br>
+					<table style="width:900px;">
+						<tr>
+							<td><b>Address: </b><c:out value="${agency.address}" /></td>
+							<td><b>Tel: </b><c:out value="${agency.agency_phone}" /></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><b>Website: </b><c:out value="${agency.web}" /></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><b>Fax: </b><c:out value="${agency.fax}" /></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><b>Email: </b><c:out value="${agency.agency_email}" /></td>
+						</tr>
+						<tr>
+							<td><b>Reservation Coordinator: </b><c:out value="${user.firstName}" /> <c:out value="${user.lastName}" /></td>
+							<td><b>Reservation ID: </b><c:out value="${reservation.reservation_number}" /></td>
+						</tr>
+					</table>
+				</c:if>
+				
+				<c:if test="${reservation.reservation_type != 2}">
 				<span><b>To: </b></span><c:out value="${guest.name}" /> <br>
 				<table style="width:900px;">
 					<tr>
@@ -89,6 +117,10 @@
 						<td><b>Reservation ID: </b><c:out value="${reservation.reservation_number}" /></td>
 					</tr>
 				</table>
+				
+				</c:if>
+				
+				
 			</div>
 			<br>
 			<span style="font-size:18px"><b><u>STAY DETAILS:</u></b></span>
@@ -96,7 +128,7 @@
 			<table style="width:900px;">
 				<tr>
 					<td style="width:230px;"><b>NAME:</b></td>
-					<td style="border-bottom: 1px #000000;border-bottom-style: solid;"> <c:out value="${guest.name}" /></td>
+					<td style="border-bottom: 1px #000000;border-bottom-style: solid;"><span style="background-color: yellow;"><c:out value="${guest.name}" /></span></td>
 				</tr>
 				<tr>
 					<td style="width:230px;"><b>QUANTITY:</b></td>
@@ -104,7 +136,7 @@
 				</tr>
 				<tr>
 					<td style="width:230px;"><b>STAY DATES:</b></td>
-					<td style="border-bottom: 1px #000000;border-bottom-style: solid;"><c:out value="${reservation.reservation_check_in_format}" /> &nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp; <c:out value="${reservation.reservation_check_out_format}" /> &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp; <c:out value="${reservation.reservation_nights}" /> Night(s)</td>
+					<td style="border-bottom: 1px #000000;border-bottom-style: solid;"><span style="background-color: yellow;"><c:out value="${reservation.reservation_check_in_format}" /> &nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp; <c:out value="${reservation.reservation_check_out_format}" /> &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp; <c:out value="${reservation.reservation_nights}" /> Night(s)</span></td>
 				</tr>
 				<tr>
 					<td style="width:230px;"><b>PLAN:</b></td>
@@ -112,7 +144,7 @@
 				</tr>
 				<tr>
 					<td style="width:230px;"><b>ROOM(S) NO:</b></td>
-					<td style="border-bottom: 1px #000000;border-bottom-style: solid;"><c:out value="${reservation.reservation_rooms}" /></td>
+					<td style="border-bottom: 1px #000000;border-bottom-style: solid;"><span style="background-color: yellow;"><c:out value="${reservation.reservation_rooms_comma_separate}" /></span></td>
 				</tr>
 				<tr>
 					<td style="width:230px;"><b>OCCUPANCY:</b></td>
@@ -121,9 +153,8 @@
 				<tr>
 					<td style="width:230px;"><b>NOTES:</b></td>
 					<td style="border-bottom: 1px #000000;border-bottom-style: solid;">
-						service Notes:  <c:out value="${reservation.reservation_service_notes}" />,<br>
-						Transport Notes:  <c:out value="${reservation.reservation_transport_notes}" />,<br>
-						Internal Notes:  <c:out value="${reservation.reservation_internal_notes}" />
+						Service Notes:  <c:out value="${reservation.reservation_service_notes}" />,<br>
+						Transport Notes:  <c:out value="${reservation.reservation_transport_notes}" />
 					</td>
 				</tr>
 			</table>
@@ -153,7 +184,7 @@
 			</table>
 			<div style="width:900px; height:80px;"></div>
 			<hr>
-			<table style="width:900px;">
+			<table style="width:900px; text-align: right;">
 				<tr>
 					<td style="width:800px;"><b>Subtotal:</b></td>
 					<td style="border-bottom: 1px #000000;border-bottom-style: solid; text-align: right;"><c:out value="${subtotal}" /></td>
@@ -164,7 +195,7 @@
 				</tr>
 				<tr>
 					<td style="width:800px;"><b>Total:</b></td>
-					<td style="border-bottom: 1px #000000;border-bottom-style: solid; text-align: right;"><c:out value="${total}" /></td>
+					<td style="border-bottom: 1px #000000;border-bottom-style: solid; text-align: right;"><b><c:out value="${total}" /></b></td>
 				</tr>
 			</table>
 			<br><br>
@@ -188,18 +219,18 @@
 						</tr>
 						<tr>
 							<td  style="width:80px;"><b>Type:</b></td>
-							<td style="border-bottom: 1px #000000;border-bottom-style: solid;"><c:out value="${reservation.card_type}" /></td>
+							<td style="border-bottom: 1px #000000;border-bottom-style: solid;"><c:out value="${reservation.card_type_name}" /></td>
 						</tr>
 					</table>
 				</div>
 			</div>
-			<br>	
+			<br><br>	
 			<div>
-				<label><b>Payment method: </b><c:out value="${lastPeyment.methodName}" /></label><br>
+				<label><b>Payment method: </b><input type="checkbox"> Credit Card &nbsp;&nbsp;&nbsp;<input type="checkbox"> Wire &nbsp;&nbsp;&nbsp;<input type="checkbox"> Cash &nbsp;&nbsp;&nbsp;<input type="checkbox"> Other: _______________</label><br>
 				<label><b>Payment Terms: </b><c:out value="${reservation.reservation_payment_terms_name}" /></label><br>
 				<label><b>For Hotel Reception Usage: </b>Payment confirm Yes / No</label><br>
 			</div>
-			<br>
+			<br><br><br>
 			<table style="width:900px;">
 				<tr>
 					<td style="font-size:16px"><b><u>Confirmation is subject to payment </b></u></td>
@@ -207,7 +238,7 @@
 				</tr>
 			</table>
 		
-			<br><br>
+			<br>
 			<div id="footer">
 				<span>Reservations: (506) 475-1081, Fax: +506-475-1084, Email: reservations@landsinlove.com</span><br>
 				<span>San Ramón, Alajuela, Costa Rica. www.landsinlove.com</span><br>

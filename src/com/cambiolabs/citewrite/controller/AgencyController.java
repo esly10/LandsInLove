@@ -65,7 +65,7 @@ public class AgencyController extends MultiActionController
 			}
 			
 			value = request.getParameter("reservation_agency_id");
-			if(value != null && value.length() > 0)
+			if(value != null && value.length() > 0 && !value.equals("0"))
 			{
 				filter.add(new DBFilter("agency_id", "=", value));
 			}

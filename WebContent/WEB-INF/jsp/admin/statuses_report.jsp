@@ -32,7 +32,7 @@
 						<td><c:out value="${item.checkOutFormated}" /></td>
 						<td><c:out value="${item.guestName}" /></td>
 						<td><c:out value="${item.agencyName}" /></td>
-						<td><c:out value="${item.reservation_rooms}" /></td>
+						<td style="word-wrap: break-word;">${item.reservation_rooms_comma_separate}</td>
 						<td><c:out value="${item.reservation_creation_date}" /></td> 
 				 	</tr>			 	
 			</c:forEach>
@@ -46,7 +46,7 @@
 							<td><c:out value="${item.checkOutFormated}" /></td>
 							<td><c:out value="${item.guestName}" /></td>
 							<td><c:out value="${item.agencyName}" /></td>
-							<td><c:out value="${item.reservation_rooms_qty}" /></td>
+							<td style="word-wrap: break-word;">${item.reservation_rooms_comma_separate}</td>
 							<td><c:out value="${item.reservation_creation_date}" /></td> 
 					 	</tr>
 					 

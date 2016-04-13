@@ -54,7 +54,7 @@ public class GuestsController extends MultiActionController
 			}
 			
 			value = request.getParameter("reservation_guest_id");
-			if(value != null && value.length() > 0)
+			if(value != null && value.length() > 0 && !value.equals("0"))
 			{
 				filter.add(new DBFilter("guest_id", "=", value));
 			}

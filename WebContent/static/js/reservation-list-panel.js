@@ -424,12 +424,15 @@ ReservationListPanel = Ext.extend(Ext.Panel, {
 						            id: 'filter_type',
 						            itemCls: 'x-check-group-alt',
 						            //columnHeigth: 15,
-						            columns: 2,
+						            columns: 3,
 						            items: [
 						                {boxLabel: 'Today', name: 'rb', inputValue: 1, height: 32},
-						                {boxLabel: 'Following Week', name: 'rb', inputValue: 2, height: 32},
-						                {boxLabel: 'Following Month', name: 'rb', inputValue: 3, height: 32},
-						                {boxLabel: 'This Year', name: 'rb', inputValue: 4}
+						                {boxLabel: 'This Week', name: 'rb', inputValue: 5, height: 32},
+						                {boxLabel: 'Fllw Week', name: 'rb', inputValue: 2, height: 32},
+						                {boxLabel: 'This Year', name: 'rb', inputValue: 4, height: 32},
+						                {boxLabel: 'This Month', name: 'rb', inputValue: 6, height: 32},
+						                {boxLabel: 'Fllw Month', name: 'rb', inputValue: 3, height: 32}           
+						               
 						            ],
 						            listeners: {
 						            	change: function(field, newValue, oldValue, eOpts){

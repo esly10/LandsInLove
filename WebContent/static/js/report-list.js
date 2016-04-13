@@ -302,7 +302,7 @@ Ext.onReady(function(){
 	            			            	var type = Ext.getCmp('filter_pay').getValue();
 	            			            	var password = Ext.getCmp('filter_password').getValue();
 	            				    		var tabs = Ext.getCmp('reporttabs');
-	            				    		if(id == 6 && password != '1234')
+	            				    		if(id == 6 && password != 'acc011')
 	        	                    		{
 	        		                    		Ext.Msg.show({
 	        			            				   title:'Permission Message',
@@ -360,7 +360,7 @@ Ext.onReady(function(){
             			    				frame.remove();
             			    			}
             			    			
-            			    			if(id == 6 && password != '1234')
+            			    			if(id == 6 && password != 'acc011')
         	                    		{
         		                    		Ext.Msg.show({
         			            				   title:'Permission Message',

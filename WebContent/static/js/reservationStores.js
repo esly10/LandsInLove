@@ -203,7 +203,8 @@ agencyStore= new Ext.data.JsonStore({
                  'charge_qty',
                  'charge_rate',
                  'charge_total',
-                 'charge_folio'
+                 'charge_folio',
+                 'unique_id'
         ]
     });
     

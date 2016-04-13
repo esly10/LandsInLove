@@ -1,5 +1,7 @@
 package com.cambiolabs.citewrite.data;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -68,13 +70,14 @@ public class Reservations extends DBObject
 	@Expose public String reservation_service_notes = null;
 	@Expose public String reservation_transport_notes = null;
 	@Expose public String reservation_internal_notes = null;
+	@Expose public String reservation_bar_notes = null;	
 	@Expose public String reservation_update_date = null;
 	@Expose public String reservation_creation_date = null;
 	
 	@Expose public String card_name = null;
 	@Expose public String card_no = null;
 	@Expose public String card_exp = null;
-	@Expose public String card_type = null;
+	@Expose public int card_type = 0;
 	@Expose public int reservation_tax = 0;
 	@Expose public int reservation_ignore_service = 0;
 	@Expose public int reservation_ignore_tax = 0;
@@ -124,6 +127,11 @@ public class Reservations extends DBObject
 	{
 		Guests Guest = new Guests(this.reservation_guest_id);
 		return Guest;
+	}
+	public Agencies getAgency() throws UnknownObjectException
+	{
+		Agencies agency = new Agencies(this.reservation_agency_id);
+		return agency;
 	}
 	
 	public ArrayList<Charges> getCharges() throws UnknownObjectException
@@ -298,6 +306,9 @@ public class Reservations extends DBObject
 	public String getReservation_rooms() {
 		return reservation_rooms;
 	}
+	public String getReservation_rooms_comma_separate() {
+		return reservation_rooms.replace(";", ", ");
+	}
 	public void setReservation_rooms(String reservation_rooms) {
 		this.reservation_rooms = reservation_rooms;
 	}
@@ -319,6 +330,19 @@ public class Reservations extends DBObject
 	public void setReservation_children(int reservation_children) {
 		this.reservation_children = reservation_children;
 	}
+	
+	public String getReservation_bar_notes() {
+		return reservation_bar_notes;
+	}
+
+	public void setReservation_bar_notes(String reservation_bar_notes) {
+		this.reservation_bar_notes = reservation_bar_notes;
+	}
+
+	public Timestamp getReservation_check_out() {
+		return reservation_check_out;
+	}
+
 	public int getReservation_guides() {
 		return reservation_guides;
 	}
@@ -467,11 +491,17 @@ public class Reservations extends DBObject
 		this.card_exp = card_exp;
 	}
 
-	public String getCard_type() {
+	public int getCard_type() {
 		return card_type;
 	}
 
-	public void setCard_type(String card_type) {
+	public String getCard_type_name() throws UnknownObjectException {
+		
+		CcType ccType = new CcType(this.card_type);
+		return ccType.getCc_type_description();
+	}
+
+	public void setCard_type(int card_type) {
 		this.card_type = card_type;
 	}
 
@@ -488,7 +518,7 @@ public class Reservations extends DBObject
 			//need to mask the credit card and remove the cvv
 		    int end = this.card_no.length() - 4;
 		    
-		    this.card_no = this.card_no.substring(0, 4) + StringUtils.repeat("*", end - 4) + this.card_no.substring(end) ;
+		    this.card_no = this.card_no.substring(0, 1) + StringUtils.repeat("*", end - 1) + this.card_no.substring(end) ;
 		    
 		}
 	}
@@ -516,7 +546,7 @@ public class Reservations extends DBObject
 		try 
 		{
 			conn = new DBConnection();
-			String sql = "SELECT * FROM reservations where ('"+ date +"' BETWEEN reservation_check_in and  reservation_check_out) ";
+			String sql = "SELECT * FROM reservations where (date('"+ date +"') BETWEEN date(reservation_check_in) and  date(reservation_check_out)) ";
 			if(conn.query(sql))
 			{
 				Reservations resrervation = new Reservations();
@@ -785,7 +815,13 @@ public class Reservations extends DBObject
 	public String getAgencyName() {
 		try {
 			Agencies agency = new Agencies (this.reservation_agency_id);
-			return agency.agency_name;
+			
+			if(agency.agency_name==null){
+				return "No Agency";
+			}else{
+				return agency.agency_name;
+			}
+				
 		} catch (UnknownObjectException e) {
 			e.printStackTrace();
 		}
@@ -849,13 +885,13 @@ public class Reservations extends DBObject
 		return Format;
 	}
 	public double getTotalGuest() {
-		double total =  getGuestCharges()+getGuestTax()+getGuestService()-getGuestPaid();
+		double total =  getGuestCharges()+getGuestTax()-getGuestPaid();
 		
 		return total;
 	}
 	
 	public double getTotalAgency() {
-		double total =  getAgencyCharges()+getAgencyTax()+getAgencyService()-getAgencyPaid();
+		double total =  getAgencyCharges()+getAgencyTax()-getAgencyPaid();
 		return total;
 	}
 	
@@ -865,7 +901,7 @@ public class Reservations extends DBObject
 	}
 	
 	public double getTotalWOPaid() {
-		double total = getAgencyCharges()+getAgencyTax()+getAgencyService()+getGuestCharges()+getGuestTax()+getGuestService();
+		double total = getAgencyCharges()+getAgencyTax()+getGuestCharges()+getGuestTax();
 		return total;
 	}
 	
@@ -1045,14 +1081,18 @@ public class Reservations extends DBObject
 		double tax = 0;
 		 ArrayList<Charges> charges = new  ArrayList<Charges>();
 		 charges = getChargesItems();
-		 for (int i =0; i<charges.size(); i++){
-			 if (charges.get(i).charge_folio.equals(FOLIO_AGENCY) ){
-				if (charges.get(i).charge_item_name.equals("Room") || charges.get(i).charge_item_name.equals("Room NS") ){
-					tax =charges.get(i).charge_total*0.13;
-					total += tax;
-				}
+		 if (this.reservation_ignore_tax==1){
+			 for (int i =0; i<charges.size(); i++){
+				 if (charges.get(i).charge_folio.equals(FOLIO_AGENCY) ){
+					if (charges.get(i).charge_item_name.equals("Room") || charges.get(i).charge_item_name.equals("Room NS") || charges.get(i).charge_item_name.equals("Restaurant") || charges.get(i).charge_item_name.equals("Rest/Bar") ){
+						tax =charges.get(i).charge_total*0.13;
+						total += tax;
+						
+					}
+				 }
 			 }
 		 }
+		 
 		return total;
 	}
 	
@@ -1077,15 +1117,37 @@ public class Reservations extends DBObject
 		double tax = 0;
 		 ArrayList<Charges> charges = new  ArrayList<Charges>();
 		 charges = getChargesItems();
-		 for (int i =0; i<charges.size(); i++){
-			 if (charges.get(i).charge_folio.equals(FOLIO_GUEST) ){
-				if (charges.get(i).charge_item_name.equals("Room") || charges.get(i).charge_item_name.equals("Room NS") ){
-					tax =charges.get(i).charge_total*0.13;
-					total += tax;
-				}
+		 if (this.reservation_ignore_tax==1){
+			 for (int i =0; i<charges.size(); i++){
+				 if (charges.get(i).charge_folio.equals(FOLIO_GUEST) ){
+						if (charges.get(i).charge_item_name.equals("Room") || charges.get(i).charge_item_name.equals("Room NS") || charges.get(i).charge_item_name.equals("Restaurant") || charges.get(i).charge_item_name.equals("Rest/Bar") ){
+							tax =charges.get(i).charge_total*0.13;
+						total += tax;
+					}
+				 }
 			 }
 		 }
 		return total;
+	}
+	
+	public String getGuestFormatTax() {
+		double total = 0;
+		total = getGuestTax();
+		double tax = round(total, 2);
+		 if (this.reservation_ignore_tax==1){
+			 return "$"+String.valueOf(tax);
+		 }
+		return "Included";	 
+	}
+	
+	public String getAgencyFormatTax() {
+		double total = 0;
+		total = getAgencyTax();
+		double tax = round(total, 2);
+		 if (this.reservation_ignore_tax==1){
+			 return "$"+String.valueOf(tax);
+		 }
+		return "Included";	 
 	}
 	
 	public double getGuestService() {
@@ -1117,5 +1179,12 @@ public class Reservations extends DBObject
 	return null;
 	}
 	
+	public static double round(double value, int places) {
+	    if (places < 0) throw new IllegalArgumentException();
+
+	    BigDecimal bd = new BigDecimal(value);
+	    bd = bd.setScale(places, RoundingMode.HALF_UP);
+	    return bd.doubleValue();
+	}
 	
 }

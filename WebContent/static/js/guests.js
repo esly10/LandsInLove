@@ -473,6 +473,7 @@ Ext.onReady(function(){
 					                items: [
 								       {
 								    	   id: 'guest_phone',
+								    	   allowBlank: false,
 								    	   fieldLabel: 'Phone',
 								    	   maskRe: /^[0-9]*$/,
 								    	   anchor:'95%',
@@ -550,7 +551,7 @@ Ext.onReady(function(){
 		                    	var guest_market = guestMarketCombo.getValue();
 		                    	var guest_type = guestTypeCombo.getValue();
 		                     	
-		                    	if(guest_name.length == 0 || guest_market.length == 0 || guest_email.length == 0)
+		                    	/*if(guest_name.length == 0 || guest_market.length == 0 || guest_email.length == 0)
 	                    		{
 		                    		Ext.Msg.show({
 			            				   title:'Missing Field',
@@ -584,7 +585,7 @@ Ext.onReady(function(){
 			            				});
 		                    		
 		                    		return false;
-	                    		}
+	                    		}*/
 		                    	
 		                    	
 		                    	//validate form

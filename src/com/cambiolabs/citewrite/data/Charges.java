@@ -22,8 +22,9 @@ public class Charges extends DBObject
 	@Expose public float charge_total = 0;
 	@Expose public float charge_tax = 0;
 	@Expose public String charge_folio = null;
+	@Expose public String unique_id = null;
 	
-		
+	
 	//private static final String UTF_8 = "UTF-8";
 	
 	public Charges() throws UnknownObjectException
@@ -41,6 +42,21 @@ public class Charges extends DBObject
 		}
 	}
 	
+	public Charges(String unique_id) throws UnknownObjectException
+	{
+		super("charges", "charge_id");
+		
+		try {
+			if(unique_id.length() > 0)
+			{
+				this.unique_id = unique_id;
+				this.populate();
+			}
+		} catch (Exception e) {
+
+		}
+		
+	}
 	public int getChargeID() {
 		return charge_id;
 	}
@@ -114,6 +130,14 @@ public class Charges extends DBObject
 		this.charge_folio = charge_folio;
 	}
 	
+	public String getUnique_id() {
+		return unique_id;
+	}
+
+	public void setUnique_id(String unique_id) {
+		this.unique_id = unique_id;
+	}
+
 	public static ArrayList<Charges> GuestCharges(int reservation_id) {
 		
 		ArrayList<Charges> charges = new ArrayList<Charges>();

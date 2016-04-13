@@ -126,7 +126,10 @@
 			background: none;
 			background-color: #4F5F6F;
 		}
-		
+		dl {}
+		dl.list dt { clear: left; float: left; width: 130px; font-weight: bold;  height: 15px; line-height: 15px; margin-bottom: 2px; white-space: nowrap; color: #0D324C; }
+		dl.list dd { margin-left:105px; /*width: 300px;*/ overflow: hidden; height: 15px; line-height: 15px; margin-bottom: 10px; color: #4F5F6F;}
+		dl.list dt.spacer { height: 10px; line-height:0px; width: 275px; margin-bottom: 0px; float: none; }
 		div.dhtmlx_window_active,div.dhx_modal_cover_dv {
 			position: fixed !important;
 		}

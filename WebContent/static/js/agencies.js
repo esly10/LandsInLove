@@ -206,7 +206,6 @@ Ext.onReady(function(){
 		     					           displayField:'country_name',
 		     					           valueField: 'country_id',
 		     					           triggerAction: 'all',
-		     					           allowBlank: false,
 		     					           forceSelection: true
 		                                }
 		                            ] // close items for first column
@@ -388,6 +387,7 @@ Ext.onReady(function(){
 								       {
 								    	   id: 'agency_phone',
 								    	   fieldLabel: 'Phone',
+								    	   allowBlank: false,
 								    	   anchor:'95%',
 						                   tabIndex: 6 
 								       },
@@ -459,7 +459,7 @@ Ext.onReady(function(){
 		                    	var agency_notes = Ext.getCmp('agency_notes').getValue();
 		                    	var agency_type = agencyTypeCombo.getValue();
 		                     	
-		                    	if(agency_name.length == 0 || agency_phone.length == 0 || agency_email.length == 0)
+		                    	/*if(agency_name.length == 0 || agency_phone.length == 0 || agency_email.length == 0)
 	                    		{
 		                    		Ext.Msg.show({
 			            				   title:'Missing Field',
@@ -481,7 +481,7 @@ Ext.onReady(function(){
 			            				});
 		                    		
 		                    		return false;
-	                    		}
+	                    		}*/
 		                    	
 		                    	
 		                    	//validate form

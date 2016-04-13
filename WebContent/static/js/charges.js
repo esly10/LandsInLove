@@ -64,9 +64,9 @@ Ext.onReady(function(){
 			        columns: [
 			               {header: '', sortable: true, dataIndex: 'room_no', width: 20, 
 					            	renderer : function(value, meta, chargeStore) {
-					            		meta.style = "background-color:#4f5f6f; color: #FFFFFF; height:32px; font-size: 12px; width: 20px; ";
+					            		meta.style = "background-color:#4f5f6f; color: #FFFFFF; height:24px; font-size: 12px; width: 20px; ";
 					            		 if(chargeStore.data.rr_id != "") {
-						            	        meta.style = "background-color:#33cc33; height:32px; color: #FFFFFF; font-size: 12px; font-weight: bold; width: 20px;";
+						            	        meta.style = "background-color:#33cc33; height:24px; color: #FFFFFF; font-size: 12px; font-weight: bold; width: 20px;";
 						            	       
 						            	    }
 					            		 return	 chargeStore.data.room_no;
@@ -74,9 +74,9 @@ Ext.onReady(function(){
 			                  },
 				            {header: 'Room Status', sortable: false, dataIndex: 'room_no', width: 110, 
 				            	renderer : function(value, meta, chargeStore) {
-				            		meta.style = "background-color:#E1E1E1; height:32px; width: 110px;";
+				            		meta.style = "background-color:#E1E1E1; height:24px; width: 110px;";
 				            		if(chargeStore.data.rr_id != "") {
-					            	        meta.style = "background-color:#ccff99; height:32px; font-weight: bold; width: 110px;";
+					            	        meta.style = "background-color:#ccff99; height:24px; font-weight: bold; width: 110px;";
 					            	        return "Used";
 					            	    }
 				            		 return "Empty";

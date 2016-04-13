@@ -85,8 +85,7 @@
 				</c:forEach>
 				
 				<tr><td colspan=4 style="border-top: 1px solid #000;">Sub Total:</td><td colspan=2 style="border-top: 1px solid #000;">$ <c:out value="${reservation.agencyCharges}" /></td></tr>
-				<tr><td colspan=4>Tax:</td><td colspan=2>$ <c:out value="${reservation.agencyTax}" /></td></tr>
-				<tr><td colspan=4>Service:</td><td colspan=2>$ <c:out value="${reservation.agencyService}" /></td></tr>
+				<tr><td colspan=4>Tax:</td><td colspan=2> <c:out value="${reservation.agencyFormatTax}" /></td></tr>
 				<tr><td colspan=4>Paid:</td><td colspan=2;  style="color:red;">$ <c:out value="${reservation.agencyPaid}" /></td></tr>		
 				<tr><td colspan=4>Total:</td><td colspan=2> <c:out value="${reservation.totalAgency}" /></td></tr>
 			
@@ -110,8 +109,7 @@
 				</c:forEach>
 				
 				<tr><td colspan=4  style="border-top: 1px solid #000;">Sub Total:</td><td colspan=2  style="border-top: 1px solid #000;">$ <c:out value="${reservation.guestCharges}" /></td></tr>
-				<tr><td colspan=4>Tax:</td><td colspan=2>$ <c:out value="${reservation.guestTax}" /></td></tr>
-				<tr><td colspan=4>Service:</td><td colspan=2>$ <c:out value="${reservation.guestService}" /></td></tr>
+				<tr><td colspan=4>Tax:</td><td colspan=2> <c:out value="${reservation.guestFormatTax}" /></td></tr>
 				<tr><td colspan=4>Paid:</td><td colspan=2  style="color:red;">$ <c:out value="${reservation.guestPaid}" /></td></tr>	
 				<tr><td colspan=4>Total:</td><td colspan=2> <c:out value="${reservation.totalGuest}" /></td></tr>
 			</table>

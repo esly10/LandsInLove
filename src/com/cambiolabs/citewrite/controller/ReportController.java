@@ -305,7 +305,7 @@ public class ReportController extends MultiActionController
 					String pay = request.getParameter("type");
 					String password = null;
 					password=request.getParameter("password");
-					if(password == null || !password.equals("1234"))
+					if(password == null || !password.equals("acc011"))
 					{
 						response.getOutputStream().print("Incorrect Password!");
 						return null;
@@ -712,7 +712,7 @@ public class ReportController extends MultiActionController
 					String pay = request.getParameter("type");
 					String password = null;
 					password=request.getParameter("password");
-					if(password == null || !password.equals("1234"))
+					if(password == null || !password.equals("acc011"))
 					{
 						response.getOutputStream().print("Incorrect Password!");
 					}

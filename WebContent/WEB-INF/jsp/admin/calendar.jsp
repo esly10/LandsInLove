@@ -59,4 +59,5 @@
 
 <script type="text/javascript">
 $jQuery(document).ready(Calendar.Init);
+$jQuery(document).ready(Calendar.Init);
 </script>					

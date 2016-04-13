@@ -52,31 +52,34 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    				chargesStore.each(function(record,id){
 	    					panel.total_charges += parseFloat(record.data.charge_total);
 	    					
-	    					if(record.data.charge_item_name == "Room" || record.data.charge_item_name == "Room NS"){
+	    					if(record.data.charge_item_name == "Room" || 
+	    					   record.data.charge_item_name == "Room NS" ||
+	    					   record.data.charge_item_name == "Restaurant" ||
+	    					   record.data.charge_item_name == "Rest/Bar"){
 	    						taxSum += (record.data.charge_qty*record.data.charge_rate);
 	    					}
-	    					if(record.data.charge_item_name == "Restaurant" || record.data.charge_item_name == "Rest/Bar"){
+	    					/*if(record.data.charge_item_name == "Restaurant" || record.data.charge_item_name == "Rest/Bar"){
 	    						servSum += (record.data.charge_qty*record.data.charge_rate);
-	    					}
+	    					}*/
 			        			        		
 			        		
 	    				});
 	    				
 	    				if(taxSum > 1){
-	    					if(panel.reservationInfo.reservation_ignore_tax == "0"){
+	    					if(panel.reservationInfo.reservation_ignore_tax == "1"){
 		        			taxSum = (13*taxSum)/100;
 	    					}else {
 	    						taxSum = 0.00;
 	    					}
 		        			
 		        		}
-		        		if(servSum > 1){
+		        		/*if(servSum > 1){
 		        			if(panel.reservationInfo.reservation_ignore_service == "0"){
 		        			servSum = (10*servSum)/100;
 		        			}else {
 		        				servSum = 0.00;
 		        			}
-		        		}	
+		        		}	*/
 		        			
 	    				 Ext.getCmp("sub_total").setValue(panel.total_charges.toFixed(2));	    		 
 	    				//after set sub_total amount sum taxes
@@ -84,7 +87,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 		        		
 	    	    		 Ext.getCmp("total_changes").setValue(panel.total_charges.toFixed(2));
 	    	    		Ext.getCmp("reservation_tax").setValue(Ext.util.Format.number(taxSum, '0.00'));
-		        		Ext.getCmp("services").setValue(Ext.util.Format.number(servSum, '0.00'));
+		        		//Ext.getCmp("services").setValue(Ext.util.Format.number(servSum, '0.00'));
 			    
 	    	    		 paymentStore.baseParams = {'reservation_id': panel.reservation_id};
 	    	    		 paymentStore.load({
@@ -873,16 +876,19 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																	  readOnly: false,
 																	  anchor: "99.2%",			
 																	  listeners:{
-																		  change :  function(self,newValue,oldValue){
-																			  //alert("change");
-																		  },
+																	
 																		  select :  function(self,newValue,oldValue){
 																			  if(self.getValue().split(";").size() > Ext.getCmp("reservation_rooms_qty").getValue()){
 																				  
 																				  var val = self.getValue().slice(0, self.getValue().lastIndexOf(";"));
 																				  self.deselectAll();
 																				  self.setComboValue(val);
+																				  if(Ext.getCmp("reservation_rooms_qty").getValue() == ""){
+																					  alert("Room Qty is required before selecting roms.");
+																				  }else {
 																				  alert("Maximum Rooms by selecting: "+ Ext.getCmp("reservation_rooms_qty").getValue());
+																			  }
+																			  
 																			  }
 																			  
 																		  },
@@ -1150,7 +1156,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																		    value:'0.00',
 																		    readOnly: true,
 																		    fieldLabel: 'Tax'													    
-																		},
+																							}/*,
 																		{
 																		    xtype: 'textfield',
 																		    id: 'services',
@@ -1160,7 +1166,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																			readOnly: true,
 																		    value:'0.00',
 																		    fieldLabel: 'Services'													    
-																		}
+																							}*/
 																	]
 																				},
 																				{
@@ -1177,18 +1183,18 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																								 name: 'reservation_ignore_tax',
 																								 labelSeparator: '',
 																								 hideLabel: true,
-																								 boxLabel: 'No Included',
-																								 fieldLabel: 'No Included',
+																								 boxLabel: 'Included',
+																								 fieldLabel: 'Included',
 																								 listeners:{
 																					        		check: function(self, newVal, oldVal) {																	        			
-																					        			if(newVal){
+																					        			if(!newVal){
 																					        				Ext.getCmp("reservation_tax").setValue("0.00");
 																					        			}
 																					        			
 																					        			ChargeGrid.fireEvent("click");	
 																					        		}
 																					        	}
-																							},
+																							}/*,
 																							{
 																								 id: 'reservation_ignore_service',
 																								 xtype:'checkbox',
@@ -1206,7 +1212,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 																					        			ChargeGrid.fireEvent("click");		
 																					        		}
 																					        	}
-																							}
+																							}*/
 																					]
 																				}
 																			]
@@ -1568,6 +1574,14 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 															},{
 															    xtype: 'box',
 															    height: 15										    
+															},
+															{
+															    xtype: 'textfield',
+															    id: 'reservation_bar_notes',
+															    name: 'reservation_bar_notes',
+															    labelStyle: 'width:115px',
+															    anchor: "90%",
+															    fieldLabel: 'MiniBar Notes'													    
 															}
 													      ]
 												}
@@ -2073,8 +2087,11 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 						            iconCls: 'x-tbar-loading'  
 						            ,scope: this
 						            ,handler: function(){
-						            	agencyStore.baseParams = {'query': ""};
-						            	agencyStore.reload(); 
+						            	guestsStore.baseParams = {'query': ""};
+						            	guestsStore.setBaseParam('query', "");
+						            	guestsStore.load({
+						            		  params: {reservation_guest_id: 0}
+						            	}) ;
 						            	Ext.getCmp("guest_id_search2").setValue("");
 						            }
 						        } 
@@ -2153,6 +2170,13 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 						items: items
 					}).showAt(event.xy);
 				};
+				
+				guestsStore.baseParams = {'query': ""};
+            	guestsStore.setBaseParam('query', "");
+            	guestsStore.load({
+            		  params: {reservation_guest_id: 0}
+            	}) ;
+		    	  
 			    return gridGuestPanel;
 	    
 	    },
@@ -2214,8 +2238,13 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 						            iconCls: 'x-tbar-loading'  
 						            ,scope: this
 						            ,handler: function(){
+						            
 						            	agencyStore.baseParams = {'query': ""};
-						            	agencyStore.reload(); 
+						            	agencyStore.setBaseParam('query', "");
+						            	agencyStore.load({
+						            		  params: {reservation_agency_id: 0}
+						            	}) ;
+						            	
 						            	Ext.getCmp("agency_id_search2").setValue("");
 						            }
 						        } 
@@ -2281,6 +2310,15 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 						items: items
 					}).showAt(event.xy);
 				};
+				
+				agencyStore.baseParams = {'query': ""};
+            	agencyStore.setBaseParam('query', "");
+            	agencyStore.load({
+            		  params: {reservation_agency_id: 0}
+            	}) ;
+            	
+            	
+            	
 			    return gridAgencyPanel;
 	    },	    
 	    selectGuest: function (gest){
@@ -2628,14 +2666,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    	var panel = this;
 	    	if(type == "done"){
 	    		if(Ext.getCmp("reservation_type").getValue() != 3){
-	    			if(!panel.isValid()){
-		    			return false;
-		    		}
-		    	} else {
-	    		if(!panel.isValid()){
-	    			return false;
-	    		}else {
-	    			if(multiRomms.getValue() == ""){
+	    			if(multiRomms.getValue() == "" && Ext.getCmp("reservation_type").getValue() != 3){
 	    				 Ext.Msg.show({
 	     					   title:'Error!',
 	     					   msg: 'Room(s) are required.',
@@ -2645,7 +2676,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	        			return false;
 	    			}else {
 	    				var qty = Ext.getCmp("reservation_rooms_qty").getValue();
-	    				if(multiRomms.getValue().split(";").size() != qty){
+	    				if(multiRomms.getValue().split(";").size() != qty && Ext.getCmp("reservation_type").getValue() != 3){
 	    					Ext.Msg.show({
 		     					   title:'Error!',
 		     					   msg: 'You need to select '+ qty+' Rom(s)',
@@ -2656,10 +2687,14 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    				}
 	    				
 	    			}
+	    			
+		    	} else {
+		    		if(!panel.isValid()){
+		    			return false;
 	    		}    		
 	    	}
-	    	
 	    	}
+	    	
 	    	
 	    	var res_number = document.getElementById("res_number").innerHTML;
 	    	var status = document.getElementById("status").innerHTML;
@@ -2748,9 +2783,9 @@ ReservationPanel = Ext.extend(Ext.Panel, {
     		(
     			values,     			
     			{'reservation_ignore_tax':  Ext.getCmp("reservation_ignore_tax").getValue()},
-    			{'reservation_ignore_service':  Ext.getCmp("reservation_ignore_service").getValue()},
-    			{'reservation_tax':  Ext.getCmp("reservation_tax").getValue()},
-    			{'services':  Ext.getCmp("services").getValue()}
+    			//{'reservation_ignore_service':  Ext.getCmp("reservation_ignore_service").getValue()},
+    			{'reservation_tax':  Ext.getCmp("reservation_tax").getValue()}
+    			//{'services':  Ext.getCmp("services").getValue()}
 			
     		);
 			
@@ -2832,6 +2867,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    	
 	    },
 	    submitCharges: function(res_id){
+	    	panel = this;
 	    	if(res_id <= 0 ){
 	    		Ext.growl.message('Error!', 'You must save the reservation information before save a charges.');
 	    		return false;
@@ -2847,6 +2883,11 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 		    	   data.charge_rate		 =  record.get("charge_rate");
 		    	   data.charge_total	 =  record.get("charge_total");
 		    	   data.charge_folio 	 = record.get("charge_folio");
+		    	   data.unique_id 	 	 = record.get("unique_id");
+		    	     
+		    	   if(data.unique_id == ""){
+		    		   data.unique_id = panel.uniqueID();
+		    	   }
 		    	     
 		    	   Ext.Ajax.request({params: data,url: _contextPath + '/reservation/saveCharges',failure: function(response, opts){ return false;}});
 	    	   
@@ -2882,7 +2923,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
             return value ? value.dateFormat('M d, Y') : '';
         },
         
-        showPaymentWindow : function (){
+        showPaymentWindow : function (data){
         	var panel = this;
         	
 	    	var formPanel = new Ext.form.FormPanel({
@@ -3178,6 +3219,19 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    	paymentWindow.show();
 	    	paymentWindow.center();
 	    
+	    	if(data != null){
+	    		$jQuery.each( data, function( key, value ) {
+	    			if(key == 'payment_date' || key == 'receive_date'){
+	    				Ext.getCmp(key).setValue(Ext.util.Format.date(value, 'd/m/Y'));
+	    			}else {
+	    				if(Ext.getCmp(key) !== undefined){
+	    					Ext.getCmp(key).setValue(value);
+	    				} 
+	    			}
+				  
+				});
+	    	}
+	    
         },
         loadPaymentsGrid: function(){
 	    	 var panel = this;
@@ -3241,11 +3295,61 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 			        // customize view config
 			        viewConfig: { forceFit:true },
 			        bbar: new Ext.PagingToolbar(toolbar),
+			        listeners: {'rowcontextmenu': panel.showContextMenuPayment,
+						'rowdblclick': function(grid, index, event)
+						{
+			        			return;
+								
+						}, scope: this }
 			        // paging bar on the bottom
 			    });
 			    			    
 	    	   return paymentGridPanel;
         },
+        showContextMenuPayment: function(grid, index, event)    	{
+    		event.stopEvent();
+    		var panel = this;
+    		var record = grid.getStore().getAt(index);
+    		
+    		var items = new Array({
+    					text: 'Edit',
+    					handler: function() 
+    					{    						
+    						//panel.details(record.data);
+    						panel.showPaymentWindow(record.data);
+    					}
+    				});
+    		
+    		/*if(hasPermission(PL_CITATION_MANAGE) || (hasPermission(PL_OWNER_MANAGE) && panel.owner.owner_id > 0))
+    		{
+    			items.push({
+    					text: 'Edit',
+    					handler: function() 
+    					{
+    						panel.editCitation(record.data.citation_id);
+    					}
+    				});
+    			
+    		}*/	
+    		/*
+    		if(hasPermission(PL_ADMIN))
+    		{
+    			items.push({
+    				text: 'Delete',
+    				handler: function() 
+    				{
+    					panel.deleteCitation(record.data);
+    				}
+    			});
+    			
+    		}		*/
+
+    		new Ext.menu.Menu(
+    		{
+    			items: items,
+    			autoDestroy: true
+    		}).showAt(event.xy);
+    	},
 	    loadChargesGrid: function(){
 	    	
 	    	var panel = this;
@@ -3417,20 +3521,25 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 		        	},
 		        	click : function(){
 		        		// update row charge_total of grid 
-		        		var calculate_tax = Ext.getCmp("reservation_ignore_tax").getValue();
-		        		var calculate_tax_serv = Ext.getCmp("reservation_ignore_service").getValue();
+		        		var calculate_tax = 0;
+		        		if(Ext.getCmp("reservation_ignore_tax").getValue() == "0"){
+		        			calculate_tax = 1;
+		        		}
+		        		
+		        		var calculate_tax_serv = 0;//Ext.getCmp("reservation_ignore_service").getValue();
 		        		var sum = 0.00;
 		        		var taxSum = 0.00;
 		        		var servSum = 0.00;
 		        		chargesStore.each(function(record,id){				    					
 	    					record.set('charge_total',(record.data.charge_qty*record.data.charge_rate));	
 	    					sum += (record.data.charge_qty*record.data.charge_rate);
-	    					if(record.data.charge_item_name == "Room" || record.data.charge_item_name == "Room NS"){
+	    					if(record.data.charge_item_name == "Room" || record.data.charge_item_name == "Room NS" || 
+	    					   record.data.charge_item_name == "Restaurant" ||record.data.charge_item_name == "Rest/Bar"){
 	    						taxSum += (record.data.charge_qty*record.data.charge_rate);
 	    					}
-	    					if(record.data.charge_item_name == "Restaurant" || record.data.charge_item_name == "Rest/Bar"){
+	    					/*if(record.data.charge_item_name == "Restaurant" || record.data.charge_item_name == "Rest/Bar"){
 	    						servSum += (record.data.charge_qty*record.data.charge_rate);
-	    					}
+	    					}*/
 	    				});
 		        		
 		        		if(taxSum > 1){
@@ -3441,17 +3550,17 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 		        			}
 		        			
 		        		}
-		        		if(servSum > 1){
+		        		/*if(servSum > 1){
 		        			if(!calculate_tax_serv){
 		        			servSum = (10*servSum)/100;
 		        			}else {
 		        				servSum = 0.00;
 		        			}
 		        			
-		        		}		        		
+		        		}*/        		
 		        		
 		        		Ext.getCmp("reservation_tax").setValue(Ext.util.Format.number(taxSum, '0.00'));
-		        		Ext.getCmp("services").setValue(Ext.util.Format.number(servSum, '0.00'));
+		        		//Ext.getCmp("services").setValue(Ext.util.Format.number(servSum, '0.00'));
 		        		
 		        		Ext.getCmp("sub_total").setValue('$'+Ext.util.Format.number(sum, '0.00'));
 		        		Ext.getCmp("total_changes").setValue(Ext.util.Format.number((sum+taxSum+servSum), '0.00'));
@@ -3476,17 +3585,19 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	                                   {name: 'charge_qty',  mapping : "charge_qty",  type: 'int'},
 	                                   {name: 'charge_rate',  mapping : "charge_rate",  type: 'float'},
 	                                   {name: 'charge_total',  mapping : "charge_total",  type: 'float'},
-	                                   {name: 'charge_folio',  mapping : "charge_folio"}
+	                                   {name: 'charge_folio',  mapping : "charge_folio"},
+	                                   {name: 'unique_id',  mapping : "unique_id"},
 								                         ]);
 	                    var d = new Data({
 	                    	charge_id: 	0,
-	                    	charge_reservation_id: 	this.reservation_id,
+	                    	charge_reservation_id: 	panel.reservation_id,
 	                    	charge_item_name: 	'',
 	                    	charge_item_desc: 	'',
 	                    	charge_qty: 		0,
 	                    	charge_rate: 		0,
 	                    	charge_total: 		0,
-	                    	charge_folio: 		'Guest'
+	                    	charge_folio: 		'Guest',
+	                    	unique_id: 			panel.uniqueID()	                    	
 	                    });
 	                    ChargeGrid.stopEditing();
 	                    chargesStore.insert(chargesStore.data.length, d);
@@ -3534,9 +3645,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 				text: 'delete Row',
 				handler: function() 
 				{
-					if(record.data.charge_id > 0){
-						Ext.Ajax.request({params: {charge_id : record.data.charge_id},url: _contextPath + '/reservation/deleteCharges',failure: function(response, opts){ return false;}});
-					}					
+					Ext.Ajax.request({params: {unique_id : record.data.unique_id, charge_id : record.data.charge_id},url: _contextPath + '/reservation/deleteCharges',failure: function(response, opts){ return false;}});
 					ChargeGrid.store.remove(record);
 	
 				}
@@ -3667,27 +3776,35 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	    	occupancyWindow.center();
 	    },
 	    addGuest: function(){
-	    	  guestDialog.setTitle('New Guest');
-			  guestFormPanel.getForm().reset();
+	    	  guestDialogAdd.setTitle('New Guest');
+			  guestFormPanelAdd.getForm().reset();
 			  guestTittleCombo.setValue(1);
 			  guestMarketCombo.setValue(1);
 			  guestCountryCombo.setValue(1);
 			  guestTypeCombo.setValue(1);
-			  guestDialog.show();
+			  guestDialogAdd.show();
+			  
+			  guestsStore.baseParams = {'query': ""};
+	    	  guestsStore.params = {};
+	    	  guestsStore.reload(); 
 	    },
 	    loadGuestPanel: function ()
 		{
 	    	
-	    	if(typeof guestFormPanel != "undefined"){
-	    		return false;
+	    	if(typeof guestFormPanelAdd != "undefined"){
+	    		guestsStore.baseParams = {'query': ""};
+	    		guestsStore.params = {};
+	    		guestsStore.reload(); 
+	    		//return false;
 	    	}
 	    	
+	    	if(typeof guestFormPanelAdd == "undefined"){
 	    	guestTittleCombo = new Ext.form.ComboBox({
 			    typeAhead: true,
 			    triggerAction: 'all',
 			    lazyRender:true,
 			    mode: 'local',
-			    id: 'guest_title',
+				    id: 'guest_title_add',
 			    hiddenName: 'guest_title',
 			    autoload: true,
 			    store: new Ext.data.ArrayStore({
@@ -3733,7 +3850,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 			});
 			
 			guestCountryCombo = new Ext.form.ComboBox({
-				id: 'guest_country',
+					id: 'guest_country_add',
 		    	hiddenName: 'guest_country',
 		    	fieldLabel: 'Country',
 		    	anchor:'95%',
@@ -3753,7 +3870,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 			    triggerAction: 'all',
 			    lazyRender:true,
 			    mode: 'local',
-			    id: 'guest_market',
+				    id: 'guest_market_add',
 			    autoload: true,
 			    hiddenName: 'guest_market',
 			    store: new Ext.data.ArrayStore({
@@ -3772,8 +3889,11 @@ ReservationPanel = Ext.extend(Ext.Panel, {
                 allowBlank: false,
                 forceSelection: true
 			});
+				
 	    	//guest form
-			guestFormPanel = new Ext.FormPanel({
+				if(typeof guestFormPanelAdd == "undefined"){			
+				
+					guestFormPanelAdd = new Ext.FormPanel({
 				bodyBorder: false,
 				border: false,
 				frame: false,
@@ -3783,7 +3903,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 				autoWidth: true,
 				defaults: { width: '95%' },
 				bodyCssClass: 'x-citewrite-panel-body',
-				id: 'guestFormPanel',
+						id: 'guestFormPanelRes_add',
 				items:[
 				       {
 				            layout:'column',
@@ -3835,6 +3955,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 							    	   id: 'guest_phone_add',
 							    	   fieldLabel: 'Phone',
 							    	   name: 'guest_phone',
+							    	   allowBlank: false,
 							    	   maskRe: /^[0-9]*$/,
 							    	   anchor:'95%',
 					                   tabIndex: 7 
@@ -3869,8 +3990,11 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 							   value: '0'
 						}]
 			});
+				}
+	    	}
 			
-	    	guestDialog = new Ext.Window({
+			if(typeof guestDialogAdd == "undefined"){		
+				guestDialogAdd = new Ext.Window({
                 renderTo: document.body,
                 layout:'fit',
                 width:540,
@@ -3879,9 +4003,8 @@ ReservationPanel = Ext.extend(Ext.Panel, {
                 plain: true,
                 resizable: false,
                 modal: true,
-                id: 'guestWindow',
-                items: guestFormPanel,
-
+	                id: 'guestWindow_add',
+	                items: guestFormPanelAdd,
                 buttons: [{
                     text:'Save',
                     handler: function()
@@ -3896,45 +4019,9 @@ ReservationPanel = Ext.extend(Ext.Panel, {
                     	var guest_market = guestMarketCombo.getValue();
                     	var guest_type = guestTypeCombo.getValue();
                      	
-                    	if(guest_name.length == 0 || guest_market.length == 0 || guest_email.length == 0)
-                		{
-                    		Ext.Msg.show({
-	            				   title:'Missing Field',
-	            				   msg: 'Name, Market and Email are required.',
-	            				   buttons: Ext.Msg.OK,
-	            				   icon: Ext.MessageBox.ERROR
-	            				});
-                    		
-                    		return false;
-                		}
-                    	
-                    	if(guest_phone.length == 0 && guest_mobile.length == 0)
-                		{
-                    		Ext.Msg.show({
-	            				   title:'Missing Field',
-	            				   msg: 'You need to provide at least one phone number.',
-	            				   buttons: Ext.Msg.OK,
-	            				   icon: Ext.MessageBox.ERROR
-	            				});
-                    		
-                    		return false;
-                		}
-                    	
-                    	if(guest_type.length == 0)
-                		{
-                    		Ext.Msg.show({
-	            				   title:'Missing Field',
-	            				   msg: 'Type are required',
-	            				   buttons: Ext.Msg.OK,
-	            				   icon: Ext.MessageBox.ERROR
-	            				});
-                    		
-                    		return false;
-                		}
-                    	
                     	
                     	//validate form
-                    	guestFormPanel.getForm().submit({
+	                    	guestFormPanelAdd.getForm().submit({
                     	    url: _contextPath + '/guests/save',
                     	    params: {
                     	        xaction: 'save'
@@ -3960,7 +4047,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
          				        	   }
          			        		   
          			        		   Ext.getCmp('guests-info').show();
-         			        		   guestDialog.hide();
+	         			        		   guestDialogAdd.hide();
          			        		   guestsStore.reload();
                            	           Ext.growl.message('Success', 'Guest has been saved.');
          			        		   
@@ -4001,25 +4088,34 @@ ReservationPanel = Ext.extend(Ext.Panel, {
                 },{
                     text: 'Close',
                     handler: function(){
-                    	guestDialog.hide();
+	                    	guestDialogAdd.hide();
                     }
                 }]
             });
+			}
+	    	
 		},
 	    addAgency: function(){
-	    	agencyFormPanel.getForm().reset();
+	    	agencyFormPanelAdd.getForm().reset();
 			agencyCountryCombo.setValue(1);
 			agencyTypeCombo.setValue(1);
-			agencyDialog.show();
+			agencyDialogAdd.show();
+			
+			agencyStore.baseParams = {'query': ""};
+    		agencyStore.params = {};
+        	agencyStore.reload(); 
 	    },
 	    loadAgencyPanel: function ()
 		{
-	    	if(typeof agencyFormPanel != "undefined"){
-	    		return false;
+		    if(typeof agencyFormPanelAdd != "undefined"){
+	    		agencyStore.baseParams = {'query': ""};
+	    		agencyStore.params = {};
+            	agencyStore.reload(); 
+		    		//return false;
 	    	}
-	    	
+		    if(typeof agencyFormPanelAdd == "undefined"){
 		    	agencyCountryCombo = new Ext.form.ComboBox({
-					id: 'agency_country',
+						id: 'agency_country_add',
 			    	hiddenName: 'agency_country',
 			    	fieldLabel: 'Country',
 			    	anchor:'95%',
@@ -4039,7 +4135,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 				    triggerAction: 'all',
 				    lazyRender:true,
 				    mode: 'local',
-				    id: 'agency_type',
+					    id: 'agency_type_add',
 				    hiddenName: 'agency_type',
 				    autoload: true,
 				    store: new Ext.data.ArrayStore({
@@ -4060,7 +4156,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 				});
 	    	
 		    	//agency form
-				agencyFormPanel = new Ext.FormPanel({
+					agencyFormPanelAdd = new Ext.FormPanel({
 					bodyBorder: false,
 					border: false,
 					frame: false,
@@ -4070,7 +4166,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 					autoWidth: true,
 					defaults: { width: '95%' },
 					bodyCssClass: 'x-citewrite-panel-body',
-					id: 'agencyFormPanel',
+						id: 'agencyFormPanelAdd',
 					items:[
 					       {
 					            layout:'column',
@@ -4122,6 +4218,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 								    	   id: 'agency_phone_add',
 								    	   name:"agency_phone",
 								    	   fieldLabel: 'Phone',
+								    	   allowBlank: false,
 								    	   anchor:'95%',
 						                   tabIndex: 6 
 								       },
@@ -4160,8 +4257,10 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 								   value: '0'
 							}]
 				});
+		    	}
 				
-		    	agencyDialog = new Ext.Window({
+		    	if(typeof agencyDialogAdd == "undefined"){
+			    	agencyDialogAdd = new Ext.Window({
 	                renderTo: document.body,
 	                layout:'fit',
 	                width:540,
@@ -4170,8 +4269,8 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	                plain: true,
 	                resizable: false,
 	                modal: true,
-	                id: 'agencyWindow',
-	                items: agencyFormPanel,
+		                id: 'agencyWindowAdd',
+		                items: agencyFormPanelAdd,
 	                title:"Add Agency",
 	                buttons: [{
 	                    text:'Save',
@@ -4183,33 +4282,10 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	                    	var agency_name = Ext.getCmp('agency_name_add').getValue();
 	                    	var agency_type = agencyTypeCombo.getValue();
 	                     	
-	                    	if(agency_name.length == 0 || agency_phone.length == 0 || agency_email.length == 0)
-	                		{
-	                    		Ext.Msg.show({
-		            				   title:'Missing Field',
-		            				   msg: 'Name, Phone and Email are required.',
-		            				   buttons: Ext.Msg.OK,
-		            				   icon: Ext.MessageBox.ERROR
-		            				});
-	                    		
-	                    		return false;
-	                		}
-	                    	
-	                    	if(agency_type.length == 0)
-	                		{
-	                    		Ext.Msg.show({
-		            				   title:'Missing Field',
-		            				   msg: 'Type are required',
-		            				   buttons: Ext.Msg.OK,
-		            				   icon: Ext.MessageBox.ERROR
-		            				});
-	                    		
-	                    		return false;
-	                		}
 	                    	
 	                    	
 	                    	//validate form
-	                    	agencyFormPanel.getForm().submit({
+		                    	agencyFormPanelAdd.getForm().submit({
 	                    	    url: _contextPath + '/agency/save',
 	                    	    params: {
 	                    	        xaction: 'save'
@@ -4235,7 +4311,7 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	         				        		   													        		   
 	         				        	   }
 	         			        		   
-	                    	    		  agencyDialog.hide();
+		                    	    		  agencyDialogAdd.hide();
 	  	                    	    	  Ext.growl.message('Success', 'Agency has been saved.');
 	  	                    	    	  agencyStore.reload();
 	         			        		   
@@ -4275,18 +4351,24 @@ ReservationPanel = Ext.extend(Ext.Panel, {
 	                },{
 	                    text: 'Close',
 	                    handler: function(){
-	                    	agencyDialog.hide();
+		                    	agencyDialogAdd.hide();
 	                    }
 	                }]
 	            });
-	    	
-			  agencyFormPanel.getForm().reset();
+		      }
+			  agencyFormPanelAdd.getForm().reset();
 			  agencyCountryCombo.setValue(1);
 			  agencyTypeCombo.setValue(1);
 			
 	    },
 	    
+	    uniqueID : function() 
+	    {	    	  
+	    	//generate unique id
+	    	var timestamp = new Date().valueOf();
+	    	return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1)+timestamp; 
 	    
+	    },
 	    bindActions: function()
 	    {
 	    	var panel = this;

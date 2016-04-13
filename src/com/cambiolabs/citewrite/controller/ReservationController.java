@@ -236,6 +236,45 @@ public class ReservationController extends MultiActionController
 						
 					}		
 					break;
+					case 5:{
+						
+						while( startCal.get( Calendar.DAY_OF_WEEK ) != Calendar.MONDAY ){
+							startCal.add( Calendar.DATE, -1 );  
+						}
+						startCal.set(Calendar.HOUR_OF_DAY, 0);
+						startCal.set(Calendar.MINUTE, 0);
+						startCal.set(Calendar.SECOND, 0);
+						startCal.set(Calendar.MILLISECOND, 0);
+						dateStart = startFormater.getTimestampDate(startCal);	
+						endCal = startCal;
+						endCal.add(Calendar.DATE, 7);
+						endCal.set(Calendar.HOUR_OF_DAY, 0);
+						endCal.set(Calendar.MINUTE, 0);
+						endCal.set(Calendar.SECOND, 0);
+						endCal.set(Calendar.MILLISECOND, 0);
+						dateEnd = startFormater.getTimestampDate(endCal);	
+						filter.add(new DBFilter("reservations.reservation_check_in", ">=", dateStart));
+						filter.add(new DBFilter("reservations.reservation_check_in", "<=", dateEnd));
+					}		
+					break;
+					case 6:{
+						
+						int startMonth =  startFormater.getDatemonth()+1;
+						if (startMonth == 13){
+							startMonth =1;
+						}else if(startMonth == 14){
+							startMonth =2;
+						}
+						//startCal.add( Calendar.MONTH, 1 );
+						startCal.set(startFormater.getDateyear(),startMonth-2, 1, 0, 0);
+						endCal.set(startFormater.getDateyear(),startMonth-1, 1, 0, 0);
+						dateStart = startFormater.getTimestampDate(startCal);
+						dateEnd = startFormater.getTimestampDate(endCal);
+						filter.add(new DBFilter("reservations.reservation_check_in", ">=", dateStart));
+						filter.add(new DBFilter("reservations.reservation_check_in", "<=", dateEnd));
+						
+					}		
+					break;
 					}
 				}
 			}
@@ -301,6 +340,7 @@ public class ReservationController extends MultiActionController
 			if (reservation != null){
 				mv.addObject("reservation", reservation);
 				mv.addObject("guest", reservation.getGuest());
+				mv.addObject("agency", reservation.getAgency());
 				mv.addObject("lastPeyment", reservation.getLastPayment());
 				
 				float subTotal = 0;
@@ -783,6 +823,12 @@ public class ReservationController extends MultiActionController
 		json.addProperty("success", false);
 		
 		int ID = 0;
+		String uniqueId = request.getParameter("unique_id");
+		if(uniqueId == null){
+			uniqueId = "";
+		}
+		
+		Charges charges = null;
 		try
 		{
 			
@@ -798,13 +844,18 @@ public class ReservationController extends MultiActionController
 					ID = Integer.parseInt(request.getParameter("charge_id"));
 				}
 				
-				Charges charges = new Charges(ID);
+				if(ID > 0){
+					charges = new Charges(ID);	
+				}else {
+					charges = new Charges(uniqueId);
+				}				
 	
 				String res_id = request.getParameter("charge_reservation_id"); //
 				charges.setReservationId(Integer.parseInt(res_id));
 						
 				charges.setCharge_item_name(request.getParameter("charge_item_name"));//
 				charges.setCharge_item_desc(request.getParameter("charge_item_desc"));
+				//charges.setUnique_id(request.getParameter("unique_id"));
 				
 				String charge_rate = request.getParameter("charge_rate");//
 				String charge_total = request.getParameter("charge_total");//
@@ -909,16 +960,18 @@ public class ReservationController extends MultiActionController
 				reservation.setReservation_service_notes(request.getParameter("reservation_service_notes"));
 				reservation.setReservation_transport_notes(request.getParameter("reservation_transport_notes"));
 				reservation.setReservation_internal_notes(request.getParameter("reservation_internal_notes"));
+				reservation.setReservation_bar_notes(request.getParameter("reservation_bar_notes"));
+				
 				String Update = request.getParameter("reservation_update_date");		
 				String Creation = request.getParameter("reservation_creation_date");
 				String reservation_tax = request.getParameter("reservation_tax");
 	
-				String reservation_ignore_service = request.getParameter("reservation_ignore_service");
+				/*String reservation_ignore_service = request.getParameter("reservation_ignore_service");
 				if(reservation_ignore_service.equals("true")){
 					reservation.setReservation_ignore_service(1);
 				}else {
 					reservation.setReservation_ignore_service(0);
-				}
+				}*/
 				
 				String reservation_ignore_tax = request.getParameter("reservation_ignore_tax");
 				if(reservation_ignore_tax.equals("true")){
@@ -931,9 +984,10 @@ public class ReservationController extends MultiActionController
 				reservation.setCard_name(request.getParameter("card_name"));
 				reservation.setCard_no(request.getParameter("card_no"));
 				reservation.setCard_exp(request.getParameter("card_exp"));
-				reservation.setCard_type(request.getParameter("card_type"));
+				String card_type = request.getParameter("card_type");				
 				reservation.setReservation_status_by_string(Status);
 	
+				try{if(card_type!= null && card_type!= "" && card_type.length()>0){reservation.setCard_type(Integer.parseInt(card_type));}}catch(NumberFormatException nfe){}
 				try{if(reservation_event_participants!= null && reservation_event_participants!= "" && reservation_event_participants.length()>0){reservation.setReservation_event_participants(Integer.parseInt(reservation_event_participants));}}catch(NumberFormatException nfe){}		
 				try{if(Type!= null && Type!= "" && Type.length()>0){reservation.setReservation_type(Integer.parseInt(Type));}}catch(NumberFormatException nfe){}	
 				try{if(Agency!= null && Agency!= "" && Agency.length()>0){reservation.setReservation_agency_id(Integer.parseInt(Agency));}}catch(NumberFormatException nfe){}	
@@ -1055,6 +1109,12 @@ public class ReservationController extends MultiActionController
 		json.addProperty("success", false);
 		
 		int chargeID = 0;
+		String uniqueId = request.getParameter("unique_id");
+		if(uniqueId == null){
+			uniqueId = "";
+		}
+		
+		Charges charge = null;
 		try
 		{
 			User user = User.getCurrentUser();
@@ -1066,12 +1126,24 @@ public class ReservationController extends MultiActionController
 			}
 			
 			chargeID = Integer.parseInt(request.getParameter("charge_id"));
-			Charges charge = new Charges(chargeID);
+			
+			if(chargeID > 0){
+				charge = new Charges(chargeID);
+			}else {
+				charge = new Charges(uniqueId);
+			}
+			
+			if(charge.charge_id > 0){
 			if(!charge.delete())
 			{
 				response.getWriter().print("{success: false, msg: 'Error removing Charge.'}");
 				return;
 			}
+			}else {
+				response.getWriter().print("{success: true'}");
+				return;
+			}
+			
 		}
 		catch(UnknownObjectException uoe)
 		{
